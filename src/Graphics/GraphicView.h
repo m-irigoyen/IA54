@@ -2,6 +2,7 @@
 #define GRAPHICVIEW_H_
 
 #include <iostream>
+#include <deque>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
@@ -15,6 +16,8 @@
 #define RECEPTOR_RADIUSSIZE 6
 #define EMITTER_RADIUSSIZE 6
 #define WAVE_SIZE 2
+
+#define WAVE_AMPLITUDE_MAX 100	// Threshold used for making wave transparent with attenuation
 
 using namespace std;
 
@@ -31,17 +34,12 @@ private:
 	World* world;						// Pointer to the world
 	Problem* problem;					// Pointer to the problem
 
-	// The shapes for all the objects
-	// TODO : (optimise) keep only one and set its position for every object before drawing
-	std::vector<sf::CircleShape> receptors;
-	std::vector<sf::CircleShape> emitters;
-	std::vector<sf::CircleShape> waves;
-
 	// display flags : if its off dont display the corresponding objects
 	bool displaySimulator;
 	bool displayProblem;
 
 	bool displayWaves;
+	bool displayWaveOpacity;
 	bool displayReceptors;
 	bool displayEmitters;
 

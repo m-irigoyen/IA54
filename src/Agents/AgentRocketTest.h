@@ -8,9 +8,12 @@ class AgentRocketTest : public Agent
 {
 protected:
 	ProblemRocket* castedProblem;
+	BodyEmitter* castedBody;
 
 public:
 	AgentRocketTest(ProblemRocket* problem);
+
+	virtual void connectCasted(BodyEmitter* body);
 
 	virtual void live();
 };

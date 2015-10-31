@@ -26,14 +26,11 @@ void Simulator::init()
 	// Rocket Problem
 	this->problem = new ProblemRocket();
 	this->problem->init();
-
-
-	// TEST STUFF
-	this->agents.push_back(new AgentRocketTest(this->problem));
 	
 	// Adding initial agents
-	//addEmitter(200,200);
-	//addReceptor(400, 200);
+	addEmitter(200,200);
+	addEmitter(200, 400);
+	addReceptor(600, 400);
 
 	std::cout << "Init done" << std::endl;
 }
@@ -185,8 +182,14 @@ void Simulator::checkEvents()
 						else
 							std::cout << "Wave optimisation : off" << std::endl;
 						break;
-					case sf::Keyboard::D :
+					case sf::Keyboard::W :
 						this->SFMLView.toggleDisplayWaves();
+						break;
+					case sf::Keyboard::E:
+						this->SFMLView.toggleDisplayEmitters();
+						break;
+					case sf::Keyboard::R:
+						this->SFMLView.toggleDisplayReceptors();
 						break;
 					case sf::Keyboard::P :
 						this->SFMLView.toggleDisplayProblem();

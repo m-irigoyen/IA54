@@ -6,6 +6,7 @@ AgentEmitterRocket::AgentEmitterRocket(ProblemRocket * problem, BodyEmitter * bo
 
 void AgentEmitterRocket::live()
 {
+	this->castedBody->send(10, 100);
 }
 
 bool AgentEmitterRocket::isLinked()
