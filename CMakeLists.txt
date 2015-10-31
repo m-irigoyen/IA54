@@ -7,26 +7,26 @@ SET(EXE_NAME "IA54")
 SET(EXECUTABLE_OUTPUT bin/${CMAKE_BUILD_TYPE})
 
 #source grouping macro
-MACRO(SOURCE_GROUP_BY_FOLDER target)
-  SET(SOURCE_GROUP_DELIMITER "/")
-  SET(last_dir "")
-  SET(files "")
-  FOREACH(file ${${target}_SRC} ${${target}_HEADERS})
-    file(RELATIVE_PATH relative_file "${PROJECT_SOURCE_DIR}/${target}" ${file})
-    GET_FILENAME_COMPONENT(dir "${relative_file}" PATH)
-    IF (NOT "${dir}" STREQUAL "${last_dir}")
-      IF (files)
-        SOURCE_GROUP("${last_dir}" FILES ${files})
-      ENDIF (files)
-      SET(files "")
-    ENDIF (NOT "${dir}" STREQUAL "${last_dir}")
-    SET(files ${files} ${file})
-    SET(last_dir "${dir}")
-  ENDFOREACH(file)
-  IF (files)
-    SOURCE_GROUP("${last_dir}" FILES ${files})
-  ENDIF (files)
-ENDMACRO(SOURCE_GROUP_BY_FOLDER)
+# MACRO(SOURCE_GROUP_BY_FOLDER target)
+  # SET(SOURCE_GROUP_DELIMITER "/")
+  # SET(last_dir "")
+  # SET(files "")
+  # FOREACH(file ${${target}_SRC} ${${target}_HEADERS})
+    # file(RELATIVE_PATH relative_file "${PROJECT_SOURCE_DIR}/${target}" ${file})
+    # GET_FILENAME_COMPONENT(dir "${relative_file}" PATH)
+    # IF (NOT "${dir}" STREQUAL "${last_dir}")
+      # IF (files)
+        # SOURCE_GROUP("${last_dir}" FILES ${files})
+      # ENDIF (files)
+      # SET(files "")
+    # ENDIF (NOT "${dir}" STREQUAL "${last_dir}")
+    # SET(files ${files} ${file})
+    # SET(last_dir "${dir}")
+  # ENDFOREACH(file)
+  # IF (files)
+    # SOURCE_GROUP("${last_dir}" FILES ${files})
+  # ENDIF (files)
+# ENDMACRO(SOURCE_GROUP_BY_FOLDER)
 
 include_directories(${IA54_SOURCE_DIR}/src)
 
@@ -62,6 +62,10 @@ FILE(GLOB_RECURSE SRCS_WORLD
 	${IA54_SOURCE_DIR}
 	${IA54_SOURCE_DIR}/src/World/*.cpp 
 	${IA54_SOURCE_DIR}/src/World/*.h)
+FILE(GLOB_RECURSE SRCS_PUGI 
+	${IA54_SOURCE_DIR}
+	${IA54_SOURCE_DIR}/src/pugixml/*.cpp 
+	${IA54_SOURCE_DIR}/src/pugixml/*.hpp)
 FILE(GLOB_RECURSE SRCS_MAIN 
 	${IA54_SOURCE_DIR}/src 
 	main.cpp)
@@ -73,11 +77,12 @@ source_group(Problems FILES ${SRCS_PROBLEMS})
 source_group(Simulator FILES ${SRCS_SIMULATOR})
 source_group(Utilities FILES ${SRCS_UTILITIES})
 source_group(World FILES ${SRCS_WORLD})
+source_group(Pugi FILES ${SRCS_PUGI})
 source_group(Main FILES ${SRCS_MAIN})
 
 #ADD_EXECUTABLE(${EXE_NAME} ${SRC_SOURCES} ${SRC_HEADER})
 
-ADD_EXECUTABLE(${EXE_NAME} ${SRCS_AGENTS} ${SRCS_BODIES} ${SRCS_GRAPHICS} ${SRCS_PROBLEMS} ${SRCS_SIMULATOR} ${SRCS_UTILITIES} ${SRCS_WORLD} ${SRCS_MAIN})
+ADD_EXECUTABLE(${EXE_NAME} ${SRCS_AGENTS} ${SRCS_BODIES} ${SRCS_GRAPHICS} ${SRCS_PROBLEMS} ${SRCS_SIMULATOR} ${SRCS_UTILITIES} ${SRCS_WORLD} ${SRCS_PUGI} ${SRCS_MAIN})
 
 FIND_FILE(SFML_CMAKE_DIR "cmake/Modules/FindSFML.cmake")
 if(SFML_CMAKE_DIR)

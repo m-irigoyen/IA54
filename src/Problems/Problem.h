@@ -5,6 +5,8 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
+#include "pugixml\pugixml.hpp"
+
 /*
 * The Problem class creates and run the problem to be solved. (pendulum, drone, etc)
 */

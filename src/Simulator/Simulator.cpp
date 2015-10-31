@@ -188,13 +188,11 @@ void Simulator::checkEvents()
 					case sf::Keyboard::D :
 						this->SFMLView.toggleDisplayWaves();
 						break;
-					case sf::Keyboard::A:
-						//this->problem->incrementFrequencyOffset();
-						//std::cout << "FrequencyOffset : " << this->problem->getFrequencyOffset() << std::endl;
+					case sf::Keyboard::P :
+						this->SFMLView.toggleDisplayProblem();
 						break;
-					case sf::Keyboard::E:
-						//this->problem->decrementFrequencyOffset();
-						//std::cout << "FrequencyOffset : " << this->problem->getFrequencyOffset() << std::endl;
+					case sf::Keyboard::S:
+						this->SFMLView.toggleDisplaySimulator();
 						break;
 					}
                     break;
@@ -204,12 +202,11 @@ void Simulator::checkEvents()
                         //std::cout << "Searching body in " <<
                         selectedBody = this->world.getClosestBodyFromLocation(
                             event.mouseButton.x,event.mouseButton.y,2*EMITTER_RADIUSSIZE);
-                    }else if (event.mouseButton.button == sf::Mouse::Right){
-                        this->addEmitter(event.mouseButton.x,event.mouseButton.y);
-                    }else if (event.mouseButton.button == sf::Mouse::Middle){
-                        this->addReceptor(event.mouseButton.x,event.mouseButton.y);
                     }
-
+					else if (event.mouseButton.button == sf::Mouse::Right)
+                        this->addEmitter(event.mouseButton.x,event.mouseButton.y);
+                    else if (event.mouseButton.button == sf::Mouse::Middle)
+                        this->addReceptor(event.mouseButton.x,event.mouseButton.y);
                     break;
                 case sf::Event::MouseMoved :
                     if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && selectedBody != NULL)

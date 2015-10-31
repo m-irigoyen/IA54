@@ -33,6 +33,8 @@ protected:
 	// World 
 	int worldWidth;
 	int worldHeight;
+	int worldFlatZone1;
+	int worldFlatZone2;
 
 	vector<pair<int, int>> terrain;	// The terrain. Just specify points, the collision and drawing is automatic
 
@@ -72,7 +74,7 @@ protected:
 
 	bool collides(double x, double y);	// Checks if the given position is colliding with terrain
 	bool correctLanding(double hSpeed, double vSpeed, double angle);	// Checks if the rocket landed correctly
-	int getTerrainPoint(double x, pair<int, int> p1, pair<int, int> p2);	// Gets the Y coordinate for the given X, with p1.x <=x and p2.x >= x
+	double getTerrainPoint(double x, pair<int, int> p1, pair<int, int> p2);	// Gets the Y coordinate for the given X, with p1.x <=x and p2.x >= x
 	vector<pair<int, int>>::iterator getPointBefore(double x);	// Returns the point contained in this->terrain with closest smallest x compared to given x parameter
 
 	// Physics stuff
@@ -86,6 +88,7 @@ public:
 
 	//TODO: load terrain
 	virtual void loadTerrain(std::string path = "Default");
+	virtual void saveTerrain(std::string path);
 
 	virtual void run(sf::Time elapsedTime);	// Updating the problem
 	virtual void draw(sf::RenderWindow* problemWindow, std::vector<sf::Font>* fonts);

@@ -53,7 +53,7 @@ private:
 	//ProblemDrones* problem;   // The instance of the drone problem.
 	ProblemRocket* problem;   // The instance of the drone problem.
 
-	PROBLEM_TYPE problemType;
+	PROBLEM_TYPE problemType;	// The type of the current problem
 
 public:
 	Simulator();

@@ -195,11 +195,15 @@ void GraphicView::toggleDisplayEmitters()
 void GraphicView::toggleDisplaySimulator()
 {
 	this->toggle(this->displaySimulator);
+	if (!this->displaySimulator)
+		this->window->clear();
 }
 
 void GraphicView::toggleDisplayProblem()
 {
 	this->toggle(this->displayProblem);
+	if (!this->displayProblem)
+		this->problemWindow->clear();
 }
 
 void GraphicView::SetWorld(World* world)

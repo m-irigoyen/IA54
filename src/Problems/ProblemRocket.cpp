@@ -31,29 +31,14 @@ bool ProblemRocket::collides(double x, double y)
 		return true;
 	}
 
-	pair<int, int> p1, p2;
+	vector<pair<int, int>>::iterator p;
 
-	p1 = *this->terrain.begin();
-		
-	//TODO : replace by a call to getPointBefore
-	bool collides = false;
-	for (vector<pair<int, int>>::iterator it = this->terrain.begin()+1; it != this->terrain.end(); ++it)
-	{
-		p2 = *it;
-		// Found the englobing points
-		if (p2.first >= x)
-		{
+	p = this->getPointBefore(x);
 
-		}
-	}
-	
+	double terrainY = this->getTerrainPoint(x, *p, *(p + 1));
 
-	// First : check if the position collides with terrain
-	if (y <= 0.0)
-	{
-		// Second : check if the speed and angle is correct
+	if (y <= terrainY)
 		return true;
-	}
 	else
 		return false;
 }
@@ -87,27 +72,18 @@ bool ProblemRocket::correctLanding(double hSpeed, double vSpeed, double angle)
 	return false;
 }
 
-int ProblemRocket::getTerrainPoint(double x, pair<int, int> p1, pair<int, int> p2)
+double ProblemRocket::getTerrainPoint(double x, pair<int, int> p1, pair<int, int> p2)
 {
-	int x1, y1, x2, y2;
-	x1 = p1.first;
-	y1 = p1.second;
-	x2 = p2.first;
-	y2 = p2.second;
-
 	int distanceP1P2 = p2.first - p1.first;
 	double distanceP1X = x - p1.first;
 
 	double distRatio = distanceP1X / distanceP1P2;
 
+	//cout << "p1 : " << x1 << "," << y1 << endl;
+	//cout << "p2 : " << x2 << "," << y2 << endl;
+	//cout << "x : " << x << endl;
 
-//	y = 
-
-	cout << "p1 : " << x1 << "," << y1 << endl;
-	cout << "p2 : " << x2 << "," << y2 << endl;
-	cout << "x : " << x << endl;
-
-	return 0;
+	return p1.second + (p2.second - p1.second)*distRatio;
 }
 
 vector<pair<int, int>>::iterator ProblemRocket::getPointBefore(double x)
@@ -195,22 +171,112 @@ void ProblemRocket::checkEvents(sf::RenderWindow * window)
 
 void ProblemRocket::loadTerrain(std::string path)
 {
+	this->terrain.clear();
+	this->worldFlatZone1 = -1;
+	this->worldFlatZone2 = -1;
+	this->worldWidth = -1;
+	this->worldHeight = -1;
+
 	if (path.compare("Default") == 0)
 	{
 		cout << "ProblemRocket::loadTerrain : Loading default terrain" << endl;
 		// Loading default terrain
-		this->terrain.push_back(pair<int, int>(0, 400));
+		this->terrain.push_back(pair<int, int>(0, 600));
+		this->terrain.push_back(pair<int, int>(100, 300));
+		this->terrain.push_back(pair<int, int>(200, 0));
+		this->terrain.push_back(pair<int, int>(300, 100));
+		this->terrain.push_back(pair<int, int>(400, 250));
+		this->terrain.push_back(pair<int, int>(500, 100));
 		this->terrain.push_back(pair<int, int>(800, 100));
-		this->terrain.push_back(pair<int, int>(2000, 1500));
-		this->terrain.push_back(pair<int, int>(2500, 1400));
-		this->terrain.push_back(pair<int, int>(2700, 50));
-		this->terrain.push_back(pair<int, int>(3700, 50));
-		this->terrain.push_back(pair<int, int>(8000, 200));
+		this->terrain.push_back(pair<int, int>(1000, 200));
 
-		this->worldWidth = 8000;
-		this->worldHeight = 8000;
+		this->worldWidth = 1000;
+		this->worldHeight = 1000;
+		this->worldFlatZone1 = 500;
+		this->worldFlatZone2 = 800;
+	}
+	else
+	{
+		string filePath = "../Project/res/";
+		filePath += path;
 
-		this->resetRocket();
+		// XML document creation
+		pugi::xml_document doc;
+
+		// Load document
+		pugi::xml_parse_result result = doc.load_file(filePath.data());
+		if (result.status != pugi::xml_parse_status::status_ok)
+		{
+			// An error occured
+			std::cout << "ERROR : ProblemRocket::loadTerrain : unable to parse given file : " << filePath << std::endl;
+			std::cout << "Aborting terrain loading..." << std::endl;
+			return;
+		}
+
+		// Loading terrain dimensions
+		pugi::xml_node terrainNode = doc.child("terrain");
+		this->worldWidth = terrainNode.attribute("width").as_int();
+		this->worldHeight = terrainNode.attribute("height").as_int();
+		this->worldFlatZone1 = terrainNode.attribute("flat1").as_int();
+		this->worldFlatZone2 = terrainNode.attribute("flat2").as_int();
+
+		// Loading terrain points
+		pugi::xml_node pointsNode = terrainNode.child("points");
+		// iterate over genome nodes in the genomes node
+		for (pugi::xml_node point : pointsNode.children())
+		{
+			pair<int, int> p;
+			p.first = point.attribute("x").as_int();
+			p.second = point.attribute("y").as_int();
+
+			this->terrain.push_back(p);
+		}
+	}
+
+	this->resetRocket();
+}
+
+void ProblemRocket::saveTerrain(std::string path)
+{
+	if (path.compare("Default") == 0)
+	{
+		cout << "ProblemRocket::saveTerrain : ERROR save path can't be 'Default'. Aborting save" << endl;
+		return;
+	}
+	else
+	{
+		cout << "ProblemRocket::saveTerrain : saving current terrain..." << endl;
+
+		// Creating the xml doc
+		pugi::xml_document doc;
+
+		// Set XML declaration
+		auto declarationNode = doc.append_child(pugi::node_declaration);
+		declarationNode.append_attribute("version") = "1.0";
+		declarationNode.append_attribute("encoding") = "UTF-8";
+		declarationNode.append_attribute("standalone") = "yes";
+
+		// Set XML root node
+		pugi::xml_node terrainNode = doc.append_child("terrain");
+
+		// Saving world dimensions
+		terrainNode.append_attribute("width").set_value(this->worldWidth);
+		terrainNode.append_attribute("height").set_value(this->worldHeight);
+		terrainNode.append_attribute("flat1").set_value(this->worldFlatZone1);
+		terrainNode.append_attribute("flat2").set_value(this->worldFlatZone2);
+
+		// terrain points
+		for (vector<pair<int, int>>::iterator it = this->terrain.begin(); it != this->terrain.end(); ++it)
+		{
+			pugi::xml_node pointNode = terrainNode.append_child("point");
+
+			// Saving genome data
+			pointNode.append_attribute("x").set_value(it->first);
+			pointNode.append_attribute("y").set_value(it->second);
+		}
+		string filePath = "../Project/res/";
+		filePath += path;
+		std::cout << "Save result : " << filePath.data() << " : " << doc.save_file(filePath.data()) << std::endl;
 	}
 }
 
@@ -243,7 +309,7 @@ void ProblemRocket::run(sf::Time elapsedTime)
 		if (this->collides(rocketX, rocketY))
 		{
 			// If is on flat zone
-			if (1)
+			if (rocketX >= worldFlatZone1 && rocketX <= worldFlatZone2)
 			{
 				if (this->correctLanding(hSpeed, vSpeed, rocketAngle))
 					this->hasLanded = true;
@@ -251,7 +317,11 @@ void ProblemRocket::run(sf::Time elapsedTime)
 					this->hasCrashed = true;
 			}
 			else
+			{
 				this->hasCrashed = true;
+				cout << "Rocket crashed : landed on non flat zone!" << endl;
+			}
+				
 		}
 	}
 	else
@@ -267,6 +337,25 @@ void ProblemRocket::draw(sf::RenderWindow * problemWindow, std::vector<sf::Font>
 
 	// Drawing terrain
 	//TODO: draw the terrain
+	// Drawing terrain
+	if (!this->terrain.empty())
+	{
+		vector<pair<int, int>>::iterator p = this->terrain.begin();
+		for (vector<pair<int, int>>::iterator it = this->terrain.begin()+1; it != this->terrain.end(); ++it)
+		{
+			sf::Vertex line[] =
+			{
+				sf::Vertex(sf::Vector2f(p->first*problemWindow->getSize().x / worldWidth, 
+					(worldHeight - p->second)*problemWindow->getSize().y / worldHeight)),
+				sf::Vertex(sf::Vector2f(it->first*problemWindow->getSize().x / worldWidth, 
+					(worldHeight - it->second)*problemWindow->getSize().y / worldHeight))
+			};
+
+			problemWindow->draw(line, 2, sf::Lines);
+
+			p = it;
+		}
+	}
 
 	// Drawing engine fire
 	if (this->enginePower > 0)
@@ -279,12 +368,6 @@ void ProblemRocket::draw(sf::RenderWindow * problemWindow, std::vector<sf::Font>
 
 		problemWindow->draw(this->hud_engineFire);
 	}
-
-	// Drawing terrain
-	if (!this->terrain.empty())
-	{
-
-	}	
 
 	// Drawing rocket
 	this->hud_rocketSprite.setPosition(rocketX*problemWindow->getSize().x / worldWidth,
