@@ -13,15 +13,27 @@ GraphicView::GraphicView() : displayEmitters(true), displayReceptors(true), disp
 {
 }
 
-void GraphicView::Init(int height, int width, Problem* problem)
+void GraphicView::Init(int width, int height, Problem* problem)
 {
-	this->window = new sf::RenderWindow(sf::VideoMode(height, width), "IA54 - WaveAgents simulator");
+	this->window = new sf::RenderWindow(sf::VideoMode(width, height), "IA54 - WaveAgents simulator");
 	this->window->setVerticalSyncEnabled(false);
 
-	this->problemWindow = new sf::RenderWindow(sf::VideoMode(height, width), "IA54 - WaveAgents problem");
+	// Loading fonts
+	sf::Font temp;
+	if (!temp.loadFromFile("../Project/res/Fonts/ForcedSquare.ttf"))
+	{
+		cout << "GraphicView::Init : ERROR : couldn't load ForcedSquare font" << endl;
+	}
+
+	this->fonts.push_back(temp);
+
+	// Init problem
+	this->problemWindow = new sf::RenderWindow(sf::VideoMode(width, height), "IA54 - WaveAgents problem");
 	this->problemWindow->setVerticalSyncEnabled(false);
 
 	this->setProblem(problem);
+
+	this->problem->initGraphics(&this->fonts);
 }
 
 void GraphicView::Draw()
@@ -140,7 +152,7 @@ void GraphicView::Draw()
 	// Drawing the problem
 	if (this->displayProblem)
 	{
-		this->problem->draw(this->problemWindow);
+		this->problem->draw(this->problemWindow, &this->fonts);
 		this->problemWindow->display();
 	}
 }

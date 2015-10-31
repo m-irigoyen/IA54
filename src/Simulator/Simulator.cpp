@@ -134,9 +134,7 @@ void Simulator::run(sf::Time refreshRate)
 
 			/*if (frameTime.asMilliseconds() > 17)
 				std::cout << "frame time : " << frameTime.asMilliseconds() << " ms, threshold was " << 1/30 << "ms" << std::endl;*/
-
 			//std::cout << "frame time : " << frameTime.asMilliseconds() << " ms, waiting " << refreshRate.asMilliseconds() - frameTime.asMilliseconds() << " ms" << std::endl;
-
 			//std::cout << "Simulator::Run : FRAME ENDED" << endl;
 		}
 		else

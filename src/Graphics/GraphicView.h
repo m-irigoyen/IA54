@@ -16,15 +16,18 @@
 #define EMITTER_RADIUSSIZE 6
 #define WAVE_SIZE 2
 
+using namespace std;
+
 /*
 *   The GraphicView handles the GUI, drawing and displaying, etc.
 */
-
 class GraphicView
 {
 private:
 	sf::RenderWindow* window;			// The window
 	sf::RenderWindow* problemWindow;	// The problem's window
+	//TODO: intercept close events from the problem window
+
 	World* world;						// Pointer to the world
 	Problem* problem;					// Pointer to the problem
 
@@ -49,10 +52,12 @@ private:
 
 	void toggle(bool& toToggle);
 
+	vector<sf::Font> fonts;
+
 public:
 	GraphicView();
 
-	void Init(int height, int width, Problem* problem);		// Init the window
+	void Init(int width, int height, Problem* problem);		// Init the window
 	void Draw();							// Draw stuff
 
 	// Setters

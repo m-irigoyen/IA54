@@ -3,6 +3,7 @@
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Graphics.hpp>
+#include <vector>
 
 /*
 * The Problem class creates and run the problem to be solved. (pendulum, drone, etc)
@@ -19,7 +20,8 @@ class Problem
 {
 public:
 	virtual void run(sf::Time elapsedTime) = 0;			// Run the problem
-	virtual void draw(sf::RenderWindow* window) = 0;	// Draw the problem on the given window
+	virtual void draw(sf::RenderWindow* window, std::vector<sf::Font>* fonts) = 0;	// Draw the problem on the given window
+	virtual void initGraphics(std::vector<sf::Font>* fonts) = 0;
 };
 
 #endif
