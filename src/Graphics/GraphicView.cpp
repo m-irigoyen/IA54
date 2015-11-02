@@ -126,6 +126,19 @@ void GraphicView::Draw()
 	}
 }
 
+void GraphicView::clean()
+{
+	this->problem = NULL;
+	this->world = NULL;
+
+	this->fonts.clear();
+	
+	this->window->clear();
+	delete (this->window);
+	this->problemWindow->clear();
+	delete (this->problemWindow);
+}
+
 void GraphicView::setDisplayWaves(bool displayWaves)
 {
 	this->displayWaves = displayWaves;

@@ -23,6 +23,7 @@ class Problem
 public:
 	virtual void run(sf::Time elapsedTime) = 0;			// Run the problem
 	virtual void draw(sf::RenderWindow* window, std::vector<sf::Font>* fonts) = 0;	// Draw the problem on the given window
+	virtual void clean() = 0;
 	virtual void initGraphics(std::vector<sf::Font>* fonts) = 0;
 };
 

@@ -57,6 +57,7 @@ public:
 
 	void Init(int width, int height, Problem* problem);		// Init the window
 	void Draw();							// Draw stuff
+	void clean();	// Cleans the graphics stuff
 
 	// Setters
 	void setDisplayWaves(bool displayWaves);

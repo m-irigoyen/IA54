@@ -92,6 +92,7 @@ public:
 
 	virtual void run(sf::Time elapsedTime);	// Updating the problem
 	virtual void draw(sf::RenderWindow* problemWindow, std::vector<sf::Font>* fonts);
+	virtual void clean();
 	virtual void init();	// Running the problem
 	virtual void initGraphics(std::vector<sf::Font>* fonts);
 
