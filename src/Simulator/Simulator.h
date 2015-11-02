@@ -58,6 +58,7 @@ private:
 public:
 	Simulator();
 	void init();	// Initialise everything. Is called before run()
+	void initProblem(PROBLEM_TYPE newProblem);
 
     // Creates an agent at given position, then add him to the agent list
 	void addEmitter(float xPos, float yPos);

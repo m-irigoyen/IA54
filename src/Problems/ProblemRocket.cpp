@@ -392,6 +392,11 @@ void ProblemRocket::draw(sf::RenderWindow * problemWindow, std::vector<sf::Font>
 	problemWindow->draw(this->hud_power);
 }
 
+void ProblemRocket::clean()
+{
+	
+}
+
 void ProblemRocket::init()
 {
 	//TODO: load rocket image and set sprite

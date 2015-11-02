@@ -35,6 +35,22 @@ void Simulator::init()
 	std::cout << "Init done" << std::endl;
 }
 
+void Simulator::initProblem(PROBLEM_TYPE newProblem)
+{
+	if (newProblem != this->problemType)
+	{
+		this->problem->clean();
+		switch (newProblem)
+		{
+		case PROBLEM_TYPE::ROCKET:
+			delete(this->problem);
+			this->problem = new ProblemRocket();
+			break;
+		}
+	}
+	
+}
+
 void Simulator::addEmitter(float xPos, float yPos)
 {
 	BodyEmitter* body = static_cast<BodyEmitter*>(this->world.createBody(BODY_TYPE::EMITTER, xPos, yPos));
@@ -59,15 +75,21 @@ void Simulator::addReceptor(float xPos, float yPos)
 	BodyReceptorComposition* body = static_cast<BodyReceptorComposition*>(this->world.createBody(BODY_TYPE::RECEPTOR, xPos, yPos));
 	if (body != NULL)
 	{
-		ProblemRocket* castedProblem = static_cast<ProblemRocket*>(this->problem);
-		if (castedProblem != NULL)
+		ProblemRocket* castedProblem;
+		switch (this->problemType)
 		{
-			AgentReceptorRocket* agent = new AgentReceptorRocket(castedProblem);
-			agent->connectCasted(body);
-			this->agents.push_back(agent);
+		case PROBLEM_TYPE::ROCKET :
+			castedProblem = static_cast<ProblemRocket*>(this->problem);
+			if (castedProblem != NULL)
+			{
+				AgentReceptorRocket* agent = new AgentReceptorRocket(castedProblem);
+				agent->connectCasted(body);
+				this->agents.push_back(agent);
+			}
+			else
+				std::cout << "ERROR : couldn't cast problem to ProblemDrones" << std::endl;
+			break;
 		}
-		else
-			std::cout << "ERROR : couldn't cast problem to ProblemDrones" << std::endl;
 	}
 	else
 		std::cout << "ERROR : couldn't cast resulting body" << std::endl;
