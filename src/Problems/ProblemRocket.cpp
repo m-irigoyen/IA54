@@ -324,10 +324,6 @@ void ProblemRocket::run(sf::Time elapsedTime)
 				
 		}
 	}
-	else
-	{
-		
-	}
 }
 
 // Draw the problem
