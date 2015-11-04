@@ -1,14 +1,9 @@
 #include "Simulator.h"
 
 
-Simulator::Simulator() : world(&simulationClock, 800, 600), finishSimulation(false), frameFlag(true), problem(NULL), selectedBody(NULL), problemType(PROBLEM_TYPE::ROCKET)
+Simulator::Simulator() : world(&simulationClock, 800, 600), finishSimulation(false), frameFlag(true), problem(NULL), selectedBody(NULL), problemType(PROBLEM_TYPE::NONE)
 {
 	init();
-
-	this->SFMLView.Init(800, 600, this->problem);
-	this->SFMLView.setProblemType(this->problemType);
-	this->SFMLView.SetWorld(&this->world);
-	this->window = this->SFMLView.getWindow();
 }
 
 void Simulator::init()
@@ -23,14 +18,7 @@ void Simulator::init()
 	/*std::map<int, DRONE_BEHAVIOURS> behaviourTable;
 	this->problem = new ProblemDrones(behaviourTable, 1);*/
 
-	// Rocket Problem
-	this->problem = new ProblemRocket();
-	this->problem->init();
-	
-	// Adding initial agents
-	addEmitter(200,200);
-	addEmitter(200, 400);
-	addReceptor(600, 400);
+	this->initProblem(PROBLEM_TYPE::ROCKET);
 
 	std::cout << "Init done" << std::endl;
 }
@@ -39,16 +27,28 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 {
 	if (newProblem != this->problemType)
 	{
-		this->problem->clean();
+		this->world.clear();
+		if (this->problem != NULL)
+			this->problem->clean();
+
 		switch (newProblem)
 		{
 		case PROBLEM_TYPE::ROCKET:
 			delete(this->problem);
 			this->problem = new ProblemRocket();
+
+			// Adding initial agents
+			addEmitter(200, 200);
+			addEmitter(200, 400);
+			addReceptor(600, 400);
 			break;
 		}
+
+		this->SFMLView.Init(800, 600, this->problem);
+		this->SFMLView.setProblemType(this->problemType);
+		this->SFMLView.SetWorld(&this->world);
+		this->window = this->SFMLView.getWindow();
 	}
-	
 }
 
 void Simulator::addEmitter(float xPos, float yPos)

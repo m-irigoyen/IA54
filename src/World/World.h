@@ -56,6 +56,8 @@ private:
 public:
 	World(sf::Clock* clock, float worldLength, float worldHeight);
 
+	void clear();	// Clears the world of all waves, emitters, receptors
+
 	void updateMaxWaveDistance();	// Calculates and sets the max wave distance
 	bool toggleWaveOptimisation();	// Toggle wave optimisation on/off. If its on, waves are removed as soon as they go farther than the biggest distance between an emitter and a receptor in the world. If its off, they are removed when they go off screen.
 

@@ -1,7 +1,7 @@
 #include "ProblemRocket.h"
 
 
-ProblemRocket::ProblemRocket() : Problem(), worldWidth(SIZE_DEFAULT_WIDTH), worldHeight(SIZE_DEFAULT_HEIGHT), rocketX(worldWidth/2), rocketY(worldHeight/2), hasLanded(false), hasCrashed(false), hSpeed(0.0), vSpeed(0.0), enginePower(0), userControlled(true)
+ProblemRocket::ProblemRocket(float waveAmplLossPerSec) : Problem(waveAmplLossPerSec), worldWidth(SIZE_DEFAULT_WIDTH), worldHeight(SIZE_DEFAULT_HEIGHT), rocketX(worldWidth/2), rocketY(worldHeight/2), hasLanded(false), hasCrashed(false), hSpeed(0.0), vSpeed(0.0), enginePower(0), userControlled(true)
 {
 	this->setAngle(0);
 	this->loadTerrain();
@@ -398,13 +398,12 @@ void ProblemRocket::draw(sf::RenderWindow * problemWindow, std::vector<sf::Font>
 
 void ProblemRocket::clean()
 {
-	
+	// Nothing to do here, no dinamically allocated memory
 }
 
 void ProblemRocket::init()
 {
-	//TODO: load rocket image and set sprite
-	
+	// Nothing to do here	
 }
 
 void ProblemRocket::initGraphics(std::vector<sf::Font>* fonts)

@@ -22,6 +22,13 @@
 * The Problem class creates and run the problem to be solved. (pendulum, drone, etc)
 */
 
+enum AGENTTYPE_ROCKET
+{
+	ROCKET_DEFAULT,
+	ROCKET_DIRECTION,
+	ROCKET_POWER
+};
+
 using namespace std;
 
 class ProblemRocket : public Problem
@@ -84,7 +91,7 @@ protected:
 	void checkEvents(sf::RenderWindow* window);	// Checks for user input on the problem window
 
 public:
-	ProblemRocket();
+	ProblemRocket(float waveAmplLossPerSec = 50.0f);
 
 	//TODO: load terrain
 	virtual void loadTerrain(std::string path = "Default");

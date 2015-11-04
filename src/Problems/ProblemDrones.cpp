@@ -1,6 +1,6 @@
 #include "ProblemDrones.h"
 
-ProblemDrones::ProblemDrones(std::map<int, DRONE_BEHAVIOURS> behaviourTable, int numberOfDrones)
+ProblemDrones::ProblemDrones(std::map<int, DRONE_BEHAVIOURS> behaviourTable, int numberOfDrones) : Problem(10)
 {
 }
 

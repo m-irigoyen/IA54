@@ -13,6 +13,7 @@
 
 enum PROBLEM_TYPE
 {
+	NONE,
 	POINTER,
 	DRONE,
 	ROCKET
@@ -20,7 +21,11 @@ enum PROBLEM_TYPE
 
 class Problem
 {
+protected:
+	float waveAmplLossPerSec;
+
 public:
+	Problem(float waveAmplLossPerSec);
 	virtual void run(sf::Time elapsedTime) = 0;			// Run the problem
 	virtual void draw(sf::RenderWindow* window, std::vector<sf::Font>* fonts) = 0;	// Draw the problem on the given window
 	virtual void clean() = 0;
