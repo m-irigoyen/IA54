@@ -9,13 +9,7 @@ void AgentReceptorRocket::live()
 	// Getting perception from body
 	WAVE_COMPOSITION perception = this->castedBody->getPerception();
 
-	switch (agentType)
-	{
-	case AGENTTYPE_ROCKET::ROCKET_DIRECTION:
-		
-		//this->castedBody->
-		break;
-	}
+	
 }
 
 bool AgentReceptorRocket::isLinked()

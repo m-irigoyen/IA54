@@ -17,7 +17,7 @@ void AgentRocketTest::connectCasted(BodyEmitter * body)
 
 void AgentRocketTest::live()
 {
-	this->castedBody->send(10, 100);
+	this->castedBody->send(1, 100);
 	//this->castedProblem->setPower(100);
 	//this->castedProblem->addAngle(1);
 }

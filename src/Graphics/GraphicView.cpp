@@ -15,9 +15,14 @@ GraphicView::GraphicView() : displayEmitters(true), displayReceptors(true), disp
 
 void GraphicView::Init(int width, int height, Problem* problem)
 {
+	if (this->window != NULL)
+		this->window->close();
 	this->window = new sf::RenderWindow(sf::VideoMode(width, height), "IA54 - WaveAgents simulator");
 	this->window->setVerticalSyncEnabled(false);
 	this->window->setPosition(sf::Vector2i(0, 0));
+
+	if (!this->fonts.empty())
+		this->fonts.clear();
 
 	// Loading fonts
 	sf::Font temp;
@@ -29,6 +34,9 @@ void GraphicView::Init(int width, int height, Problem* problem)
 	this->fonts.push_back(temp);
 
 	// Init problem
+	if (this->problemWindow != NULL)
+		this->problemWindow->close();
+
 	this->problemWindow = new sf::RenderWindow(sf::VideoMode(width, height), "IA54 - WaveAgents problem");
 	this->problemWindow->setVerticalSyncEnabled(false);
 	this->problemWindow->setPosition(sf::Vector2i(width, 0));

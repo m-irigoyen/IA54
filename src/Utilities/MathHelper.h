@@ -7,5 +7,6 @@
 
 double degToRad(double degrees);
 double radToDeg(double radians);
+double computeAngle(double x, double y);	// Computes angle (in degrees) from given
 
 #endif
