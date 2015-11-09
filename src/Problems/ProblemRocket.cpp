@@ -182,9 +182,14 @@ void ProblemRocket::loadTerrain(std::string path)
 		cout << "ProblemRocket::loadTerrain : Loading default terrain" << endl;
 		// Loading default terrain
 		this->terrain.push_back(pair<int, int>(0, 600));
-		this->terrain.push_back(pair<int, int>(100, 300));
-		this->terrain.push_back(pair<int, int>(200, 0));
+		this->terrain.push_back(pair<int, int>(100, 500));
+		this->terrain.push_back(pair<int, int>(200, 200));
+		this->terrain.push_back(pair<int, int>(250, 275));
+		this->terrain.push_back(pair<int, int>(265, 275));
 		this->terrain.push_back(pair<int, int>(300, 100));
+		this->terrain.push_back(pair<int, int>(325, 110));
+		this->terrain.push_back(pair<int, int>(370, 420));
+		this->terrain.push_back(pair<int, int>(380, 430));
 		this->terrain.push_back(pair<int, int>(400, 250));
 		this->terrain.push_back(pair<int, int>(500, 100));
 		this->terrain.push_back(pair<int, int>(800, 100));

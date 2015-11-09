@@ -21,7 +21,7 @@ class Wave : public PhysicalObject
 {
 public :
 	//Constructor
-	Wave(Semantic type, float x, float y, int emitterId, float speed, float amplitude, float ampLossPerSec = 50.0f);
+	Wave(Semantic type, float x, float y, int emitterId, float speed, float amplitude, float ampLossPerSec = 35.0f);
 
 	//Getter
 	float getAmplitude();

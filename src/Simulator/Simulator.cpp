@@ -28,9 +28,11 @@ void Simulator::init()
 	this->problem->init();
 	
 	// Adding initial agents
-	addEmitter(200,200);
+	addEmitter(200, 200);
 	addEmitter(200, 400);
-	addReceptor(600, 400);
+	addReceptor(300, 400);
+	addReceptor(300, 200);
+	addReceptor(400, 300);
 
 	std::cout << "Init done" << std::endl;
 }
@@ -56,15 +58,22 @@ void Simulator::addEmitter(float xPos, float yPos)
 	BodyEmitter* body = static_cast<BodyEmitter*>(this->world.createBody(BODY_TYPE::EMITTER, xPos, yPos));
 	if (body != NULL)
 	{
-		ProblemRocket* castedProblem = static_cast<ProblemRocket*>(this->problem);
-		if (castedProblem != NULL)
+		ProblemRocket* castedProblem;
+
+		switch (this->problemType)
 		{
-			AgentEmitterRocket* agent = new AgentEmitterRocket(castedProblem);
-			agent->connectCasted(body);
-			this->agents.push_back(agent);
+		case PROBLEM_TYPE::ROCKET:
+			castedProblem = static_cast<ProblemRocket*>(this->problem);
+			if (castedProblem != NULL)
+			{
+				AgentEmitterRocket* agent = new AgentEmitterRocket(castedProblem);
+				agent->connectCasted(body);
+				this->agents.push_back(agent);
+			}
+			else
+				std::cout << "ERROR : couldn't cast problem to ProblemDrones" << std::endl;
+			break;
 		}
-		else
-			std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
 	}
 	else
 		std::cout << "ERROR : couldn't cast resulting body" << std::endl;
@@ -76,6 +85,7 @@ void Simulator::addReceptor(float xPos, float yPos)
 	if (body != NULL)
 	{
 		ProblemRocket* castedProblem;
+
 		switch (this->problemType)
 		{
 		case PROBLEM_TYPE::ROCKET :
