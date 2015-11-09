@@ -51,6 +51,8 @@ private:
 	sf::Clock* simulationClock;	// Pointer to the clock
 	sf::Time currentFrameTime;	// Current frame
 
+	float waveAplitudeLoss;
+	bool useWaveAttenuation;
 	
 
 public:
@@ -79,6 +81,8 @@ public:
 	std::vector<Wave*>* getWaves();
 	std::vector<BodyEmitter*>* getEmitters();
 	std::vector<BodyReceptor*>* getReceptors();
+
+	void setWaveAmplitude(float amplitudeLoss);
 
 	~World(void);
 };

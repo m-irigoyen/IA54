@@ -168,6 +168,16 @@ void ProblemRocket::checkEvents(sf::RenderWindow * window)
 	}
 }
 
+double ProblemRocket::constrainAngle(double angle)
+{
+	// constrain angle
+	while (angle >= 360)
+		angle -= 360;
+	while (angle < 0)
+		angle += 360;
+	return angle;
+}
+
 void ProblemRocket::loadTerrain(std::string path)
 {
 	this->terrain.clear();
@@ -328,6 +338,8 @@ void ProblemRocket::run(sf::Time elapsedTime)
 				
 		}
 	}
+	else
+		this->problemLive = false;
 }
 
 // Draw the problem
@@ -464,10 +476,7 @@ void ProblemRocket::addPower(int powerOffset)
 void ProblemRocket::setAngle(double angle)
 {
 	angle += ANGLE_OFFSET;	// Applying offset to have 0° be up
-	while (angle >= 360)
-		angle -= 360;
-	while (angle < 0)
-		angle += 360;
+	angle = constrainAngle(angle);
 		
 	this->rocketAngle = angle;
 }
@@ -476,6 +485,16 @@ void ProblemRocket::addAngle(double angleOffset)
 {
 	this->setAngle(this->rocketAngle-ANGLE_OFFSET + angleOffset);
 	//cout << "Adding angle" << endl;
+}
+
+double ProblemRocket::getAngle()
+{
+	double angle = this->rocketAngle;
+	angle -= ANGLE_OFFSET;	// Applying offset to have 0° be up
+
+	angle = constrainAngle(angle);
+
+	return angle;
 }
 
 void ProblemRocket::setNumberOfEmitters(int nb)
@@ -495,13 +514,20 @@ void ProblemRocket::getProblemData(double& x, double& y, double & hSpeed, double
 {
 	hSpeed = this->hSpeed;
 	vSpeed = this->vSpeed;
-	angle = this->rocketAngle;
+	angle = this->getAngle();
 	power = this->enginePower;
 	
 	vector<pair<int, int>>::iterator p;
 	p = this->getPointBefore(this->rocketX);
-	double terrainY = this->getTerrainPoint(this->rocketX, *p, *(p + 1));
-	distanceToGround = this->rocketY - terrainY;
+	if (p != this->terrain.end())
+	{
+		double terrainY = this->getTerrainPoint(this->rocketX, *p, *(p + 1));
+		distanceToGround = this->rocketY - terrainY;
+	}
+	else
+		distanceToGround = 0;
+	
+	
 
 	distanceToCenterOfLandingZone = this->rocketX - (this->worldFlatZone2 - ((this->worldFlatZone2 - this->worldFlatZone1)/2));
 }

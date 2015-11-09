@@ -1,7 +1,7 @@
 #include "World.h"
 
 // Constructor
-World::World(sf::Clock* clock, float worldLength, float worldHeight) : simulationClock(clock), maxWaveDistance(0.0f), optimiseWaveTravelDistance(true)
+World::World(sf::Clock* clock, float worldLength, float worldHeight) : simulationClock(clock), maxWaveDistance(0.0f), optimiseWaveTravelDistance(true), waveAplitudeLoss(0.0f), useWaveAttenuation(true)
 {
     this->receptors.clear();
     this->maxWorldDistance = calculateDistance(0,0, worldLength, worldHeight);
@@ -108,9 +108,10 @@ Wave* World::createWave(float x, float y, int emitterId, float speed, float ampl
 	// If speed wasn't specified, set it
 	if (speed == -1.0f)
 		speed = DEFAULT_PROPAGATION_SPEED;
+
 	
 	// Create a wave, add it to the list
-	Wave * wave = new Wave(Semantic(Tags::wave), x, y, emitterId, speed, amplitude);
+	Wave * wave = new Wave(Semantic(Tags::wave), x, y, emitterId, speed, amplitude, this->waveAplitudeLoss, this->useWaveAttenuation);
 	this->waves.push_back(wave);
 
 	// return it
@@ -202,6 +203,11 @@ std::vector<BodyReceptor*>* World::getReceptors()
     return &this->receptors;
 }
 
+void World::setWaveAmplitude(float amplitudeLoss)
+{
+	this->waveAplitudeLoss = amplitudeLoss;
+}
+
 World::~World(void)
 {
 	for (std::vector<Wave*>::iterator it = this->waves.begin(); it != this->waves.end(); ++it)
@@ -262,6 +268,7 @@ void World::checkCollisionEvents(Wave* wave, sf::Time elapsedTime)
 
 				// Telling the object it was hit by that wave
 				(*it)->onWaveCollision(wave->getEmitterId(), displayT, wave->getAmplitude());
+				cout << "WORLD : wave collision : amplitude " << wave->getAmplitude() << endl;
 			}
 		}
 	}

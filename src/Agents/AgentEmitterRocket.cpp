@@ -6,7 +6,15 @@ AgentEmitterRocket::AgentEmitterRocket(ProblemRocket * problem, BodyEmitter * bo
 
 void AgentEmitterRocket::live()
 {
+	if (!this->problem->getProblemLive())
+	{
+		if (this->castedBody->isSending())
+			this->castedBody->stopSending();
+		return;
+	}
+
 	// Amplitude is direction, frequency is power
+	
 
 	double x, y, power, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat;
 	this->castedProblem->getProblemData(x, y, hSpeed, vSpeed, angle, power, distanceToGround, distanceToCenterFlat);
@@ -30,7 +38,7 @@ void AgentEmitterRocket::live()
 			desiredAngle = (distanceToCenterFlat * ROCKET_PROBLEM_MAXANGLE) / ROCKET_PROBLEM_MAXDISTANCE;
 
 		// Correct the sign
-		if (distanceToCenterFlat < 0)
+		if (distanceToCenterFlat >= 0)
 			desiredAngle *= -1;
 
 		// Now : we need to translate that desired angle into an amplitude
@@ -45,13 +53,18 @@ void AgentEmitterRocket::live()
 		amplitude = ((desiredAngle + ROCKET_PROBLEM_MAXANGLE) * ROCKET_WAVE_AMPLITUDE_RANGE) / (ROCKET_PROBLEM_MAXANGLE * 2);
 		amplitude += ROCKET_WAVE_AMPLITUDE_OFFSET;		// Adding the offset back : we don't want 0 in amplitude
 
+		amplitude = 15.0f;
+
 		frequency = ROCKET_WAVE_FREQUENCY_OFFSET;	// Power = 0
+
+		
 		break;
 	case AGENTTYPE_ROCKET::ROCKET_ALTITUDE:
 		amplitude = (ROCKET_WAVE_AMPLITUDE_RANGE) / 2 + ROCKET_WAVE_AMPLITUDE_OFFSET; // Angle : 0
 		frequency = (ROCKET_WAVE_FREQUENCY_RANGE) / 2 + ROCKET_WAVE_FREQUENCY_OFFSET; // Power : half
 		break;
 	}
+	cout << "EMITTING : " << amplitude << ", " << frequency << endl;
 	this->castedBody->send(amplitude, frequency);
 }
 

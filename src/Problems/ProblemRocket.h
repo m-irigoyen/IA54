@@ -110,6 +110,8 @@ protected:
 
 	void checkEvents(sf::RenderWindow* window);	// Checks for user input on the problem window
 
+	double constrainAngle(double angle);	// Constrains given angle between 0 and 359 degrees
+
 public:
 	ProblemRocket(float waveAmplLossPerSec = 0.0f);
 
@@ -128,6 +130,8 @@ public:
 	void addPower(int powerOffset);
 	void setAngle(double angle);
 	void addAngle(double angleOffset);
+
+	double getAngle();
 
 	// Agents
 	void setNumberOfEmitters(int nb);

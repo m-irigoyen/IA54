@@ -6,12 +6,20 @@ AgentReceptorRocket::AgentReceptorRocket(ProblemRocket * problem, BodyReceptorCo
 
 void AgentReceptorRocket::live()
 {
+	if (!this->problem->getProblemLive())
+		return;
+
 	// Getting perception from body
 	WAVE_COMPOSITION perception = this->castedBody->getPerception();
 
 	// Getting angle back
+	cout << "Perceived amplitude : " << perception.amplitude << endl;
 	perception.amplitude -= ROCKET_WAVE_AMPLITUDE_OFFSET;
+
+	cout << "Perceived amplitude : " << perception.amplitude << endl;
+	
 	double angle = (perception.amplitude * (ROCKET_PROBLEM_MAXANGLE * 2)) / ROCKET_WAVE_AMPLITUDE_RANGE;	// 0 <= angle <= 2 * maxAngle
+	cout << "Preliminary angle : " << angle <<  endl;
 	angle -= ROCKET_PROBLEM_MAXANGLE;	// Correcting to -maxAngle <= angle <= maxAngle
 
 	// Getting frequency back
@@ -19,6 +27,9 @@ void AgentReceptorRocket::live()
 
 	this->castedProblem->setAngle(angle);
 	this->castedProblem->setPower(power);
+
+	cout << "RECEIVING : " << angle << ", " << power << endl;
+	cout << endl;
 }
 
 bool AgentReceptorRocket::isLinked()

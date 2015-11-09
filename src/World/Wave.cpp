@@ -3,8 +3,8 @@
 //Constructor
 
 Wave::Wave(Semantic type, float x, float y, int emitterId, float speed, float amplitude, 
-	float amplitudeLossPerSecond) : PhysicalObject(type, x, y), emitterId(emitterId), m_speed(speed), 
-	m_amplitude(amplitude), amplitudeLossPerSecond(amplitudeLossPerSecond), m_radius(0.0f)
+	float amplitudeLossPerSecond, bool useAttenuation) : PhysicalObject(type, x, y), emitterId(emitterId), m_speed(speed),
+	m_amplitude(amplitude), amplitudeLossPerSecond(amplitudeLossPerSecond), m_radius(0.0f), useAttenuation(useAttenuation)
 {
 
 }
@@ -50,9 +50,11 @@ void Wave::update(sf::Time elapsedTime)
 	setRadius(newRadius);
 }
 
+// Returns true if wave has attenuated below 0 and needs to be destroyed
 bool Wave::attenuate(sf::Time elapsedTime)
 {
-	//TODO: do attenuation
+	if (!this->useAttenuation)
+		return false;
 	this->m_amplitude -= this->amplitudeLossPerSecond * elapsedTime.asSeconds() * COEFF_ATTENUATION;
 
 	if (this->m_amplitude <= 0.0f)

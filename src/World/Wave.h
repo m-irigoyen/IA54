@@ -21,7 +21,7 @@ class Wave : public PhysicalObject
 {
 public :
 	//Constructor
-	Wave(Semantic type, float x, float y, int emitterId, float speed, float amplitude, float ampLossPerSec = 05.0f);
+	Wave(Semantic type, float x, float y, int emitterId, float speed, float amplitude, float ampLossPerSec = 05.0f, bool useAttenuation = false);
 
 	//Getter
 	float getAmplitude();
@@ -44,6 +44,7 @@ private :
 	const float m_speed;	// The speed at which the wave travels
 	float m_amplitude;		// The amplitude of the wave
 	const int emitterId;	// The id of the Emitter body ho sent that wave
+	bool useAttenuation;	// If this wave should loose amplitude over time
 
 	float amplitudeLossPerSecond;	// How much amplitude is lost per second of travel
 
