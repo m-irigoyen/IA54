@@ -32,9 +32,7 @@ bool ProblemRocket::collides(double x, double y)
 	}
 
 	vector<pair<int, int>>::iterator p;
-
 	p = this->getPointBefore(x);
-
 	double terrainY = this->getTerrainPoint(x, *p, *(p + 1));
 
 	if (y <= terrainY)
@@ -72,6 +70,7 @@ bool ProblemRocket::correctLanding(double hSpeed, double vSpeed, double angle)
 	return false;
 }
 
+// Gets the Y coordinate for the given X, with p1.x <=x and p2.x >= x
 double ProblemRocket::getTerrainPoint(double x, pair<int, int> p1, pair<int, int> p2)
 {
 	int distanceP1P2 = p2.first - p1.first;
@@ -404,6 +403,8 @@ void ProblemRocket::clean()
 void ProblemRocket::init()
 {
 	// Nothing to do here	
+	this->rocketX = 900;
+	this->rocketY = 900;
 }
 
 void ProblemRocket::initGraphics(std::vector<sf::Font>* fonts)
@@ -447,8 +448,8 @@ void ProblemRocket::initGraphics(std::vector<sf::Font>* fonts)
 
 void ProblemRocket::setPower(int power)
 {
-	if (power > 100)
-		power = 100;
+	if (power > ROCKET_SPECS_POWER_MAX)
+		power = ROCKET_SPECS_POWER_MAX;
 	else if (power < 0)
 		power = 0;
 	this->enginePower = power;
@@ -474,4 +475,32 @@ void ProblemRocket::addAngle(double angleOffset)
 {
 	this->setAngle(this->rocketAngle-ANGLE_OFFSET + angleOffset);
 	//cout << "Adding angle" << endl;
+}
+
+void ProblemRocket::setNumberOfEmitters(int nb)
+{
+	if (nb < 0)
+		nb = 0;
+	this->numberOfAgents = nb;
+}
+
+int ProblemRocket::getNumberOfEmitters()
+{
+	return this->numberOfAgents;
+}
+
+// Get the current rocket data
+void ProblemRocket::getProblemData(double& x, double& y, double & hSpeed, double & vSpeed, double & angle, double& power, double & distanceToGround, double & distanceToCenterOfLandingZone)
+{
+	hSpeed = this->hSpeed;
+	vSpeed = this->vSpeed;
+	angle = this->rocketAngle;
+	power = this->enginePower;
+	
+	vector<pair<int, int>>::iterator p;
+	p = this->getPointBefore(this->rocketX);
+	double terrainY = this->getTerrainPoint(this->rocketX, *p, *(p + 1));
+	distanceToGround = this->rocketY - terrainY;
+
+	distanceToCenterOfLandingZone = this->rocketX - (this->worldFlatZone2 - ((this->worldFlatZone2 - this->worldFlatZone1)/2));
 }

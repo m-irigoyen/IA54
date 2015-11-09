@@ -65,8 +65,8 @@ public:
 	void initProblem(PROBLEM_TYPE newProblem);
 
     // Creates an agent at given position, then add him to the agent list
-	void addEmitter(float xPos, float yPos);
-	void addReceptorComposition(float xPos, float yPos);
+	Agent* addEmitter(float xPos, float yPos);
+	Agent* addReceptorComposition(float xPos, float yPos);
 	void addHybrid(float xPos, float yPos);
 
 	void checkEvents();					// Check user events

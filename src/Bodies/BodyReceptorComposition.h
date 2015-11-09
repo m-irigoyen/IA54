@@ -2,8 +2,9 @@
 #define BODYRECEPTORCOMPOSITION_H_
 
 #include "Bodies/BodyReceptor.h"
+#include "Utilities/MathHelper.h"
 
-#define PI (3.141592653589793)
+
 #include <math.h>
 
 /*

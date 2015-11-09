@@ -41,8 +41,10 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 
 			// Adding initial agents
 			addEmitter(200, 200);
-			addEmitter(200, 400);
-			addReceptorComposition(600, 400);
+			((AgentEmitterRocket*)(this->agents[this->agents.size() - 1]))->setAgentType(AGENTTYPE_ROCKET::ROCKET_DIRECTION);
+			addReceptorComposition(300, 200);
+
+			((ProblemRocket*)this->problem)->setNumberOfEmitters(2);
 			break;
 		case PROBLEM_TYPE::ROCKET2:
 			delete(this->problem);
@@ -64,8 +66,9 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 	}
 }
 
-void Simulator::addEmitter(float xPos, float yPos)
+Agent* Simulator::addEmitter(float xPos, float yPos)
 {
+	Agent* agent;
 	BodyEmitter* body = static_cast<BodyEmitter*>(this->world.createBody(BODY_TYPE::EMITTER, xPos, yPos));
 	if (body != NULL)
 	{
@@ -77,9 +80,10 @@ void Simulator::addEmitter(float xPos, float yPos)
 			castedRocketProblem = static_cast<ProblemRocket*>(this->problem);
 			if (castedRocketProblem != NULL)
 			{
-				AgentRocketTest* agent = new AgentRocketTest(castedRocketProblem);
-				agent->connectCasted(body);
+				agent = new AgentRocketTest(castedRocketProblem);
+				((AgentRocketTest*)agent)->connectCasted(body);
 				this->agents.push_back(agent);
+				
 			}
 			else
 				std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
@@ -88,8 +92,8 @@ void Simulator::addEmitter(float xPos, float yPos)
 			ProblemRocket2* castedRocket2Problem = static_cast<ProblemRocket2*>(this->problem);
 			if (castedRocket2Problem != NULL)
 			{
-				AgentEmitterRocket2* agent = new AgentEmitterRocket2(castedRocket2Problem);
-				agent->connectCasted(body);
+				agent = new AgentEmitterRocket2(castedRocket2Problem);
+				((AgentEmitterRocket2*)agent)->connectCasted(body);
 				this->agents.push_back(agent);
 			}
 			else
@@ -98,11 +102,16 @@ void Simulator::addEmitter(float xPos, float yPos)
 		}
 	}
 	else
+	{
 		std::cout << "ERROR : couldn't cast resulting body" << std::endl;
+		return NULL;
+	}
+	return agent;
 }
 
-void Simulator::addReceptorComposition(float xPos, float yPos)
+Agent* Simulator::addReceptorComposition(float xPos, float yPos)
 {
+	Agent* agent;
 	BodyReceptorComposition* body = static_cast<BodyReceptorComposition*>(this->world.createBody(BODY_TYPE::RECEPTOR, xPos, yPos));
 	if (body != NULL)
 	{
@@ -114,8 +123,8 @@ void Simulator::addReceptorComposition(float xPos, float yPos)
 			castedRocketProblem = static_cast<ProblemRocket*>(this->problem);
 			if (castedRocketProblem != NULL)
 			{
-				AgentReceptorRocket* agent = new AgentReceptorRocket(castedRocketProblem);
-				agent->connectCasted(body);
+				agent = new AgentReceptorRocket(castedRocketProblem);
+				((AgentReceptorRocket*)agent)->connectCasted(body);
 				this->agents.push_back(agent);
 			}
 			else
@@ -125,8 +134,8 @@ void Simulator::addReceptorComposition(float xPos, float yPos)
 			castedRocket2Problem = static_cast<ProblemRocket2*>(this->problem);
 			if (castedRocket2Problem != NULL)
 			{
-				AgentReceptorRocket2* agent = new AgentReceptorRocket2(castedRocket2Problem);
-				agent->connectCasted(body);
+				agent = new AgentReceptorRocket2(castedRocket2Problem);
+				((AgentReceptorRocket2*)agent)->connectCasted(body);
 				this->agents.push_back(agent);
 			}
 			else
@@ -136,6 +145,8 @@ void Simulator::addReceptorComposition(float xPos, float yPos)
 	}
 	else
 		std::cout << "ERROR : couldn't cast resulting body" << std::endl;
+
+	return agent;
 }
 
 void Simulator::addHybrid(float xPos, float yPos)

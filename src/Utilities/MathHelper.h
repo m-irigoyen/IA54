@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-#define PI 3.1415
+#define PI (3.141592653589793)
 
 double degToRad(double degrees);
 double radToDeg(double radians);

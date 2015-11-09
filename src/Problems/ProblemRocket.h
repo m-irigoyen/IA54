@@ -18,15 +18,31 @@
 #define THRUSTER_STRENGTH 10	// Strength of each thruster in meters/seconds
 #define ANGLE_OFFSET 90	// Offset to have 0° be up
 
+
+// Wave values
+#define ROCKET_WAVE_AMPLITUDE_OFFSET 10.0f
+#define ROCKET_WAVE_AMPLITUDE_RANGE 10.0f
+
+#define ROCKET_WAVE_FREQUENCY_OFFSET 10.0f
+#define ROCKET_WAVE_FREQUENCY_RANGE 10.0f
+
+// Problem values
+#define ROCKET_PROBLEM_MAXANGLE 45.0f	// The maximum angle the agents will deviate from 0
+#define ROCKET_PROBLEM_MAXDISTANCE 500.0f	// The threshold in distance considerations
+
+// Rocket specs
+#define ROCKET_SPECS_POWER_MAX 100	// The maximum power the rocket can have
+
+
 /*
-* The Problem class creates and run the problem to be solved. (pendulum, drone, etc)
+* The Rocket problem represents a rocket with only one thruster. The rocket can be controlled by rotating it, and setting its engine power.
 */
 
 enum AGENTTYPE_ROCKET
 {
 	ROCKET_DEFAULT,
 	ROCKET_DIRECTION,
-	ROCKET_POWER
+	ROCKET_ALTITUDE
 };
 
 using namespace std;
@@ -34,6 +50,10 @@ using namespace std;
 class ProblemRocket : public Problem
 {
 protected:
+	// Problem related values
+	int numberOfAgents;
+
+	// hud stuff
 	sf::Texture hud_rocketTexture;
 	sf::Sprite hud_rocketSprite;
 
@@ -91,7 +111,7 @@ protected:
 	void checkEvents(sf::RenderWindow* window);	// Checks for user input on the problem window
 
 public:
-	ProblemRocket(float waveAmplLossPerSec = 50.0f);
+	ProblemRocket(float waveAmplLossPerSec = 0.0f);
 
 	//TODO: load terrain
 	virtual void loadTerrain(std::string path = "Default");
@@ -110,6 +130,9 @@ public:
 	void addAngle(double angleOffset);
 
 	// Agents
+	void setNumberOfEmitters(int nb);
+	int getNumberOfEmitters();
+	void getProblemData(double& x, double& y, double& hSpeed, double& vSpeed, double& angle, double& power, double& distanceToGround, double& distanceToCenterOfLandingZone);
 };
 
 #endif
