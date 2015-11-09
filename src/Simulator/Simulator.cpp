@@ -34,30 +34,36 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 			this->problem->clean();
 			delete(this->problem);
 		}
-			
 
 		this->problemType = newProblem;
 
-		switch (newProblem)
+		if (newProblem == PROBLEM_TYPE::ROCKET)
 		{
-		case PROBLEM_TYPE::ROCKET:
 			this->problem = new ProblemRocket();
 
 			// Adding initial agents
-			addEmitter(200, 200);
-			((AgentEmitterRocket*)(this->agents[this->agents.size() - 1]))->setAgentType(AGENTTYPE_ROCKET::ROCKET_DIRECTION);
+			AgentEmitterRocket* newAgent = static_cast<AgentEmitterRocket*>(addEmitter(200, 200));
+			if (newAgent != NULL)
+			{
+				newAgent->setAgentType(AGENTTYPE_ROCKET::ROCKET_DIRECTION);
+			}
+			else
+			{
+				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
+			}
+
 			addReceptorComposition(300, 200);
 
 			((ProblemRocket*)this->problem)->setNumberOfEmitters(2);
-			break;
-		case PROBLEM_TYPE::ROCKET2:
+		}
+		else if (newProblem == PROBLEM_TYPE::ROCKET2)
+		{
 			this->problem = new ProblemRocket2();
 
 			// Adding initial agents
 			addEmitter(200, 200);
 			addEmitter(200, 400);
 			addReceptorComposition(600, 400);
-			break;
 		}
 
 		this->problem->init();
@@ -83,8 +89,8 @@ Agent* Simulator::addEmitter(float xPos, float yPos)
 			castedRocketProblem = static_cast<ProblemRocket*>(this->problem);
 			if (castedRocketProblem != NULL)
 			{
-				agent = new AgentRocketTest(castedRocketProblem);
-				((AgentRocketTest*)agent)->connectCasted(body);
+				agent = new AgentEmitterRocket(castedRocketProblem);
+				((AgentEmitterRocket*)agent)->connectCasted(body);
 				this->agents.push_back(agent);
 				
 			}
