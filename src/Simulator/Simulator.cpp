@@ -1,14 +1,9 @@
 #include "Simulator.h"
 
 
-Simulator::Simulator() : world(&simulationClock, 800, 600), finishSimulation(false), frameFlag(true), problem(NULL), selectedBody(NULL), problemType(PROBLEM_TYPE::ROCKET)
+Simulator::Simulator() : world(&simulationClock, 800, 600), finishSimulation(false), frameFlag(true), problem(NULL), selectedBody(NULL), problemType(PROBLEM_TYPE::NONE)
 {
 	init();
-
-	this->SFMLView.Init(800, 600, this->problem);
-	this->SFMLView.setProblemType(this->problemType);
-	this->SFMLView.SetWorld(&this->world);
-	this->window = this->SFMLView.getWindow();
 }
 
 void Simulator::init()
@@ -23,16 +18,7 @@ void Simulator::init()
 	/*std::map<int, DRONE_BEHAVIOURS> behaviourTable;
 	this->problem = new ProblemDrones(behaviourTable, 1);*/
 
-	// Rocket Problem
-	this->problem = new ProblemRocket();
-	this->problem->init();
-	
-	// Adding initial agents
-	addEmitter(200, 200);
-	addEmitter(200, 400);
-	addReceptor(300, 400);
-	addReceptor(300, 200);
-	addReceptor(400, 300);
+	this->initProblem(PROBLEM_TYPE::ROCKET2);
 
 	std::cout << "Init done" << std::endl;
 }
@@ -41,68 +27,129 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 {
 	if (newProblem != this->problemType)
 	{
-		this->problem->clean();
+		this->agents.clear();
+		this->world.clear();
+		if (this->problem != NULL)
+		{
+			this->problem->clean();
+			delete(this->problem);
+		}
+			
+
+		this->problemType = newProblem;
+
 		switch (newProblem)
 		{
 		case PROBLEM_TYPE::ROCKET:
-			delete(this->problem);
 			this->problem = new ProblemRocket();
+
+			// Adding initial agents
+			addEmitter(200, 200);
+			((AgentEmitterRocket*)(this->agents[this->agents.size() - 1]))->setAgentType(AGENTTYPE_ROCKET::ROCKET_DIRECTION);
+			addReceptorComposition(300, 200);
+
+			((ProblemRocket*)this->problem)->setNumberOfEmitters(2);
+			break;
+		case PROBLEM_TYPE::ROCKET2:
+			this->problem = new ProblemRocket2();
+
+			// Adding initial agents
+			addEmitter(200, 200);
+			addEmitter(200, 400);
+			addReceptorComposition(600, 400);
 			break;
 		}
+
+		this->problem->init();
+
+		this->SFMLView.Init(800, 600, this->problem);
+		this->SFMLView.setProblemType(this->problemType);
+		this->SFMLView.SetWorld(&this->world);
+		this->window = this->SFMLView.getWindow();
 	}
-	
 }
 
-void Simulator::addEmitter(float xPos, float yPos)
+Agent* Simulator::addEmitter(float xPos, float yPos)
 {
+	Agent* agent;
 	BodyEmitter* body = static_cast<BodyEmitter*>(this->world.createBody(BODY_TYPE::EMITTER, xPos, yPos));
 	if (body != NULL)
 	{
-		ProblemRocket* castedProblem;
-
+		ProblemRocket* castedRocketProblem;
+		ProblemRocket2* castedRocket2Problem;
 		switch (this->problemType)
 		{
 		case PROBLEM_TYPE::ROCKET:
-			castedProblem = static_cast<ProblemRocket*>(this->problem);
-			if (castedProblem != NULL)
+			castedRocketProblem = static_cast<ProblemRocket*>(this->problem);
+			if (castedRocketProblem != NULL)
 			{
-				AgentEmitterRocket* agent = new AgentEmitterRocket(castedProblem);
-				agent->connectCasted(body);
+				agent = new AgentRocketTest(castedRocketProblem);
+				((AgentRocketTest*)agent)->connectCasted(body);
+				this->agents.push_back(agent);
+				
+			}
+			else
+				std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
+			break;
+		case PROBLEM_TYPE::ROCKET2:
+			ProblemRocket2* castedRocket2Problem = static_cast<ProblemRocket2*>(this->problem);
+			if (castedRocket2Problem != NULL)
+			{
+				agent = new AgentEmitterRocket2(castedRocket2Problem);
+				((AgentEmitterRocket2*)agent)->connectCasted(body);
 				this->agents.push_back(agent);
 			}
 			else
-				std::cout << "ERROR : couldn't cast problem to ProblemDrones" << std::endl;
+				std::cout << "ERROR : couldn't cast problem to ProblemRocket2" << std::endl;
 			break;
 		}
 	}
 	else
+	{
 		std::cout << "ERROR : couldn't cast resulting body" << std::endl;
+		return NULL;
+	}
+	return agent;
 }
 
-void Simulator::addReceptor(float xPos, float yPos)
+Agent* Simulator::addReceptorComposition(float xPos, float yPos)
 {
+	Agent* agent;
 	BodyReceptorComposition* body = static_cast<BodyReceptorComposition*>(this->world.createBody(BODY_TYPE::RECEPTOR, xPos, yPos));
 	if (body != NULL)
 	{
-		ProblemRocket* castedProblem;
-
+		ProblemRocket* castedRocketProblem;
+		ProblemRocket2* castedRocket2Problem;
 		switch (this->problemType)
 		{
 		case PROBLEM_TYPE::ROCKET :
-			castedProblem = static_cast<ProblemRocket*>(this->problem);
-			if (castedProblem != NULL)
+			castedRocketProblem = static_cast<ProblemRocket*>(this->problem);
+			if (castedRocketProblem != NULL)
 			{
-				AgentReceptorRocket* agent = new AgentReceptorRocket(castedProblem);
-				agent->connectCasted(body);
+				agent = new AgentReceptorRocket(castedRocketProblem);
+				((AgentReceptorRocket*)agent)->connectCasted(body);
 				this->agents.push_back(agent);
 			}
 			else
-				std::cout << "ERROR : couldn't cast problem to ProblemDrones" << std::endl;
+				std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
+			break;
+		case PROBLEM_TYPE::ROCKET2 :
+			castedRocket2Problem = static_cast<ProblemRocket2*>(this->problem);
+			if (castedRocket2Problem != NULL)
+			{
+				agent = new AgentReceptorRocket2(castedRocket2Problem);
+				((AgentReceptorRocket2*)agent)->connectCasted(body);
+				this->agents.push_back(agent);
+			}
+			else
+				std::cout << "ERROR : couldn't cast problem to ProblemRocket2" << std::endl;
 			break;
 		}
 	}
 	else
 		std::cout << "ERROR : couldn't cast resulting body" << std::endl;
+
+	return agent;
 }
 
 void Simulator::addHybrid(float xPos, float yPos)
@@ -179,6 +226,15 @@ void Simulator::run(sf::Time refreshRate)
 	}
 }
 
+void Simulator::clearAgents()
+{
+	for (vector<Agent*>::iterator it = this->agents.begin(); it != this->agents.end(); ++it)
+	{
+		delete(*it);
+	}
+	this->agents.clear();
+}
+
 Simulator::~Simulator(void)
 {
 	for (std::vector<Agent*>::iterator it = this->agents.begin(); it != this->agents.end(); ++it)
@@ -197,40 +253,68 @@ void Simulator::checkEvents()
 	{
         switch (event.type)
         {
+				// Close window
                 case sf::Event::Closed :
                     this->window->close();
                     finishSimulation = true;
                     break;
+
+				// Key press event
                 case sf::Event::KeyPressed :
 					switch (event.key.code)
 					{
-					case sf::Keyboard::Escape :
+					// Switch problem to Rocket2
+					case sf::Keyboard::F1:
+						this->initProblem(PROBLEM_TYPE::ROCKET);
+						break;
+
+					// Switch problem to Rocket2
+					case sf::Keyboard::F2:
+						this->initProblem(PROBLEM_TYPE::ROCKET2);
+						break;
+
+					// Quit simulation
+					case sf::Keyboard::Escape : 
 						this->window->close();
 						this->finishSimulation = true;
 						break;
+
+					// Toggle wave optimisation
 					case sf::Keyboard::O :
 						if (this->world.toggleWaveOptimisation())
 							std::cout << "Wave optimisation : on" << std::endl;
 						else
 							std::cout << "Wave optimisation : off" << std::endl;
 						break;
+
+					// Toggle wave display
 					case sf::Keyboard::W :
 						this->SFMLView.toggleDisplayWaves();
 						break;
+
+					// Toggle emitter display
 					case sf::Keyboard::E:
 						this->SFMLView.toggleDisplayEmitters();
 						break;
+
+					// Quit receptor display
 					case sf::Keyboard::R:
 						this->SFMLView.toggleDisplayReceptors();
 						break;
+
+					// Toggle problem display
 					case sf::Keyboard::P :
 						this->SFMLView.toggleDisplayProblem();
 						break;
+
+					// Toggle simulator display
 					case sf::Keyboard::S:
 						this->SFMLView.toggleDisplaySimulator();
 						break;
 					}
                     break;
+
+				// Emitter/receptor drag & drop
                 case sf::Event::MouseButtonPressed :
                     if (event.mouseButton.button == sf::Mouse::Left)
                     {
@@ -241,8 +325,10 @@ void Simulator::checkEvents()
 					else if (event.mouseButton.button == sf::Mouse::Right)
                         this->addEmitter(event.mouseButton.x,event.mouseButton.y);
                     else if (event.mouseButton.button == sf::Mouse::Middle)
-                        this->addReceptor(event.mouseButton.x,event.mouseButton.y);
+                        this->addReceptorComposition(event.mouseButton.x,event.mouseButton.y);
                     break;
+
+				// Emitter/receptor drag and drop
                 case sf::Event::MouseMoved :
                     if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && selectedBody != NULL)
                     {
@@ -250,11 +336,6 @@ void Simulator::checkEvents()
 						this->world.updateMaxWaveDistance();    // Recalculating max wave distance
                         //std::cout << "MOVING BODY TO " << event.mouseMove.x << "," << event.mouseMove.y <<  std::endl;
                     }
-					else
-					{
-						//this->problem->setCurrentMouse(event.mouseMove.x, event.mouseMove.y);
-					}
-
                     break;
         }
 	}

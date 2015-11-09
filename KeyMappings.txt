@@ -1,0 +1,27 @@
+	SIMULATOR WINDOW
+F1 : load problem rocket (one thruster)
+F2 : load problem rocket2 (two thrusters)
+
+Esc (or close window) : close program
+O : toggle wave optimised drawing
+W : toggle display waves
+E : toggle display emitters
+R : toggle display receptors
+S : toggle display simulator (equivalent to toggling the 3 above)
+P : toggle display problem
+
+Mouse : draw & drop bodies
+
+
+	PROBLEM WINDOW
+ProblemRocket :
+F1 : Activate manual controls
+F2 : deactivate manual controls
+Arrow keys : control rocket angle and engine power
+
+ProblemRocket2 : 
+A/Q : Control left engine power
+Z/S : Control left engine power
+Left/Right : Control rocket angle (easier to test with that
+Up/Down : Control engine power on both engines at the same time
+

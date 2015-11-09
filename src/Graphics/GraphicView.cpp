@@ -9,15 +9,20 @@ void GraphicView::toggle(bool & toToggle)
 		toToggle = true;
 }
 
-GraphicView::GraphicView() : displayEmitters(true), displayReceptors(true), displayWaves(true), maxAmplitude(100), displaySimulator(true), displayProblem(true), problem(NULL), displayWaveOpacity(true)
+GraphicView::GraphicView() : displayEmitters(true), displayReceptors(true), displayWaves(true), maxAmplitude(100), displaySimulator(true), displayProblem(true), problem(NULL), displayWaveOpacity(true), problemWindow(NULL), window(NULL)
 {
 }
 
 void GraphicView::Init(int width, int height, Problem* problem)
 {
+	if (this->window != NULL)
+		this->window->close();
 	this->window = new sf::RenderWindow(sf::VideoMode(width, height), "IA54 - WaveAgents simulator");
 	this->window->setVerticalSyncEnabled(false);
 	this->window->setPosition(sf::Vector2i(0, 0));
+
+	if (!this->fonts.empty())
+		this->fonts.clear();
 
 	// Loading fonts
 	sf::Font temp;
@@ -29,6 +34,9 @@ void GraphicView::Init(int width, int height, Problem* problem)
 	this->fonts.push_back(temp);
 
 	// Init problem
+	if (this->problemWindow != NULL)
+		this->problemWindow->close();
+
 	this->problemWindow = new sf::RenderWindow(sf::VideoMode(width, height), "IA54 - WaveAgents problem");
 	this->problemWindow->setVerticalSyncEnabled(false);
 	this->problemWindow->setPosition(sf::Vector2i(width, 0));
@@ -40,89 +48,94 @@ void GraphicView::Init(int width, int height, Problem* problem)
 
 void GraphicView::Draw()
 {
-	window->clear(sf::Color::Black);
-	problemWindow->clear(sf::Color::Black);
-
-	if (this->displaySimulator)
+	if (this->window != NULL)
 	{
-		// The shape to draw with
-		sf::CircleShape circle;
-
-		// DISPLAYING RECEPTORS
-		if (this->displayReceptors)
+		window->clear(sf::Color::Black);
+		if (this->displaySimulator)
 		{
-			// Updating color and radius
-			circle.setRadius(RECEPTOR_RADIUSSIZE);
-			circle.setFillColor(sf::Color(255, 0, 0));
-			circle.setOrigin(RECEPTOR_RADIUSSIZE, RECEPTOR_RADIUSSIZE);
+			// The shape to draw with
+			sf::CircleShape circle;
 
-			// For each emitter in the world
-			std::vector<BodyReceptor*>* worldReceptors = this->world->getReceptors();
-			for (std::vector<BodyReceptor*>::iterator it = worldReceptors->begin(); it != worldReceptors->end(); ++it)
+			// DISPLAYING RECEPTORS
+			if (this->displayReceptors)
 			{
-				std::vector<float> pos = (*it)->GetPosition();	// Getting position
-				circle.setPosition(pos[0], pos[1]);				// Placing wave accordingly on screen
-				window->draw(circle);							// Drawing
-			}
-		}
+				// Updating color and radius
+				circle.setRadius(RECEPTOR_RADIUSSIZE);
+				circle.setFillColor(sf::Color(255, 0, 0));
+				circle.setOrigin(RECEPTOR_RADIUSSIZE, RECEPTOR_RADIUSSIZE);
 
-		// DISPLAYING EMIITERS
-		if (this->displayEmitters)
-		{
-			// Updating color and radius
-			circle.setRadius(EMITTER_RADIUSSIZE);
-			circle.setFillColor(sf::Color(0, 255, 0));
-			circle.setOrigin(EMITTER_RADIUSSIZE, EMITTER_RADIUSSIZE);
-
-			// For each emitter in the world
-			std::vector<BodyEmitter*>* worldEmitters = this->world->getEmitters();
-			for (std::vector<BodyEmitter*>::iterator it = worldEmitters->begin(); it != worldEmitters->end(); ++it)
-			{
-				std::vector<float> pos = (*it)->GetPosition();	// Getting position
-				circle.setPosition(pos[0], pos[1]);				// Placing wave accordingly on screen
-				window->draw(circle);							// Drawing
-			}
-		}
-
-		// DISPLAYING WAVES
-		if (this->displayWaves)
-		{
-			// Updating color
-			circle.setFillColor(sf::Color::Transparent);
-			circle.setOutlineThickness(1);
-			// For each wave in the world
-			std::vector<Wave*>* worldWaves = this->world->getWaves();
-			for (std::vector<Wave*>::iterator it = worldWaves->begin(); it != worldWaves->end(); ++it)
-			{
-				double rad = (*it)->getRadius();
-				circle.setRadius(rad);				// Setting radius
-				circle.setOrigin(rad, rad);	// Setting new origin
-
-				if (this->displayWaveOpacity)
+				// For each emitter in the world
+				std::vector<BodyReceptor*>* worldReceptors = this->world->getReceptors();
+				for (std::vector<BodyReceptor*>::iterator it = worldReceptors->begin(); it != worldReceptors->end(); ++it)
 				{
-					// Displaying the wave's fade away
-					double ampl = (*it)->getAmplitude();
-					if (ampl > WAVE_AMPLITUDE_MAX)	// Capping to the threshold if amplitude is too high
-						ampl = WAVE_AMPLITUDE_MAX;
-					circle.setOutlineColor(sf::Color(255, 255, 255, (ampl * 255)/WAVE_AMPLITUDE_MAX));
+					std::vector<float> pos = (*it)->GetPosition();	// Getting position
+					circle.setPosition(pos[0], pos[1]);				// Placing wave accordingly on screen
+					window->draw(circle);							// Drawing
 				}
-
-				std::vector<float> pos = (*it)->GetPosition();	// Getting position
-				circle.setPosition(pos[0], pos[1]);				// Placing wave accordingly on screen
-				
-				window->draw(circle);							// Drawing
 			}
-		}
 
-		// Displaying the whole thing
-		window->display();
+			// DISPLAYING EMIITERS
+			if (this->displayEmitters)
+			{
+				// Updating color and radius
+				circle.setRadius(EMITTER_RADIUSSIZE);
+				circle.setFillColor(sf::Color(0, 255, 0));
+				circle.setOrigin(EMITTER_RADIUSSIZE, EMITTER_RADIUSSIZE);
+
+				// For each emitter in the world
+				std::vector<BodyEmitter*>* worldEmitters = this->world->getEmitters();
+				for (std::vector<BodyEmitter*>::iterator it = worldEmitters->begin(); it != worldEmitters->end(); ++it)
+				{
+					std::vector<float> pos = (*it)->GetPosition();	// Getting position
+					circle.setPosition(pos[0], pos[1]);				// Placing wave accordingly on screen
+					window->draw(circle);							// Drawing
+				}
+			}
+
+			// DISPLAYING WAVES
+			if (this->displayWaves)
+			{
+				// Updating color
+				circle.setFillColor(sf::Color::Transparent);
+				circle.setOutlineThickness(1);
+				// For each wave in the world
+				std::vector<Wave*>* worldWaves = this->world->getWaves();
+				for (std::vector<Wave*>::iterator it = worldWaves->begin(); it != worldWaves->end(); ++it)
+				{
+					double rad = (*it)->getRadius();
+					circle.setRadius(rad);				// Setting radius
+					circle.setOrigin(rad, rad);	// Setting new origin
+
+					if (this->displayWaveOpacity)
+					{
+						// Displaying the wave's fade away
+						double ampl = (*it)->getAmplitude();
+						if (ampl > WAVE_AMPLITUDE_MAX)	// Capping to the threshold if amplitude is too high
+							ampl = WAVE_AMPLITUDE_MAX;
+						circle.setOutlineColor(sf::Color(255, 255, 255, (ampl * 255) / WAVE_AMPLITUDE_MAX));
+					}
+
+					std::vector<float> pos = (*it)->GetPosition();	// Getting position
+					circle.setPosition(pos[0], pos[1]);				// Placing wave accordingly on screen
+
+					window->draw(circle);							// Drawing
+				}
+			}
+
+			// Displaying the whole thing
+			window->display();
+		}
 	}
 
-	// Drawing the problem
-	if (this->displayProblem)
+	if (this->problemWindow != NULL)
 	{
-		this->problem->draw(this->problemWindow, &this->fonts);
-		this->problemWindow->display();
+		problemWindow->clear(sf::Color::Black);
+		// Drawing the problem
+		if (this->displayProblem)
+		{
+			this->problem->draw(this->problemWindow, &this->fonts);
+			this->problemWindow->display();
+		}
 	}
 }
 

@@ -20,6 +20,10 @@
 #include "Agents/AgentReceptorRocket.h"
 #include "Agents/AgentRocketTest.h"
 
+// Rocket problem 2
+#include "Agents/AgentEmitterRocket2.h"
+#include "Agents/AgentReceptorRocket2.h"
+
 
 /*
 *   The Simulator is the main class of the project.
@@ -51,7 +55,7 @@ private:
 		// Problem
 	//ProblemPointer* problem;   // The instance of the pointer problem.
 	//ProblemDrones* problem;   // The instance of the drone problem.
-	ProblemRocket* problem;   // The instance of the drone problem.
+	Problem* problem;   // The instance of the drone problem.
 
 	PROBLEM_TYPE problemType;	// The type of the current problem
 
@@ -61,12 +65,14 @@ public:
 	void initProblem(PROBLEM_TYPE newProblem);
 
     // Creates an agent at given position, then add him to the agent list
-	void addEmitter(float xPos, float yPos);
-	void addReceptor(float xPos, float yPos);
+	Agent* addEmitter(float xPos, float yPos);
+	Agent* addReceptorComposition(float xPos, float yPos);
 	void addHybrid(float xPos, float yPos);
 
 	void checkEvents();					// Check user events
 	void run(sf::Time refreshRate);		// Simulation loop
+
+	void clearAgents();
 
 	~Simulator(void);
 };

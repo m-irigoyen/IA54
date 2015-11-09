@@ -1,6 +1,6 @@
 #include "ProblemPointer.h"
 
-ProblemPointer::ProblemPointer(int width, int height, sf::CircleShape& secondPointer) : secondPointer(secondPointer), windowWidth(width), windowHeight(height), frequencyOffset(FREQUENCY_OFFSET)
+ProblemPointer::ProblemPointer(int width, int height, sf::CircleShape& secondPointer) : Problem(10), secondPointer(secondPointer), windowWidth(width), windowHeight(height), frequencyOffset(FREQUENCY_OFFSET)
 {
 	this->secondPointer.setFillColor(sf::Color::Yellow);
 	this->secondPointer.setPosition(0.0f, 0.0f);

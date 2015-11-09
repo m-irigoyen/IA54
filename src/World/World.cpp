@@ -7,6 +7,13 @@ World::World(sf::Clock* clock, float worldLength, float worldHeight) : simulatio
     this->maxWorldDistance = calculateDistance(0,0, worldLength, worldHeight);
 }
 
+void World::clear()
+{
+	this->emitters.clear();
+	this->receptors.clear();
+	this->waves.clear();
+}
+
 // Toggle wave optimisation on/off. If its on, waves are removed as soon as they go farther than the biggest distance between an emitter and a receptor in the world. If its off, they are removed when they go off screen.
 bool World::toggleWaveOptimisation()
 {

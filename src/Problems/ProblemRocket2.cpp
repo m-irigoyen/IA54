@@ -1,13 +1,13 @@
-#include "ProblemRocket.h"
+#include "ProblemRocket2.h"
 
 
-ProblemRocket::ProblemRocket(float waveAmplLossPerSec) : Problem(waveAmplLossPerSec), worldWidth(SIZE_DEFAULT_WIDTH), worldHeight(SIZE_DEFAULT_HEIGHT), rocketX(worldWidth/2), rocketY(worldHeight/2), hasLanded(false), hasCrashed(false), hSpeed(0.0), vSpeed(0.0), enginePower(0), userControlled(true), desiredPowerChange(0), desiredRotationChange(0)
+ProblemRocket2::ProblemRocket2(float waveAmplLossPerSec) : Problem(waveAmplLossPerSec), worldWidth(SIZE_DEFAULT_WIDTH), worldHeight(SIZE_DEFAULT_HEIGHT), rocketX(worldWidth/2), rocketY(worldHeight/2), hasLanded(false), hasCrashed(false), hSpeed(0.0), vSpeed(0.0), enginePowerRight(0), enginePowerLeft(0), userControlled(true)
 {
 	this->setAngle(0);
 	this->loadTerrain();
 }
 
-void ProblemRocket::resetRocket(int x, int y)
+void ProblemRocket2::resetRocket(int x, int y)
 {
 	if (x == -1 || y == -1)
 	{
@@ -16,13 +16,13 @@ void ProblemRocket::resetRocket(int x, int y)
 	}
 
 	this->setAngle(0);
-	this->enginePower = 0;
+	this->enginePowerRight = 0;
 	this->hSpeed = 0;
 	this->vSpeed = 0;
 }
 
 //Check if rocket collides with the ground
-bool ProblemRocket::collides(double x, double y)
+bool ProblemRocket2::collides(double x, double y)
 {
 	if (x <= 0 || y <= 0 || x >= this->worldWidth || y >= this->worldHeight)
 	{
@@ -32,7 +32,9 @@ bool ProblemRocket::collides(double x, double y)
 	}
 
 	vector<pair<int, int>>::iterator p;
+
 	p = this->getPointBefore(x);
+
 	double terrainY = this->getTerrainPoint(x, *p, *(p + 1));
 
 	if (y <= terrainY)
@@ -48,7 +50,7 @@ We assume that a correct landing means :
 |vSpeed| < 40
 -5 <= rocketAngle <= 5
 */
-bool ProblemRocket::correctLanding(double hSpeed, double vSpeed, double angle)
+bool ProblemRocket2::correctLanding(double hSpeed, double vSpeed, double angle)
 {
 	if (angle >= ANGLE_OFFSET-10 && angle <= ANGLE_OFFSET + 10)	// Don't forget to check for the angle offset
 	{
@@ -70,8 +72,7 @@ bool ProblemRocket::correctLanding(double hSpeed, double vSpeed, double angle)
 	return false;
 }
 
-// Gets the Y coordinate for the given X, with p1.x <=x and p2.x >= x
-double ProblemRocket::getTerrainPoint(double x, pair<int, int> p1, pair<int, int> p2)
+double ProblemRocket2::getTerrainPoint(double x, pair<int, int> p1, pair<int, int> p2)
 {
 	int distanceP1P2 = p2.first - p1.first;
 	double distanceP1X = x - p1.first;
@@ -85,7 +86,7 @@ double ProblemRocket::getTerrainPoint(double x, pair<int, int> p1, pair<int, int
 	return p1.second + (p2.second - p1.second)*distRatio;
 }
 
-vector<pair<int, int>>::iterator ProblemRocket::getPointBefore(double x)
+vector<pair<int, int>>::iterator ProblemRocket2::getPointBefore(double x)
 {
 	if (this->terrain.size() < 2)
 	{
@@ -104,20 +105,33 @@ vector<pair<int, int>>::iterator ProblemRocket::getPointBefore(double x)
 	return this->terrain.end();
 }
 
-void ProblemRocket::getThrustersForce(double angle, int power, double & horizontalForce, double & verticalForce)
+void ProblemRocket2::getThrustersForce(double angle, int powerLeft, int powerRight, double& horizontalForce, double & verticalForce)
 {
 	double vecX = cos(degToRad(angle));
 	double vecY = sin(degToRad(angle));
 
+	double hForceLeft = 0;
+	double vForceLeft = 0;
+	double hForceRight = 0;
+	double vForceRight = 0;
+
 	//cout << "Thruster computation : " << vecX << "," << vecY << endl;
 
-	horizontalForce = (power*THRUSTER_STRENGTH*vecX) / 100;
-	verticalForce = (power*THRUSTER_STRENGTH*vecY) / 100;
+	hForceLeft = (powerLeft*THRUSTER_STRENGTH/2*vecX) / 100;
+	vForceLeft = (powerLeft*THRUSTER_STRENGTH/2*vecY) / 100;
 
-	//cout << "V : " << verticalForce << endl;
+	hForceRight = (powerRight*THRUSTER_STRENGTH/2*vecX) / 100;
+	vForceRight = (powerRight*THRUSTER_STRENGTH/2*vecY) / 100;
+
+	horizontalForce = hForceLeft + hForceRight;
+	verticalForce = vForceLeft + vForceRight;
+
+	// Compute the resulting angle change
+	//addAngle(0);
+	// TODO : If, toi qui aimes les maths : il faut trouver le nouvel angle de la fusée en fonction de la force appliquée par les moteurs. Du coup tu calcules le changement (mettons tu trouve rotation = -5°), et tu appeles la fonction addAngle(rotation)
 }
 
-void ProblemRocket::checkEvents(sf::RenderWindow * window)
+void ProblemRocket2::checkEvents(sf::RenderWindow * window)
 {
 	sf::Event event;
 	while (window->pollEvent(event))
@@ -143,32 +157,41 @@ void ProblemRocket::checkEvents(sf::RenderWindow * window)
 		}
 	}
 
-	// Engine control
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+	if (this->userControlled)
 	{
-		if (this->userControlled)
-			this->addPower(1);
-	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-	{
-		if (this->userControlled)
-			this->addPower(-1);
-	}
+		// Engine control
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+			this->addPowerLeft(1);
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+			this->addPowerLeft(-1);
 
-	// Angle control
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-	{
-		if (this->userControlled)
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+			this->addPowerRight(1);
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+			this->addPowerRight(-1);
+		
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+		{
+			this->addPowerRight(-1);
+			this->addPowerLeft(-1);
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+		{
+			this->addPowerRight(1);
+			this->addPowerLeft(1);
+		}
+			
+
+		// Angle control
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 			this->addAngle(-1);
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+			this->addAngle(+1);
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-	{
-		if (this->userControlled)
-			this->addAngle(1);
-	}
+	
 }
 
-void ProblemRocket::loadTerrain(std::string path)
+void ProblemRocket2::loadTerrain(std::string path)
 {
 	this->terrain.clear();
 	this->worldFlatZone1 = -1;
@@ -181,14 +204,9 @@ void ProblemRocket::loadTerrain(std::string path)
 		cout << "ProblemRocket::loadTerrain : Loading default terrain" << endl;
 		// Loading default terrain
 		this->terrain.push_back(pair<int, int>(0, 600));
-		this->terrain.push_back(pair<int, int>(100, 500));
-		this->terrain.push_back(pair<int, int>(200, 200));
-		this->terrain.push_back(pair<int, int>(250, 275));
-		this->terrain.push_back(pair<int, int>(265, 275));
+		this->terrain.push_back(pair<int, int>(100, 300));
+		this->terrain.push_back(pair<int, int>(200, 0));
 		this->terrain.push_back(pair<int, int>(300, 100));
-		this->terrain.push_back(pair<int, int>(325, 110));
-		this->terrain.push_back(pair<int, int>(370, 420));
-		this->terrain.push_back(pair<int, int>(380, 430));
 		this->terrain.push_back(pair<int, int>(400, 250));
 		this->terrain.push_back(pair<int, int>(500, 100));
 		this->terrain.push_back(pair<int, int>(800, 100));
@@ -240,7 +258,7 @@ void ProblemRocket::loadTerrain(std::string path)
 	this->resetRocket();
 }
 
-void ProblemRocket::saveTerrain(std::string path)
+void ProblemRocket2::saveTerrain(std::string path)
 {
 	if (path.compare("Default") == 0)
 	{
@@ -284,30 +302,30 @@ void ProblemRocket::saveTerrain(std::string path)
 	}
 }
 
-void ProblemRocket::run(sf::Time elapsedTime)
+void ProblemRocket2::run(sf::Time elapsedTime)
 {
 	if (!hasLanded && !hasCrashed)
 	{
-		if (!this->userControlled)
-		{
-			// Adding agent's influence
-			this->addAngle(this->desiredRotationChange);
-			this->addPower(this->desiredPowerChange);
+		//TODO : get that back
+		//if (!this->userControlled)
+		//{
+		//	// Adding agent's influence
+		//	this->addAngle(this->desiredRotationChange);
+		//	this->addPower(this->desiredPowerChange);
+		//	this->desiredPowerChange = 0;
+		//	this->desiredRotationChange = 0;
+		//}
 
-			this->desiredPowerChange = 0;
-			this->desiredRotationChange = 0;
-		}
-
+		// Compute the force applied by the engines
 		double hOffset, vOffset;
-		getThrustersForce(this->rocketAngle, this->enginePower, hOffset, vOffset);
+		getThrustersForce(this->rocketAngle, this->enginePowerLeft, this->enginePowerRight, hOffset, vOffset);
 
+		// Apply that force to the current rocket position
 		hSpeed += hOffset * elapsedTime.asSeconds();
 		vSpeed += vOffset * elapsedTime.asSeconds() - (MARS_GRAVITY*elapsedTime.asSeconds());
 
 		this->rocketY += vSpeed * elapsedTime.asSeconds();
 		this->rocketX += hSpeed * elapsedTime.asSeconds();
-
-		//cout << hSpeed << " / " << vSpeed << endl;
 
 		// If collides with terrain
 		if (this->collides(rocketX, rocketY))
@@ -328,21 +346,25 @@ void ProblemRocket::run(sf::Time elapsedTime)
 				
 		}
 	}
+	else
+	{
+		
+	}
 }
 
 // Draw the problem
-void ProblemRocket::draw(sf::RenderWindow * problemWindow, std::vector<sf::Font>* fonts)
+void ProblemRocket2::draw(sf::RenderWindow * problemWindow, std::vector<sf::Font>* fonts)
 {
 	this->checkEvents(problemWindow);
 
 	// Drawing terrain
-	//TODO: draw the terrain
-	// Drawing terrain
 	if (!this->terrain.empty())
 	{
+		// Iterating on terrain points
 		vector<pair<int, int>>::iterator p = this->terrain.begin();
 		for (vector<pair<int, int>>::iterator it = this->terrain.begin()+1; it != this->terrain.end(); ++it)
 		{
+			// For each point, draw a line
 			sf::Vertex line[] =
 			{
 				sf::Vertex(sf::Vector2f(p->first*problemWindow->getSize().x / worldWidth, 
@@ -357,17 +379,30 @@ void ProblemRocket::draw(sf::RenderWindow * problemWindow, std::vector<sf::Font>
 		}
 	}
 
-	// Drawing engine fire
-	if (this->enginePower > 0)
+	// Drawing engine fire right
+	if (this->enginePowerRight > 0)
 	{
-		this->hud_engineFire.setSize(sf::Vector2f(this->enginePower*HUD_SIZE_THRUSTER, 6));
-		this->hud_engineFire.setOrigin(this->enginePower*HUD_SIZE_THRUSTER + this->hud_rocketSprite.getLocalBounds().width/2, 3);
+		this->hud_engineFire.setSize(sf::Vector2f(this->enginePowerRight*HUD_SIZE_THRUSTER, 6));
+		this->hud_engineFire.setOrigin(this->enginePowerRight*HUD_SIZE_THRUSTER + this->hud_rocketSprite.getLocalBounds().width/2, 3 - 10);
 		this->hud_engineFire.setRotation(-this->rocketAngle);
 		this->hud_engineFire.setPosition(rocketX*problemWindow->getSize().x / worldWidth,
 			problemWindow->getSize().y - (rocketY*problemWindow->getSize().y / worldHeight));
 
 		problemWindow->draw(this->hud_engineFire);
 	}
+
+	// Drawing engine fire left
+	if (this->enginePowerLeft > 0)
+	{
+		this->hud_engineFire.setSize(sf::Vector2f(this->enginePowerLeft*HUD_SIZE_THRUSTER, 6));
+		this->hud_engineFire.setOrigin(this->enginePowerLeft*HUD_SIZE_THRUSTER + this->hud_rocketSprite.getLocalBounds().width / 2, 3 + 10);
+		this->hud_engineFire.setRotation(-this->rocketAngle);
+		this->hud_engineFire.setPosition(rocketX*problemWindow->getSize().x / worldWidth,
+			problemWindow->getSize().y - (rocketY*problemWindow->getSize().y / worldHeight));
+
+		problemWindow->draw(this->hud_engineFire);
+	}
+
 
 	// Drawing rocket
 	this->hud_rocketSprite.setPosition(rocketX*problemWindow->getSize().x / worldWidth,
@@ -387,7 +422,7 @@ void ProblemRocket::draw(sf::RenderWindow * problemWindow, std::vector<sf::Font>
 	temp = std::to_string(this->vSpeed);
 	this->hud_vSpeed.setString("vSpeed : " + temp);
 
-	temp = std::to_string(this->enginePower);
+	temp = std::to_string(this->enginePowerLeft) + " / " + std::to_string(this->enginePowerRight);
 	this->hud_power.setString("Power  : " + temp);
 
 	problemWindow->draw(this->hud_angle);
@@ -396,19 +431,17 @@ void ProblemRocket::draw(sf::RenderWindow * problemWindow, std::vector<sf::Font>
 	problemWindow->draw(this->hud_power);
 }
 
-void ProblemRocket::clean()
+void ProblemRocket2::clean()
 {
 	this->terrain.clear();
 }
 
-void ProblemRocket::init()
+void ProblemRocket2::init()
 {
 	// Nothing to do here	
-	this->rocketX = 900;
-	this->rocketY = 900;
 }
 
-void ProblemRocket::initGraphics(std::vector<sf::Font>* fonts)
+void ProblemRocket2::initGraphics(std::vector<sf::Font>* fonts)
 {
 	// Text
 	this->hud_angle.setFont(fonts->at(0));
@@ -447,21 +480,35 @@ void ProblemRocket::initGraphics(std::vector<sf::Font>* fonts)
 	this->hud_engineFire.setOrigin(0, 3);
 }
 
-void ProblemRocket::setPower(int power)
+void ProblemRocket2::setPowerRight(int power)
 {
-	if (power > ROCKET_SPECS_POWER_MAX)
-		power = ROCKET_SPECS_POWER_MAX;
+	if (power > 100)
+		power = 100;
 	else if (power < 0)
 		power = 0;
-	this->enginePower = power;
+	this->enginePowerRight = power;
 }
 
-void ProblemRocket::addPower(int powerOffset)
+void ProblemRocket2::setPowerLeft(int power)
 {
-	this->setPower(this->enginePower + powerOffset);
+	if (power > 100)
+		power = 100;
+	else if (power < 0)
+		power = 0;
+	this->enginePowerLeft = power;
 }
 
-void ProblemRocket::setAngle(double angle)
+void ProblemRocket2::addPowerRight(int powerOffset)
+{
+	this->setPowerRight(this->enginePowerRight + powerOffset);
+}
+
+void ProblemRocket2::addPowerLeft(int powerOffset)
+{
+	this->setPowerLeft(this->enginePowerLeft + powerOffset);
+}
+
+void ProblemRocket2::setAngle(double angle)
 {
 	angle += ANGLE_OFFSET;	// Applying offset to have 0° be up
 	while (angle >= 360)
@@ -472,36 +519,8 @@ void ProblemRocket::setAngle(double angle)
 	this->rocketAngle = angle;
 }
 
-void ProblemRocket::addAngle(double angleOffset)
+void ProblemRocket2::addAngle(double angleOffset)
 {
 	this->setAngle(this->rocketAngle-ANGLE_OFFSET + angleOffset);
 	//cout << "Adding angle" << endl;
-}
-
-void ProblemRocket::setNumberOfEmitters(int nb)
-{
-	if (nb < 0)
-		nb = 0;
-	this->numberOfAgents = nb;
-}
-
-int ProblemRocket::getNumberOfEmitters()
-{
-	return this->numberOfAgents;
-}
-
-// Get the current rocket data
-void ProblemRocket::getProblemData(double& x, double& y, double & hSpeed, double & vSpeed, double & angle, double& power, double & distanceToGround, double & distanceToCenterOfLandingZone)
-{
-	hSpeed = this->hSpeed;
-	vSpeed = this->vSpeed;
-	angle = this->rocketAngle;
-	power = this->enginePower;
-	
-	vector<pair<int, int>>::iterator p;
-	p = this->getPointBefore(this->rocketX);
-	double terrainY = this->getTerrainPoint(this->rocketX, *p, *(p + 1));
-	distanceToGround = this->rocketY - terrainY;
-
-	distanceToCenterOfLandingZone = this->rocketX - (this->worldFlatZone2 - ((this->worldFlatZone2 - this->worldFlatZone1)/2));
 }
