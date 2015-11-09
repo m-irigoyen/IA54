@@ -1,5 +1,30 @@
 #include "Agents/Agent.h"
 
+//
+float Agent::convertToRange(float value, float valueOffset, float valueRange, float targetOffset, float targetRange)
+{
+	if (value < 0 || valueOffset < 0 || valueRange <= 0 || targetOffset < 0 || targetRange <= 0
+		||  value < valueOffset || value > valueRange)
+	{
+		cout << "ERROR : Agent::convertToRange : invalid parameters" << endl;
+		return -1.0f;
+	}
+
+	//valueOffset		-> value				-> valueRange+valueOffset
+	// 0				-> value-valueOffset	-> valueRange
+	//float translatedValue = (value * valueRange) / (valueRange + valueOffset);
+	float translatedValue = value - valueOffset;
+
+	// 0		-> translatedValue		-> valueRange
+	// 0		-> result - offset		-> range
+	float translatedResult = (translatedValue * (targetRange)) / valueRange;
+	cout << "translated " << translatedResult << endl;
+
+	// 0		-> translatedOffset		-> range
+	//offset	-> result				-> range+offset
+	return translatedResult + targetOffset;
+}
+
 Agent::Agent(Problem* problem, Body* body) : problem(problem), body(body)
 {
 }

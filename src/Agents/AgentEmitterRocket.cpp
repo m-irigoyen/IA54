@@ -28,44 +28,52 @@ void AgentEmitterRocket::live()
 	{
 	case AGENTTYPE_ROCKET::ROCKET_DIRECTION :
 		// We send the distance to flat zone. This is converted to amplitude : positive amplitude means towards right
-		desiredAngle;
 
-		// Compute the angle to apply based on the distance
-		tempDistance = abs(distanceToCenterFlat);
-		if (tempDistance >= ROCKET_PROBLEM_MAXDISTANCE)
-			desiredAngle = ROCKET_PROBLEM_MAXANGLE;
+		// -maxDist		dist	maxDist
+		// -maxAngle	angle	maxAngle
+
+		if (distanceToCenterFlat >= ROCKET_PROBLEM_MAXDISTANCE)
+		{
+			// Positive max angle
+			desiredAngle = ROCKET_PROBLEM_MAXDISTANCE;
+		}
+		else if (distanceToCenterFlat <= ROCKET_PROBLEM_MAXDISTANCE)
+		{
+			// Negative max angle
+			desiredAngle = -ROCKET_PROBLEM_MAXDISTANCE;
+		}
 		else
-			desiredAngle = (distanceToCenterFlat * ROCKET_PROBLEM_MAXANGLE) / ROCKET_PROBLEM_MAXDISTANCE;
+		{
+			// Compute angle
+			desiredAngle = this->convertToRange(distanceToCenterFlat + ROCKET_PROBLEM_MAXDISTANCE,
+				ROCKET_PROBLEM_MAXDISTANCE * 2,
+				0,
+				ROCKET_PROBLEM_MAXANGLE * 2,
+				0);
+		}
 
-		// Correct the sign
-		if (distanceToCenterFlat >= 0)
-			desiredAngle *= -1;
+		//desiredAngle -= ROCKET_PROBLEM_MAXANGLE;
 
-		// Now : we need to translate that desired angle into an amplitude
-		// -MAXANGLE		->		MAX ANGLE
-		// 0			->			MAX AMPLITUDE - AMPLITUDE OFFSET
-		// Gives
-		// 0		->		MAX ANGLE+MAX ANGLE
-		// 0			->			MAX AMPLITUDE - AMPLITUDE OFFSET
+		amplitude = this->convertToRange(desiredAngle,
+			ROCKET_PROBLEM_MAXANGLE * 2,
+			0,
+			ROCKET_WAVE_AMPLITUDE_RANGE,
+			ROCKET_WAVE_AMPLITUDE_OFFSET);
 
-		// ( (desiredAngle + MAX_ANGLE) * (MAX_AMP - AMP_OFFSET)	/ (MAX_ANGLE+MAX_ANGLE
+		frequency = ROCKET_WAVE_FREQUENCY_OFFSET+ROCKET_WAVE_FREQUENCY_RANGE/2;	// Power = half
 
-		amplitude = ((desiredAngle + ROCKET_PROBLEM_MAXANGLE) * ROCKET_WAVE_AMPLITUDE_RANGE) / (ROCKET_PROBLEM_MAXANGLE * 2);
-		amplitude += ROCKET_WAVE_AMPLITUDE_OFFSET;		// Adding the offset back : we don't want 0 in amplitude
-
-		amplitude = 15.0f;
-
-		frequency = ROCKET_WAVE_FREQUENCY_OFFSET;	// Power = 0
-
+		cout << "COMPUTED : " << 50 << ", " << desiredAngle - ROCKET_PROBLEM_MAXANGLE << endl;
 		
 		break;
-	case AGENTTYPE_ROCKET::ROCKET_ALTITUDE:
+	case AGENTTYPE_ROCKET::ROCKET_REGULATOR:
+
+		// Regulate speed
 		amplitude = (ROCKET_WAVE_AMPLITUDE_RANGE) / 2 + ROCKET_WAVE_AMPLITUDE_OFFSET; // Angle : 0
 		frequency = (ROCKET_WAVE_FREQUENCY_RANGE) / 2 + ROCKET_WAVE_FREQUENCY_OFFSET; // Power : half
 		break;
 	}
-	cout << "EMITTING : " << amplitude << ", " << frequency << endl;
-	this->castedBody->send(amplitude, frequency);
+	cout << "SENDING : " << frequency << "," << amplitude << endl;
+	this->castedBody->send(frequency, amplitude);
 }
 
 bool AgentEmitterRocket::isLinked()

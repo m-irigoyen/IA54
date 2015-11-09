@@ -52,7 +52,7 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
 			}
 
-			addReceptorComposition(300, 200);
+			addReceptorComposition(210, 200);
 
 			((ProblemRocket*)this->problem)->setNumberOfEmitters(2);
 		}

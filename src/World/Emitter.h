@@ -7,7 +7,10 @@
 */
 
 #include <iostream>
+#include <iostream>
 #include <SFML/System/Clock.hpp>
+
+using namespace std;
 
 class Emitter
 {

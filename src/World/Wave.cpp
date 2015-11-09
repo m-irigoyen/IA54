@@ -6,7 +6,7 @@ Wave::Wave(Semantic type, float x, float y, int emitterId, float speed, float am
 	float amplitudeLossPerSecond, bool useAttenuation) : PhysicalObject(type, x, y), emitterId(emitterId), m_speed(speed),
 	m_amplitude(amplitude), amplitudeLossPerSecond(amplitudeLossPerSecond), m_radius(0.0f), useAttenuation(useAttenuation)
 {
-
+	cout << "INIT WAVE : " << m_amplitude << endl;
 }
 
 //Getter

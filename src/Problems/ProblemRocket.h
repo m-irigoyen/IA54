@@ -15,7 +15,7 @@
 #define HUD_SIZE_THRUSTER 0.5
 
 // Rocket values
-#define THRUSTER_STRENGTH 10	// Strength of each thruster in meters/seconds
+#define THRUSTER_STRENGTH 8	// Strength of each thruster in meters/seconds
 #define ANGLE_OFFSET 90	// Offset to have 0° be up
 
 
@@ -27,8 +27,11 @@
 #define ROCKET_WAVE_FREQUENCY_RANGE 10.0f
 
 // Problem values
-#define ROCKET_PROBLEM_MAXANGLE 45.0f	// The maximum angle the agents will deviate from 0
-#define ROCKET_PROBLEM_MAXDISTANCE 500.0f	// The threshold in distance considerations
+#define ROCKET_PROBLEM_MAXANGLE 25.0f	// The maximum angle the agents will deviate from 0
+#define ROCKET_PROBLEM_MAXDISTANCE 150.0f	// The threshold in distance considerations
+
+#define ROCKET_PROBLEM_MAXHSPEED 10.0f
+#define ROCKET_PROBLEM_MAXVSPEED -30.0f
 
 // Rocket specs
 #define ROCKET_SPECS_POWER_MAX 100	// The maximum power the rocket can have
@@ -42,7 +45,7 @@ enum AGENTTYPE_ROCKET
 {
 	ROCKET_DEFAULT,
 	ROCKET_DIRECTION,
-	ROCKET_ALTITUDE
+	ROCKET_REGULATOR
 };
 
 using namespace std;

@@ -268,7 +268,6 @@ void World::checkCollisionEvents(Wave* wave, sf::Time elapsedTime)
 
 				// Telling the object it was hit by that wave
 				(*it)->onWaveCollision(wave->getEmitterId(), displayT, wave->getAmplitude());
-				cout << "WORLD : wave collision : amplitude " << wave->getAmplitude() << endl;
 			}
 		}
 	}
