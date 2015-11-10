@@ -41,17 +41,25 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 		{
 			this->problem = new ProblemRocket();
 
-			// Adding initial agents
-			AgentEmitterRocket* newAgent = static_cast<AgentEmitterRocket*>(addEmitter(200, 200));
+			// Adding emitters : direction
+			AgentEmitterRocket* newAgent;
+			newAgent = static_cast<AgentEmitterRocket*>(addEmitter(200, 200));
 			if (newAgent != NULL)
-			{
 				newAgent->setAgentType(AGENTTYPE_ROCKET::ROCKET_DIRECTION);
-			}
 			else
-			{
 				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
-			}
 
+			// Adding emitters : regulator
+			newAgent = static_cast<AgentEmitterRocket*>(addEmitter(220, 200));
+			if (newAgent != NULL)
+				newAgent->setAgentType(AGENTTYPE_ROCKET::ROCKET_REGULATOR);
+			else
+				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
+
+			// Adding stabilizers : precisionLanding
+			//TODO:
+
+			// Adding
 			addReceptorComposition(210, 200);
 
 			((ProblemRocket*)this->problem)->setNumberOfEmitters(2);

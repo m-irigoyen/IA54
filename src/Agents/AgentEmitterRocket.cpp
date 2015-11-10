@@ -13,14 +13,14 @@ void AgentEmitterRocket::live()
 		return;
 	}
 
-	// Amplitude is direction, frequency is power
-	
-
+	// Getting problem data
 	double x, y, power, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat;
 	this->castedProblem->getProblemData(x, y, hSpeed, vSpeed, angle, power, distanceToGround, distanceToCenterFlat);
 
-	double desiredAngle;
-	double tempDistance;
+	double desiredAngle = 0;
+	double desiredPower = 0;
+	double temp;
+
 	double amplitude;
 	double frequency;
 	
@@ -35,44 +35,88 @@ void AgentEmitterRocket::live()
 		if (distanceToCenterFlat >= ROCKET_PROBLEM_MAXDISTANCE)
 		{
 			// Positive max angle
-			desiredAngle = ROCKET_PROBLEM_MAXDISTANCE;
+			desiredAngle = ROCKET_PROBLEM_MAXANGLE;
 		}
-		else if (distanceToCenterFlat <= ROCKET_PROBLEM_MAXDISTANCE)
+		else if (distanceToCenterFlat <= -ROCKET_PROBLEM_MAXDISTANCE)
 		{
 			// Negative max angle
-			desiredAngle = -ROCKET_PROBLEM_MAXDISTANCE;
+			desiredAngle = -ROCKET_PROBLEM_MAXANGLE;
 		}
 		else
 		{
 			// Compute angle
-			desiredAngle = this->convertToRange(distanceToCenterFlat + ROCKET_PROBLEM_MAXDISTANCE,
-				ROCKET_PROBLEM_MAXDISTANCE * 2,
-				0,
-				ROCKET_PROBLEM_MAXANGLE * 2,
-				0);
+			desiredAngle = 0;
 		}
 
-		//desiredAngle -= ROCKET_PROBLEM_MAXANGLE;
+		desiredPower = 50;
+			// Power = half
 
-		amplitude = this->convertToRange(desiredAngle,
-			ROCKET_PROBLEM_MAXANGLE * 2,
-			0,
-			ROCKET_WAVE_AMPLITUDE_RANGE,
-			ROCKET_WAVE_AMPLITUDE_OFFSET);
-
-		frequency = ROCKET_WAVE_FREQUENCY_OFFSET+ROCKET_WAVE_FREQUENCY_RANGE/2;	// Power = half
-
-		cout << "COMPUTED : " << 50 << ", " << desiredAngle - ROCKET_PROBLEM_MAXANGLE << endl;
-		
 		break;
 	case AGENTTYPE_ROCKET::ROCKET_REGULATOR:
 
-		// Regulate speed
-		amplitude = (ROCKET_WAVE_AMPLITUDE_RANGE) / 2 + ROCKET_WAVE_AMPLITUDE_OFFSET; // Angle : 0
-		frequency = (ROCKET_WAVE_FREQUENCY_RANGE) / 2 + ROCKET_WAVE_FREQUENCY_OFFSET; // Power : half
+		
+		desiredAngle = 0;
+		
+		if (hSpeed > ROCKET_PROBLEM_MAXHSPEED || hSpeed < -ROCKET_PROBLEM_MAXHSPEED)
+		{
+			temp = abs(hSpeed);
+			desiredAngle = this->convertToRange(hSpeed,
+				0,
+				ROCKET_PROBLEM_MAXHSPEED,
+				0,
+				ROCKET_PROBLEM_MAXANGLE);
+
+			if (hSpeed < 0)
+				desiredAngle *= -1;
+
+			desiredPower = 100;
+		}
+		// We're in the landing area : slow down to a halt on hSpeed, and begin descent
+		else if (distanceToCenterFlat > -ROCKET_PROBLEM_MAXDISTANCE && x < ROCKET_PROBLEM_MAXDISTANCE)
+		{
+			// Nullify hSpeed
+			temp = abs(hSpeed);
+			desiredAngle = this->convertToRange(hSpeed,
+				0,
+				ROCKET_PROBLEM_MAXHSPEED,
+				0,
+				ROCKET_PROBLEM_MAXANGLE);
+
+			if (hSpeed < 0)
+				desiredAngle *= -1;
+			
+			//// Start dropping 
+			//if (vSpeed < ROCKET_PROBLEM_MAXVSPEED / 2)
+			//{
+			//	desiredPower = 75;
+			//}
+			//else
+			//{
+			//	desiredPower = 0;
+			//}
+		}
+		else
+		{
+			desiredAngle = 0;
+			desiredPower = 50;
+		}
 		break;
 	}
-	cout << "SENDING : " << frequency << "," << amplitude << endl;
+
+	// Sending
+	amplitude = this->convertToRange(desiredAngle + ROCKET_PROBLEM_MAXANGLE,
+		0,
+		ROCKET_PROBLEM_MAXANGLE * 2,
+		ROCKET_WAVE_AMPLITUDE_OFFSET,
+		ROCKET_WAVE_AMPLITUDE_RANGE);
+
+	frequency = this->convertToRange(desiredPower,
+		0,
+		ROCKET_SPECS_POWER_MAX,
+		ROCKET_WAVE_FREQUENCY_OFFSET,
+		ROCKET_WAVE_FREQUENCY_RANGE);
+
+	//cout << "SENDING : " << frequency << "," << amplitude << endl;
 	this->castedBody->send(frequency, amplitude);
 }
 

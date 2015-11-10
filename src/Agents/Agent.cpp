@@ -1,12 +1,13 @@
 #include "Agents/Agent.h"
 
-//
+// Converts given value from its range to the given range
 float Agent::convertToRange(float value, float valueOffset, float valueRange, float targetOffset, float targetRange)
 {
 	if (value < 0 || valueOffset < 0 || valueRange <= 0 || targetOffset < 0 || targetRange <= 0
-		||  value < valueOffset || value > valueRange)
+		||  value < valueOffset || value > valueRange+valueOffset)
 	{
 		cout << "ERROR : Agent::convertToRange : invalid parameters" << endl;
+		cout << "    Parameters were : " << value << ", " << valueOffset << ", " << valueRange << ", " << targetOffset << ", " << targetRange << endl;
 		return -1.0f;
 	}
 
@@ -18,7 +19,7 @@ float Agent::convertToRange(float value, float valueOffset, float valueRange, fl
 	// 0		-> translatedValue		-> valueRange
 	// 0		-> result - offset		-> range
 	float translatedResult = (translatedValue * (targetRange)) / valueRange;
-	cout << "translated " << translatedResult << endl;
+	//cout << "translated " << translatedResult << endl;
 
 	// 0		-> translatedOffset		-> range
 	//offset	-> result				-> range+offset
