@@ -1,6 +1,6 @@
 #include "Agents/AgentReceptor.h"
 
-AgentReceptor::AgentReceptor(Problem* problem, BodyReceptorComposition* body) : Agent(problem, body)
+AgentReceptor::AgentReceptor(Problem* problem, BodyReceptor* body) : Agent(problem, body)
 {
 	connectCasted(body);
 }
@@ -13,7 +13,7 @@ void AgentReceptor::live()
 }
 
 
-void AgentReceptor::connectCasted(BodyReceptorComposition* body)
+void AgentReceptor::connectCasted(BodyReceptor* body)
 {
 	if (body != NULL)
 	{

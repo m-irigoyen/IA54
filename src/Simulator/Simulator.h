@@ -67,6 +67,7 @@ public:
     // Creates an agent at given position, then add him to the agent list
 	Agent* addEmitter(float xPos, float yPos);
 	Agent* addReceptorComposition(float xPos, float yPos);
+	Agent* addReceptorFullComposition(float xPos, float yPos);
 	void addHybrid(float xPos, float yPos);
 
 	void checkEvents();					// Check user events

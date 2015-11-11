@@ -1,6 +1,6 @@
 #include "Agents/AgentReceptorRocket.h"
 
-AgentReceptorRocket::AgentReceptorRocket(ProblemRocket * problem, BodyReceptorComposition * body, AGENTTYPE_ROCKET type) : AgentReceptor(problem,body), castedProblem(problem), agentType(type)
+AgentReceptorRocket::AgentReceptorRocket(ProblemRocket * problem, BodyReceptorFullComposition * body, AGENTTYPE_ROCKET type) : AgentReceptor(problem,body), castedProblem(problem), agentType(type)
 {
 }
 
@@ -12,8 +12,9 @@ void AgentReceptorRocket::live()
 	// Getting perception from body
 	WAVE_COMPOSITION perception = this->castedBody->getPerception();
 	perception.amplitude = perception.amplitude / this->castedProblem->getNumberOfEmitters();
+	perception.frequency = perception.frequency / this->castedProblem->getNumberOfEmitters();
 
-	// Error checking
+	// Checking error in parameters
 	if (perception.amplitude < ROCKET_WAVE_AMPLITUDE_OFFSET)
 	{
 		perception.amplitude = ROCKET_WAVE_AMPLITUDE_OFFSET;
@@ -37,6 +38,7 @@ void AgentReceptorRocket::live()
 	}
 
 
+	// Converting into angle and power values
 	//cout << "RECEIVED : " << perception.frequency << ", " << perception.amplitude << endl;
 	double angle = this->convertToRange(perception.amplitude,
 		ROCKET_WAVE_AMPLITUDE_OFFSET,

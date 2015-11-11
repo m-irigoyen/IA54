@@ -6,6 +6,7 @@
 #include <math.h>
 
 #include "Bodies/BodyReceptorComposition.h"
+#include "Bodies/BodyReceptorFullComposition.h"
 #include "Bodies/BodyEmitter.h"
 #include "Bodies/BodyHybrid.h"
 #include "World/Wave.h"
@@ -22,7 +23,8 @@
 enum BODY_TYPE	// The types of bodies that exist in the world
 {
     EMITTER = 0,
-    RECEPTOR,
+    RECEPTOR_COMPOSITION,
+	RECEPTOR_FULLCOMPOSITION,
 	HYBRID	// Currently unsupported.
 };
 
@@ -88,4 +90,5 @@ public:
 };
 
 #endif
+
 

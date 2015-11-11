@@ -76,7 +76,7 @@ void AgentEmitterRocket::live()
 		{
 			// Nullify hSpeed
 			temp = abs(hSpeed);
-			desiredAngle = this->convertToRange(hSpeed,
+			desiredAngle = this->convertToRange(temp,
 				0,
 				ROCKET_PROBLEM_MAXHSPEED,
 				0,
@@ -85,15 +85,15 @@ void AgentEmitterRocket::live()
 			if (hSpeed < 0)
 				desiredAngle *= -1;
 			
-			//// Start dropping 
-			//if (vSpeed < ROCKET_PROBLEM_MAXVSPEED / 2)
-			//{
-			//	desiredPower = 75;
-			//}
-			//else
-			//{
-			//	desiredPower = 0;
-			//}
+			// Start dropping 
+			if (vSpeed < ROCKET_PROBLEM_MAXVSPEED / 2)
+			{
+				desiredPower = 75;
+			}
+			else
+			{
+				desiredPower = 0;
+			}
 		}
 		else
 		{

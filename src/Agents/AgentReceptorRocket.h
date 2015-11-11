@@ -16,7 +16,7 @@ protected:
 	AGENTTYPE_ROCKET agentType;
 
 public:
-	AgentReceptorRocket(ProblemRocket* problem, BodyReceptorComposition* body = NULL, AGENTTYPE_ROCKET type = AGENTTYPE_ROCKET::ROCKET_DEFAULT);
+	AgentReceptorRocket(ProblemRocket* problem, BodyReceptorFullComposition* body = NULL, AGENTTYPE_ROCKET type = AGENTTYPE_ROCKET::ROCKET_DEFAULT);
 
 	virtual void live();
 	virtual bool isLinked();

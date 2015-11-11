@@ -60,7 +60,7 @@ Body* World::getClosestBodyFromLocation(float x, float y, float rangeThreshold)
 Body* World::createBody(BODY_TYPE bodyType, float xPos, float yPos)
 {
     Body* body;
-	BodyReceptorComposition* tempBodyReceptor;
+	BodyReceptor* tempBodyReceptor;
 	BodyEmitter* tempBodyEmitter;
 	//BodyHybrid* tempBodyHybrid;
 
@@ -72,11 +72,16 @@ Body* World::createBody(BODY_TYPE bodyType, float xPos, float yPos)
 		body = tempBodyEmitter;
 		this->emitters.push_back(tempBodyEmitter);
         break;
-	case BODY_TYPE::RECEPTOR :
+	case BODY_TYPE::RECEPTOR_COMPOSITION :
 		tempBodyReceptor = new BodyReceptorComposition(Semantic(Tags::receptor), xPos, yPos);
 		body = tempBodyReceptor;
 		this->receptors.push_back(tempBodyReceptor);
         break;
+	case BODY_TYPE::RECEPTOR_FULLCOMPOSITION:
+		tempBodyReceptor = new BodyReceptorFullComposition(Semantic(Tags::receptor), xPos, yPos);
+		body = tempBodyReceptor;
+		this->receptors.push_back(tempBodyReceptor);
+		break;
 	case BODY_TYPE::HYBRID:
 		/*tempBodyHybrid = new BodyHybrid(Semantic(Tags::hybrid), xPos, yPos);
 		body = tempBodyHybrid;
