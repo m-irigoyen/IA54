@@ -73,12 +73,12 @@ Body* World::createBody(BODY_TYPE bodyType, float xPos, float yPos)
 		this->emitters.push_back(tempBodyEmitter);
         break;
 	case BODY_TYPE::RECEPTOR_COMPOSITION :
-		tempBodyReceptor = new BodyReceptorComposition(Semantic(Tags::receptor), xPos, yPos);
+		tempBodyReceptor = new BodyReceptor_Composition(Semantic(Tags::receptor), xPos, yPos);
 		body = tempBodyReceptor;
 		this->receptors.push_back(tempBodyReceptor);
         break;
 	case BODY_TYPE::RECEPTOR_FULLCOMPOSITION:
-		tempBodyReceptor = new BodyReceptorFullComposition(Semantic(Tags::receptor), xPos, yPos);
+		tempBodyReceptor = new BodyReceptor_CompositionFull(Semantic(Tags::receptor), xPos, yPos);
 		body = tempBodyReceptor;
 		this->receptors.push_back(tempBodyReceptor);
 		break;

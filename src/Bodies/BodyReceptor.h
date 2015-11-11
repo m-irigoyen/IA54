@@ -3,7 +3,7 @@
 
 #include <deque>
 #include "Bodies/Body.h"
-#include "World/Receptor.h"
+#include "Bodies/Receptor.h"
 
 #define DEFAULT_MEMORY 5.0f
 

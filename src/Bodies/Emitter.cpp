@@ -1,4 +1,4 @@
-#include "World/Emitter.h"
+#include "Bodies/Emitter.h"
 
 
 Emitter::Emitter() : sending(false), currentAmplitude(-1.0f), currentFrequency(-1.0f), currentSpeed(-1.0f)

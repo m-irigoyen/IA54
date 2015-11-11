@@ -1,4 +1,4 @@
-#include "Receptor.h"
+#include "Bodies/Receptor.h"
 
 Receptor::Receptor()
 {

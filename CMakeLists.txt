@@ -41,15 +41,10 @@ FILE(GLOB_RECURSE SRCS_BODIES
 	${IA54_SOURCE_DIR}
 	${IA54_SOURCE_DIR}/src/Bodies/*.cpp 
 	${IA54_SOURCE_DIR}/src/Bodies/*.h)
-
 FILE(GLOB_RECURSE SRCS_GRAPHICS 
 	${IA54_SOURCE_DIR}
 	${IA54_SOURCE_DIR}/src/Graphics/*.cpp 
 	${IA54_SOURCE_DIR}/src/Graphics/*.h)
-FILE(GLOB_RECURSE SRCS_PROBLEMS 
-	${IA54_SOURCE_DIR}
-	${IA54_SOURCE_DIR}/src/Problems/*.cpp 
-	${IA54_SOURCE_DIR}/src/Problems/*.h)
 FILE(GLOB_RECURSE SRCS_SIMULATOR 
 	${IA54_SOURCE_DIR}
 	${IA54_SOURCE_DIR}/src/Simulator/*.cpp 
@@ -69,20 +64,70 @@ FILE(GLOB_RECURSE SRCS_PUGI
 FILE(GLOB_RECURSE SRCS_MAIN 
 	${IA54_SOURCE_DIR}/src 
 	main.cpp)
+	
+FILE(GLOB_RECURSE SRCS_PROBLEMS_BASE 
+	${IA54_SOURCE_DIR}
+	${IA54_SOURCE_DIR}/src/Problems/Problem.cpp 
+	${IA54_SOURCE_DIR}/src/Problems/Problem.h)
+FILE(GLOB_RECURSE SRCS_PROBLEMS_DRONES
+	${IA54_SOURCE_DIR}
+	${IA54_SOURCE_DIR}/src/Problems/Drones/*.cpp 
+	${IA54_SOURCE_DIR}/src/Problems/Drones/*.h)
+FILE(GLOB_RECURSE SRCS_PROBLEMS_PENDULUM
+	${IA54_SOURCE_DIR}
+	${IA54_SOURCE_DIR}/src/Problems/Pendulum/*.cpp 
+	${IA54_SOURCE_DIR}/src/Problems/Pendulum/*.h)
+FILE(GLOB_RECURSE SRCS_PROBLEMS_POINTER
+	${IA54_SOURCE_DIR}
+	${IA54_SOURCE_DIR}/src/Problems/Pointer/*.cpp 
+	${IA54_SOURCE_DIR}/src/Problems/Pointer/*.h)
+FILE(GLOB_RECURSE SRCS_PROBLEMS_ROCKET_R_BASE 
+	${IA54_SOURCE_DIR}
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/Reactive/ProblemRocket_R.cpp 
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/Reactive/ProblemRocket_R.h)
+FILE(GLOB_RECURSE SRCS_PROBLEMS_ROCKET_HS_ONE
+	${IA54_SOURCE_DIR}
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/HardSet/OneEngine/*.cpp 
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/HardSet/OneEngine/*.h )
+FILE(GLOB_RECURSE SRCS_PROBLEMS_ROCKET_HS_TWO
+	${IA54_SOURCE_DIR}
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/HardSet/TwoEngines/*.cpp 
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/HardSet/TwoEngines/*.h )
+FILE(GLOB_RECURSE SRCS_PROBLEMS_ROCKET_R_ONE
+	${IA54_SOURCE_DIR}
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/Reactive/OneEngine/*.cpp 
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/Reactive/OneEngine/*.h )
+FILE(GLOB_RECURSE SRCS_PROBLEMS_ROCKET_R_TWO
+	${IA54_SOURCE_DIR}
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/Reactive/TwoEngines/*.cpp 
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/Reactive/TwoEngines/*.h )
 
+#Grouping everything
 source_group(Agents FILES ${SRCS_AGENTS})
 source_group(Bodies FILES ${SRCS_BODIES})
 source_group(Graphics FILES ${SRCS_GRAPHICS})
-source_group(Problems FILES ${SRCS_PROBLEMS})
 source_group(Simulator FILES ${SRCS_SIMULATOR})
 source_group(Utilities FILES ${SRCS_UTILITIES})
 source_group(World FILES ${SRCS_WORLD})
 source_group(Pugi FILES ${SRCS_PUGI})
 source_group(Main FILES ${SRCS_MAIN})
 
+#Problems
+SET(SOURCE_GROUP_DELIMITER "/")
+source_group(Problems FILES ${SRCS_PROBLEMS_BASE})
+source_group(Problems/Drones FILES ${SRCS_PROBLEMS_DRONES})
+source_group(Problems/Pendulum FILES ${SRCS_PROBLEMS_PENDULUM})
+source_group(Problems/Pointer FILES ${SRCS_PROBLEMS_POINTER})
+source_group(Problems/Rocket/Reactive FILES ${SRCS_PROBLEMS_ROCKET_R_BASE})
+source_group(Problems/Rocket/HardSet/OneEngine FILES ${SRCS_PROBLEMS_ROCKET_HS_ONE})
+source_group(Problems/Rocket/HardSet/TwoEngines FILES ${SRCS_PROBLEMS_ROCKET_HS_TWO})
+source_group(Problems/Rocket/Reactive/OneEngine FILES ${SRCS_PROBLEMS_ROCKET_R_ONE})
+source_group(Problems/Rocket/Reactive/TwoEngines FILES ${SRCS_PROBLEMS_ROCKET_R_TWO})
+
+
 #ADD_EXECUTABLE(${EXE_NAME} ${SRC_SOURCES} ${SRC_HEADER})
 
-ADD_EXECUTABLE(${EXE_NAME} ${SRCS_AGENTS} ${SRCS_BODIES} ${SRCS_GRAPHICS} ${SRCS_PROBLEMS} ${SRCS_SIMULATOR} ${SRCS_UTILITIES} ${SRCS_WORLD} ${SRCS_PUGI} ${SRCS_MAIN})
+ADD_EXECUTABLE(${EXE_NAME} ${SRCS_AGENTS} ${SRCS_BODIES} ${SRCS_GRAPHICS} ${SRCS_SIMULATOR} ${SRCS_UTILITIES} ${SRCS_WORLD} ${SRCS_PUGI} ${SRCS_MAIN} ${SRCS_PROBLEMS} ${SRCS_PROBLEMS_DRONES} ${SRCS_PROBLEMS_PENDULUM} ${SRCS_PROBLEMS_POINTER} ${SRCS_PROBLEMS_ROCKET_R_BASE} ${SRCS_PROBLEMS_ROCKET_HS_ONE} ${SRCS_PROBLEMS_ROCKET_HS_TWO} ${SRCS_PROBLEMS_ROCKET_R_ONE} ${SRCS_PROBLEMS_ROCKET_R_TWO} ${SRCS_PROBLEMS_BASE})
 
 FIND_FILE(SFML_CMAKE_DIR "cmake/Modules/FindSFML.cmake")
 if(SFML_CMAKE_DIR)

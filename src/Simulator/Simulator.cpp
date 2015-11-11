@@ -18,7 +18,7 @@ void Simulator::init()
 	/*std::map<int, DRONE_BEHAVIOURS> behaviourTable;
 	this->problem = new ProblemDrones(behaviourTable, 1);*/
 
-	this->initProblem(PROBLEM_TYPE::ROCKET2);
+	this->initProblem(PROBLEM_TYPE::ROCKET_HS_TWO);
 
 	std::cout << "Init done" << std::endl;
 }
@@ -38,22 +38,22 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 		this->problemType = newProblem;
 
 		// ROCKET PROBLEM
-		if (newProblem == PROBLEM_TYPE::ROCKET)
+		if (this->problemType == PROBLEM_TYPE::ROCKET_HS_ONE)
 		{
-			this->problem = new ProblemRocket();
+			this->problem = new ProblemRocket_HS_OneEngine();
 
 			// Adding emitters : direction
-			AgentEmitterRocket* newAgent;
-			newAgent = static_cast<AgentEmitterRocket*>(addEmitter(200, 200));
+			AgentRocket_HS_OneEngine_Emitter* newAgent;
+			newAgent = static_cast<AgentRocket_HS_OneEngine_Emitter*>(addEmitter(200, 200));
 			if (newAgent != NULL)
-				newAgent->setAgentType(AGENTTYPE_ROCKET::ROCKET_DIRECTION);
+				newAgent->setAgentType(AGENTTYPE_ROCKET_HS_ONE::ROCKET_HS_ONE_DIRECTION);
 			else
 				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
 
 			// Adding emitters : regulator
-			newAgent = static_cast<AgentEmitterRocket*>(addEmitter(220, 200));
+			newAgent = static_cast<AgentRocket_HS_OneEngine_Emitter*>(addEmitter(220, 200));
 			if (newAgent != NULL)
-				newAgent->setAgentType(AGENTTYPE_ROCKET::ROCKET_REGULATOR);
+				newAgent->setAgentType(AGENTTYPE_ROCKET_HS_ONE::ROCKET_HS_ONE_REGULATOR);
 			else
 				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
 
@@ -63,12 +63,12 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 			// Adding
 			addReceptorFullComposition(210, 200);
 
-			((ProblemRocket*)this->problem)->setNumberOfEmitters(2);
+			((ProblemRocket_HS_OneEngine*)this->problem)->setNumberOfEmitters(2);
 		}
 		// ROCKET2 PROBLEM
-		else if (newProblem == PROBLEM_TYPE::ROCKET2)
+		else if (this->problemType == PROBLEM_TYPE::ROCKET_HS_TWO)
 		{
-			this->problem = new ProblemRocket2();
+			this->problem = new ProblemRocket_HS_TwoEngines();
 
 			// Adding initial agents
 			addEmitter(200, 200);
@@ -92,27 +92,27 @@ Agent* Simulator::addEmitter(float xPos, float yPos)
 	BodyEmitter* body = static_cast<BodyEmitter*>(this->world.createBody(BODY_TYPE::EMITTER, xPos, yPos));
 	if (body != NULL)
 	{
-		ProblemRocket* castedRocketProblem;
-		ProblemRocket2* castedRocket2Problem;
+		ProblemRocket_HS_OneEngine* castedRocketProblem;
+		ProblemRocket_HS_TwoEngines* castedRocket2Problem;
 		switch (this->problemType)
 		{
-		case PROBLEM_TYPE::ROCKET:
-			castedRocketProblem = static_cast<ProblemRocket*>(this->problem);
+		case PROBLEM_TYPE::ROCKET_HS_ONE:
+			castedRocketProblem = static_cast<ProblemRocket_HS_OneEngine*>(this->problem);
 			if (castedRocketProblem != NULL)
 			{
-				agent = new AgentEmitterRocket(castedRocketProblem);
-				((AgentEmitterRocket*)agent)->connectCasted(body);
+				agent = new AgentRocket_HS_OneEngine_Emitter(castedRocketProblem);
+				((AgentRocket_HS_OneEngine_Emitter*)agent)->connectCasted(body);
 				this->agents.push_back(agent);
 			}
 			else
 				std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
 			break;
-		case PROBLEM_TYPE::ROCKET2:
-			ProblemRocket2* castedRocket2Problem = static_cast<ProblemRocket2*>(this->problem);
+		case PROBLEM_TYPE::ROCKET_HS_TWO:
+			ProblemRocket_HS_TwoEngines* castedRocket2Problem = static_cast<ProblemRocket_HS_TwoEngines*>(this->problem);
 			if (castedRocket2Problem != NULL)
 			{
-				agent = new AgentEmitterRocket2(castedRocket2Problem);
-				((AgentEmitterRocket2*)agent)->connectCasted(body);
+				agent = new AgentRocket_HS_TwoEngines_Emitter(castedRocket2Problem);
+				((AgentRocket_HS_TwoEngines_Emitter*)agent)->connectCasted(body);
 				this->agents.push_back(agent);
 			}
 			else
@@ -131,30 +131,30 @@ Agent* Simulator::addEmitter(float xPos, float yPos)
 Agent* Simulator::addReceptorComposition(float xPos, float yPos)
 {
 	Agent* agent;
-	BodyReceptorComposition* body = static_cast<BodyReceptorComposition*>(this->world.createBody(BODY_TYPE::RECEPTOR_COMPOSITION, xPos, yPos));
+	BodyReceptor_Composition* body = static_cast<BodyReceptor_Composition*>(this->world.createBody(BODY_TYPE::RECEPTOR_COMPOSITION, xPos, yPos));
 	if (body != NULL)
 	{
-		ProblemRocket* castedRocketProblem;
-		ProblemRocket2* castedRocket2Problem;
+		ProblemRocket_HS_OneEngine* castedRocketProblem;
+		ProblemRocket_HS_TwoEngines* castedRocket2Problem;
 		switch (this->problemType)
 		{
-		case PROBLEM_TYPE::ROCKET :
-			castedRocketProblem = static_cast<ProblemRocket*>(this->problem);
+		case PROBLEM_TYPE::ROCKET_HS_ONE :
+			castedRocketProblem = static_cast<ProblemRocket_HS_OneEngine*>(this->problem);
 			if (castedRocketProblem != NULL)
 			{
-				agent = new AgentReceptorRocket(castedRocketProblem);
-				((AgentReceptorRocket*)agent)->connectCasted(body);
+				agent = new AgentRocket_HS_OneEngine_Receptor(castedRocketProblem);
+				((AgentRocket_HS_OneEngine_Receptor*)agent)->connectCasted(body);
 				this->agents.push_back(agent);
 			}
 			else
 				std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
 			break;
-		case PROBLEM_TYPE::ROCKET2 :
-			castedRocket2Problem = static_cast<ProblemRocket2*>(this->problem);
+		case PROBLEM_TYPE::ROCKET_HS_TWO :
+			castedRocket2Problem = static_cast<ProblemRocket_HS_TwoEngines*>(this->problem);
 			if (castedRocket2Problem != NULL)
 			{
-				agent = new AgentReceptorRocket2(castedRocket2Problem);
-				((AgentReceptorRocket2*)agent)->connectCasted(body);
+				agent = new AgentRocket_HS_TwoEngines_Receptor(castedRocket2Problem);
+				((AgentRocket_HS_TwoEngines_Receptor*)agent)->connectCasted(body);
 				this->agents.push_back(agent);
 			}
 			else
@@ -171,30 +171,30 @@ Agent* Simulator::addReceptorComposition(float xPos, float yPos)
 Agent * Simulator::addReceptorFullComposition(float xPos, float yPos)
 {
 	Agent* agent;
-	BodyReceptorFullComposition* body = static_cast<BodyReceptorFullComposition*>(this->world.createBody(BODY_TYPE::RECEPTOR_FULLCOMPOSITION, xPos, yPos));
+	BodyReceptor_CompositionFull* body = static_cast<BodyReceptor_CompositionFull*>(this->world.createBody(BODY_TYPE::RECEPTOR_FULLCOMPOSITION, xPos, yPos));
 	if (body != NULL)
 	{
-		ProblemRocket* castedRocketProblem;
-		ProblemRocket2* castedRocket2Problem;
+		ProblemRocket_HS_OneEngine* castedRocketProblem;
+		ProblemRocket_HS_TwoEngines* castedRocket2Problem;
 		switch (this->problemType)
 		{
-		case PROBLEM_TYPE::ROCKET:
-			castedRocketProblem = static_cast<ProblemRocket*>(this->problem);
+		case PROBLEM_TYPE::ROCKET_HS_ONE:
+			castedRocketProblem = static_cast<ProblemRocket_HS_OneEngine*>(this->problem);
 			if (castedRocketProblem != NULL)
 			{
-				agent = new AgentReceptorRocket(castedRocketProblem);
-				((AgentReceptorRocket*)agent)->connectCasted(body);
+				agent = new AgentRocket_HS_OneEngine_Receptor(castedRocketProblem);
+				((AgentRocket_HS_OneEngine_Receptor*)agent)->connectCasted(body);
 				this->agents.push_back(agent);
 			}
 			else
 				std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
 			break;
-		case PROBLEM_TYPE::ROCKET2:
-			castedRocket2Problem = static_cast<ProblemRocket2*>(this->problem);
+		case PROBLEM_TYPE::ROCKET_HS_TWO:
+			castedRocket2Problem = static_cast<ProblemRocket_HS_TwoEngines*>(this->problem);
 			if (castedRocket2Problem != NULL)
 			{
-				agent = new AgentReceptorRocket2(castedRocket2Problem);
-				((AgentReceptorRocket2*)agent)->connectCasted(body);
+				agent = new AgentRocket_HS_TwoEngines_Receptor(castedRocket2Problem);
+				((AgentRocket_HS_TwoEngines_Receptor*)agent)->connectCasted(body);
 				this->agents.push_back(agent);
 			}
 			else
@@ -321,12 +321,12 @@ void Simulator::checkEvents()
 					{
 					// Switch problem to Rocket2
 					case sf::Keyboard::F1:
-						this->initProblem(PROBLEM_TYPE::ROCKET);
+						this->initProblem(PROBLEM_TYPE::ROCKET_HS_ONE);
 						break;
 
 					// Switch problem to Rocket2
 					case sf::Keyboard::F2:
-						this->initProblem(PROBLEM_TYPE::ROCKET2);
+						this->initProblem(PROBLEM_TYPE::ROCKET_HS_TWO);
 						break;
 
 					// Quit simulation

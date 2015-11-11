@@ -8,7 +8,7 @@
 */
 
 #include "Bodies/Body.h"
-#include "World/Emitter.h"
+#include "Bodies/Emitter.h"
 
 class BodyEmitter : public Body, public Emitter
 {

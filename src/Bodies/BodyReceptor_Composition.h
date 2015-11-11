@@ -1,5 +1,5 @@
-#ifndef BODYRECEPTORFULLCOMPOSITION_H_
-#define BODYRECEPTORFULLCOMPOSITION_H_
+#ifndef BODYRECEPTOR_COMPOSITION_H_
+#define BODYRECEPTOR_COMPOSITION_H_
 
 #include "Bodies/BodyReceptor.h"
 #include "Utilities/MathHelper.h"
@@ -12,10 +12,10 @@
 * This is the base class for all receptors
 */
 
-class BodyReceptorFullComposition : public BodyReceptor
+class BodyReceptor_Composition : public BodyReceptor
 {
 public:
-	BodyReceptorFullComposition(Semantic type, float x, float y);
+	BodyReceptor_Composition(Semantic type, float x, float y);
 
 	//Receptor functions
 	virtual void initialise();	// Initialises the receptor

@@ -2,8 +2,8 @@
 #define AGENTRECEPTOR_H_
 
 #include "Agents/Agent.h"
-#include "Bodies/BodyReceptorComposition.h"
-#include "Bodies/BodyReceptorFullComposition.h"
+#include "Bodies/BodyReceptor_Composition.h"
+#include "Bodies/BodyReceptor_CompositionFull.h"
 
 /*
 *   AgentReceptors recieve waves in the environment, and in turn act on the problem (drone, pendulum, etc)

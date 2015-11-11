@@ -5,8 +5,8 @@
 #include <iostream>
 #include <math.h>
 
-#include "Bodies/BodyReceptorComposition.h"
-#include "Bodies/BodyReceptorFullComposition.h"
+#include "Bodies/BodyReceptor_Composition.h"
+#include "Bodies/BodyReceptor_CompositionFull.h"
 #include "Bodies/BodyEmitter.h"
 #include "Bodies/BodyHybrid.h"
 #include "World/Wave.h"

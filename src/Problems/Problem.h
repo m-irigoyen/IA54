@@ -16,8 +16,8 @@ enum PROBLEM_TYPE
 	NONE,
 	POINTER,
 	DRONE,
-	ROCKET,
-	ROCKET2
+	ROCKET_HS_ONE,
+	ROCKET_HS_TWO
 };
 
 class Problem

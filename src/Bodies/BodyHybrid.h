@@ -1,14 +1,14 @@
 #ifndef BODYHYBRID_H_
 #define BODYHYBRID_H_
 
-#include "World/Emitter.h"
-#include "Bodies/BodyReceptorComposition.h"
+#include "Bodies/Emitter.h"
+#include "Bodies/BodyReceptor_Composition.h"
 
 /*
 *	Emitter + receptor
 */
 
-class BodyHybrid: public Emitter, public BodyReceptorComposition
+class BodyHybrid: public Emitter, public BodyReceptor_Composition
 {
 private:
 

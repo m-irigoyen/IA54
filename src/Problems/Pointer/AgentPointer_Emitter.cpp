@@ -1,11 +1,11 @@
-#include "Agents/AgentEmitterProblemPointer.h"
+#include "Problems/Pointer/AgentPointer_Emitter.h"
 
-AgentEmitterProblemPointer::AgentEmitterProblemPointer(ProblemPointer* problem, BodyEmitter* body) : AgentEmitter(problem, body), castedProblem(problem)
+AngetPointer_Emitter::AngetPointer_Emitter(ProblemPointer* problem, BodyEmitter* body) : AgentEmitter(problem, body), castedProblem(problem)
 {
 
 }
 
-void AgentEmitterProblemPointer::live()
+void AngetPointer_Emitter::live()
 {
 	if (!this->isLinked())
 	{
@@ -35,7 +35,7 @@ void AgentEmitterProblemPointer::live()
 }
 
 // Checks if agent is linked to a body
-bool AgentEmitterProblemPointer::isProblemLinked()
+bool AngetPointer_Emitter::isProblemLinked()
 {
 	if (Agent::isProblemLinked() && this->castedProblem != NULL)
 		return true;
@@ -43,14 +43,14 @@ bool AgentEmitterProblemPointer::isProblemLinked()
 
 }
 
-bool AgentEmitterProblemPointer::isLinked()
+bool AngetPointer_Emitter::isLinked()
 {
 	if (Agent::isLinked() && this->castedBody != NULL)
 		return true;
 	return false;
 }
 
-AgentEmitterProblemPointer::~AgentEmitterProblemPointer(void)
+AngetPointer_Emitter::~AngetPointer_Emitter(void)
 {
 
 }

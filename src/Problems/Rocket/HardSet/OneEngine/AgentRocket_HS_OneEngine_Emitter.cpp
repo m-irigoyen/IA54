@@ -1,10 +1,10 @@
-#include "AgentEmitterRocket.h"
+#include "Problems/Rocket/HardSet/OneEngine/AgentRocket_HS_OneEngine_Emitter.h"
 
-AgentEmitterRocket::AgentEmitterRocket(ProblemRocket * problem, BodyEmitter * body, AGENTTYPE_ROCKET type) : AgentEmitter(problem,body), castedProblem(problem), agentType(type)
+AgentRocket_HS_OneEngine_Emitter::AgentRocket_HS_OneEngine_Emitter(ProblemRocket_HS_OneEngine * problem, BodyEmitter * body, AGENTTYPE_ROCKET_HS_ONE type) : AgentEmitter(problem,body), castedProblem(problem), agentType(type)
 {
 }
 
-void AgentEmitterRocket::live()
+void AgentRocket_HS_OneEngine_Emitter::live()
 {
 	if (!this->problem->getProblemLive())
 	{
@@ -26,7 +26,7 @@ void AgentEmitterRocket::live()
 	
 	switch (this->agentType)
 	{
-	case AGENTTYPE_ROCKET::ROCKET_DIRECTION :
+	case AGENTTYPE_ROCKET_HS_ONE::ROCKET_HS_ONE_DIRECTION:
 		// We send the distance to flat zone. This is converted to amplitude : positive amplitude means towards right
 
 		// -maxDist		dist	maxDist
@@ -52,7 +52,7 @@ void AgentEmitterRocket::live()
 			// Power = half
 
 		break;
-	case AGENTTYPE_ROCKET::ROCKET_REGULATOR:
+	case AGENTTYPE_ROCKET_HS_ONE::ROCKET_HS_ONE_REGULATOR:
 
 		
 		desiredAngle = 0;
@@ -120,17 +120,17 @@ void AgentEmitterRocket::live()
 	this->castedBody->send(frequency, amplitude);
 }
 
-bool AgentEmitterRocket::isLinked()
+bool AgentRocket_HS_OneEngine_Emitter::isLinked()
 {
 	return AgentEmitter::isLinked();
 }
 
-bool AgentEmitterRocket::isProblemLinked()
+bool AgentRocket_HS_OneEngine_Emitter::isProblemLinked()
 {
 	return this->castedProblem != NULL;
 }
 
-void AgentEmitterRocket::setAgentType(AGENTTYPE_ROCKET type)
+void AgentRocket_HS_OneEngine_Emitter::setAgentType(AGENTTYPE_ROCKET_HS_ONE type)
 {
 	this->agentType = type;
 }

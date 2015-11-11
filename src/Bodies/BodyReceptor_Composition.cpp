@@ -1,7 +1,7 @@
-#include "Bodies/BodyReceptorComposition.h"
+#include "Bodies/BodyReceptor_Composition.h"
 
 
-BodyReceptorComposition::BodyReceptorComposition(Semantic type, float x, float y) : BodyReceptor(type, x, y)
+BodyReceptor_Composition::BodyReceptor_Composition(Semantic type, float x, float y) : BodyReceptor(type, x, y)
 {
 	this->currentPerception.frequency = -1.0f;
 	this->currentPerception.amplitude = 0.0f;
@@ -10,13 +10,13 @@ BodyReceptorComposition::BodyReceptorComposition(Semantic type, float x, float y
 	//Receptor functions
 
 // Initialises the receptor
-void BodyReceptorComposition::initialise()
+void BodyReceptor_Composition::initialise()
 {
 
 }
 
 // Returns what the receptor can make of all it has recieved. This is the wave composition method
-WAVE_COMPOSITION BodyReceptorComposition::getPerception()
+WAVE_COMPOSITION BodyReceptor_Composition::getPerception()
 {
 	// Resetting values
 	this->currentPerception.frequency = -1.0f;
@@ -44,7 +44,7 @@ WAVE_COMPOSITION BodyReceptorComposition::getPerception()
 	return this->currentPerception;
 }
 
-float BodyReceptorComposition::calculateValueAtT(sf::Time t)
+float BodyReceptor_Composition::calculateValueAtT(sf::Time t)
 {
 	float result = 0.0f;
 	for (std::map<int, std::pair<sf::Time, std::pair<float, float>>>::iterator it = this->perception.getWaves()->begin();
@@ -58,7 +58,7 @@ float BodyReceptorComposition::calculateValueAtT(sf::Time t)
 }
 
 // Calculates value for given wave at given time
-float BodyReceptorComposition::calculateValueAtT(sf::Time t, sf::Time firstContact, float frequency, float amplitude)
+float BodyReceptor_Composition::calculateValueAtT(sf::Time t, sf::Time firstContact, float frequency, float amplitude)
 {
     sf::Time elapsedTime = t - firstContact;
 	if (frequency < 0.0f)
@@ -77,7 +77,7 @@ float BodyReceptorComposition::calculateValueAtT(sf::Time t, sf::Time firstConta
 	}
 }
 
-void BodyReceptorComposition::updateComputedValues(sf::Time currentTime)
+void BodyReceptor_Composition::updateComputedValues(sf::Time currentTime)
 {
     this->computedValues.push_front(std::pair<sf::Time, float>(currentTime, calculateValueAtT(currentTime)));
     sf::Time differenceTime = currentTime - this->computedValues.back().first;
@@ -90,7 +90,7 @@ void BodyReceptorComposition::updateComputedValues(sf::Time currentTime)
 }
 
 //Body functions
-void BodyReceptorComposition::update(sf::Time elapsedTime)
+void BodyReceptor_Composition::update(sf::Time elapsedTime)
 {
 
 }

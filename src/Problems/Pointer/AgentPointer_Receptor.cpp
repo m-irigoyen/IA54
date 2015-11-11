@@ -1,11 +1,11 @@
-#include "Agents/AgentReceptorProblemPointer.h"
+#include "Problems/Pointer/AgentPointer_Receptor.h"
 
-AgentReceptorProblemPointer::AgentReceptorProblemPointer(ProblemPointer* problem, BodyReceptorComposition* body) : AgentReceptor(problem, body), castedProblem(problem)
+AgentPointer_Receptor::AgentPointer_Receptor(ProblemPointer* problem, BodyReceptor_Composition* body) : AgentReceptor(problem, body), castedProblem(problem)
 {
 
 }
 
-void AgentReceptorProblemPointer::live()
+void AgentPointer_Receptor::live()
 {
 	if (!this->isLinked())
 	{
@@ -37,14 +37,14 @@ void AgentReceptorProblemPointer::live()
 	//std::cout << "Percieved : " << perception.frequency << " | " << perception.amplitude << " -> " << mouseX << " | " << mouseY << std::endl;
 }
 
-bool AgentReceptorProblemPointer::isLinked()
+bool AgentPointer_Receptor::isLinked()
 {
 	if (Agent::isLinked() && this->castedBody != NULL)
 		return true;
 	return false;
 }
 
-bool AgentReceptorProblemPointer::isProblemLinked()
+bool AgentPointer_Receptor::isProblemLinked()
 {
 	if (Agent::isProblemLinked() && this->castedProblem != NULL)
 	{

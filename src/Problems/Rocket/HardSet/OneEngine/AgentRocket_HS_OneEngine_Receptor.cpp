@@ -1,10 +1,10 @@
-#include "Agents/AgentReceptorRocket.h"
+#include "Problems/Rocket/HardSet/OneEngine/AgentRocket_HS_OneEngine_Receptor.h"
 
-AgentReceptorRocket::AgentReceptorRocket(ProblemRocket * problem, BodyReceptorFullComposition * body, AGENTTYPE_ROCKET type) : AgentReceptor(problem,body), castedProblem(problem), agentType(type)
+AgentRocket_HS_OneEngine_Receptor::AgentRocket_HS_OneEngine_Receptor(ProblemRocket_HS_OneEngine * problem, BodyReceptor_CompositionFull* body, AGENTTYPE_ROCKET_HS_ONE type) : AgentReceptor(problem,body), castedProblem(problem), agentType(type)
 {
 }
 
-void AgentReceptorRocket::live()
+void AgentRocket_HS_OneEngine_Receptor::live()
 {
 	if (!this->problem->getProblemLive())
 		return;
@@ -61,17 +61,17 @@ void AgentReceptorRocket::live()
 	this->castedProblem->setPower(power);
 }
 
-bool AgentReceptorRocket::isLinked()
+bool AgentRocket_HS_OneEngine_Receptor::isLinked()
 {
 	return AgentReceptor::isLinked();
 }
 
-bool AgentReceptorRocket::isProblemLinked()
+bool AgentRocket_HS_OneEngine_Receptor::isProblemLinked()
 {
 	return this->castedProblem != NULL;
 }
 
-void AgentReceptorRocket::setAgentType(AGENTTYPE_ROCKET type)
+void AgentRocket_HS_OneEngine_Receptor::setAgentType(AGENTTYPE_ROCKET_HS_ONE type)
 {
 	this->agentType = type;
 }

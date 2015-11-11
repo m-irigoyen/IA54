@@ -8,21 +8,20 @@
 #include "Graphics/GraphicView.h"
 
 // Pointer problem
-#include "Agents/AgentEmitterProblemPointer.h"
-#include "Agents/AgentReceptorProblemPointer.h"
+#include "Problems/Pointer/AgentPointer_Emitter.h"
+#include "Problems/Pointer/AgentPointer_Receptor.h"
 
 // Drone problem
-#include "Agents/AgentHybridProblemDrones.h"
+#include "Problems/Drones/AgentDrones_Hybrid.h"
 #include "Bodies/BodyHybrid.h"
 
 // Rocket problem
-#include "Agents/AgentEmitterRocket.h"
-#include "Agents/AgentReceptorRocket.h"
-#include "Agents/AgentRocketTest.h"
+#include "Problems/Rocket/HardSet/OneEngine/AgentRocket_HS_OneEngine_Emitter.h"
+#include "Problems/Rocket/HardSet/OneEngine/AgentRocket_HS_OneEngine_Receptor.h"
 
 // Rocket problem 2
-#include "Agents/AgentEmitterRocket2.h"
-#include "Agents/AgentReceptorRocket2.h"
+#include "Problems/Rocket/HardSet/TwoEngines/AgentRocket_HS_TwoEngines_Emitter.h"
+#include "Problems/Rocket/HardSet/TwoEngines/AgentRocket_HS_TwoEngines_Receptor.h"
 
 
 /*

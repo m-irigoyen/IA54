@@ -9,9 +9,9 @@
 
 #include "World/World.h"
 // The problems
-#include "Problems/ProblemPointer.h"
-#include "Problems/ProblemDrones.h"
-#include "Problems/ProblemRocket.h"
+#include "Problems/Pointer/ProblemPointer.h"
+#include "Problems/Drones/ProblemDrones.h"
+//#include "Problems/Rocket/HardSet/OneEngine/ProblemRocket_HS_OneEngine.h"
 
 #define RECEPTOR_RADIUSSIZE 6
 #define EMITTER_RADIUSSIZE 6
