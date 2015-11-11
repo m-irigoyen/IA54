@@ -4,6 +4,27 @@ Problem::Problem(float waveAmplLossPerSec, bool useAttenuation) : waveAmplLossPe
 {
 }
 
+void Problem::checkEvents(sf::RenderWindow * window)
+{
+	sf::Event event;
+	while (window->pollEvent(event))
+	{
+		switch (event.type)
+		{
+		case sf::Event::Closed:
+			window->close();
+			return;
+		case sf::Event::KeyPressed:
+			switch (event.key.code)
+			{
+			case::sf::Keyboard::Escape:
+				window->close();
+				break;
+			}
+		}
+	}
+}
+
 float Problem::getAmplitudeLoss()
 {
 	return this->waveAmplLossPerSec;
@@ -17,4 +38,28 @@ bool Problem::getProblemLive()
 bool Problem::isUsingAttenuation()
 {
 	return this->useWaveAttenuation;
+}
+
+int Problem::getNumberOfEmitters()
+{
+	return this->numberOfEmitters;
+}
+
+int Problem::getNumberOfReceptors()
+{
+	return this->numberOfReceptors;
+}
+
+void Problem::setNumberOfEmitters(int nb)
+{
+	if (nb < 0)
+		nb = 0;
+	this->numberOfEmitters = nb;
+}
+
+void Problem::setNumberOfReceptors(int nb)
+{
+	if (nb < 0)
+		nb = 0;
+	this->numberOfEmitters = nb;
 }

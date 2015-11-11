@@ -91,7 +91,7 @@ protected:
 	void checkEvents(sf::RenderWindow* window);	// Checks for user input on the problem window
 
 public:
-	ProblemRocket_HS_TwoEngines(float waveAmplLossPerSec = 50.0f);
+	ProblemRocket_HS_TwoEngines(float waveAmplLossPerSec = 0.0f);
 
 	virtual void loadTerrain(std::string path = "Default");
 	virtual void saveTerrain(std::string path);
