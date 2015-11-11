@@ -24,21 +24,7 @@ void ProblemRocket_HS_OneEngine::resetRocket(int x, int y)
 //Check if rocket collides with the ground
 bool ProblemRocket_HS_OneEngine::collides(double x, double y)
 {
-	if (x <= 0 || y <= 0 || x >= this->worldWidth || y >= this->worldHeight)
-	{
-		cout << "Rocket went missing!" << endl;
-		this->hasCrashed = true;
-		return true;
-	}
-
-	vector<pair<int, int>>::iterator p;
-	p = this->getPointBefore(x);
-	double terrainY = this->getTerrainPoint(x, *p, *(p + 1));
-
-	if (y <= terrainY)
-		return true;
-	else
-		return false;
+	
 }
 
 /*
@@ -70,39 +56,6 @@ bool ProblemRocket_HS_OneEngine::correctLanding(double hSpeed, double vSpeed, do
 	return false;
 }
 
-// Gets the Y coordinate for the given X, with p1.x <=x and p2.x >= x
-double ProblemRocket_HS_OneEngine::getTerrainPoint(double x, pair<int, int> p1, pair<int, int> p2)
-{
-	int distanceP1P2 = p2.first - p1.first;
-	double distanceP1X = x - p1.first;
-
-	double distRatio = distanceP1X / distanceP1P2;
-
-	//cout << "p1 : " << x1 << "," << y1 << endl;
-	//cout << "p2 : " << x2 << "," << y2 << endl;
-	//cout << "x : " << x << endl;
-
-	return p1.second + (p2.second - p1.second)*distRatio;
-}
-
-vector<pair<int, int>>::iterator ProblemRocket_HS_OneEngine::getPointBefore(double x)
-{
-	if (this->terrain.size() < 2)
-	{
-		cout << "ProblemRocket::getPointBefore : ERROR : Terrain is invalid as it contains less than 2 terrain points" << endl;
-		return this->terrain.end();
-	}
-		
-	pair<int, int> p = *this->terrain.begin();
-	for (vector<pair<int, int>>::iterator it = this->terrain.begin() + 1; it != this->terrain.end(); ++it)
-	{
-		if (it->first > x)
-			return it-1;
-	}
-
-	cout << "ProblemRocket::getPointBefore : ERROR : Didn't find a point before for given x." << endl;
-	return this->terrain.end();
-}
 
 void ProblemRocket_HS_OneEngine::getThrustersForce(double angle, int power, double & horizontalForce, double & verticalForce)
 {
