@@ -1,8 +1,8 @@
-#ifndef PROBLEMROCKET_HS_TWOENGINES_EMITTER_H_
-#define PROBLEMROCKET_HS_TWOENGINES_EMITTER_H_
+#ifndef PROBLEMROCKET_TWOENGINES_EMITTER_H_
+#define PROBLEMROCKET_TWOENGINES_EMITTER_H_
 
 #include "Agents/AgentEmitter.h"
-#include "Problems/Rocket/HardSet/TwoEngines/ProblemRocket_HS_TwoEngines.h"
+#include "Problems/Rocket/TwoEngines/ProblemRocket_TwoEngines.h"
 
 #define DEBUG_AGENTEMITTER_ROCKET2 1
 
@@ -10,23 +10,23 @@
 *   Emitter for the Rocket problem
 */
 
-class AgentRocket_HS_TwoEngines_Emitter : public AgentEmitter
+class AgentRocket_TwoEngines_Emitter : public AgentEmitter
 {
 protected:
-	ProblemRocket_HS_TwoEngines* castedProblem;
+	ProblemRocket_TwoEngines* castedProblem;
 
-	AGENTTYPE_ROCKET_HS_TWO agentType;
+	AGENTTYPE_ROCKET_TWO agentType;
 
 public:
-	AgentRocket_HS_TwoEngines_Emitter(ProblemRocket_HS_TwoEngines* problem, BodyEmitter* body = NULL, AGENTTYPE_ROCKET_HS_TWO type = AGENTTYPE_ROCKET_HS_TWO::ROCKET_HS_TWO_DEFAULT);
+	AgentRocket_TwoEngines_Emitter(ProblemRocket_TwoEngines* problem, BodyEmitter* body = NULL, AGENTTYPE_ROCKET_TWO type = AGENTTYPE_ROCKET_TWO::ROCKET_HS_TWO_DEFAULT);
 
 	virtual void live();
 	virtual bool isLinked();	// Checks if agent is linked to a body
 	virtual bool isProblemLinked();
 
-	void setAgentType(AGENTTYPE_ROCKET_HS_TWO type);
+	void setAgentType(AGENTTYPE_ROCKET_TWO type);
 
-	~AgentRocket_HS_TwoEngines_Emitter(void);
+	~AgentRocket_TwoEngines_Emitter(void);
 };
 
 #endif

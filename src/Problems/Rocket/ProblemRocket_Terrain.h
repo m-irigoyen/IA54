@@ -41,6 +41,7 @@ protected:
 
 	// Helper functions
 	vector<pair<int, int>>::iterator getPointBefore(double x);	// Returns the point contained in this->terrain with closest smallest x compared to given x parameter
+	double getTerrainPoint(double x, pair<int, int> p1, pair<int, int> p2);	// Gets the Y coordinate for the given X, with p1.x <=x and p2.x >= x
 
 public:
 	// Constructors
@@ -59,7 +60,7 @@ public:
 	// Terrain interaction
 	bool isOnMap(double x, double y);
 	bool collides(double x, double y);	// Checks if the given position is colliding with terrain
-	double getTerrainPoint(double x, pair<int, int> p1, pair<int, int> p2);	// Gets the Y coordinate for the given X, with p1.x <=x and p2.x >= x
+	double getTerrainPoint(double x);	// Gets the Y coordinate for the given X, with p1.x <=x and p2.x >= x
 
 	// Getters
 	vector<pair<int, int>>* getTerrain();

@@ -16,12 +16,12 @@
 #include "Bodies/BodyHybrid.h"
 
 // Rocket problem
-#include "Problems/Rocket/HardSet/OneEngine/AgentRocket_HS_OneEngine_Emitter.h"
-#include "Problems/Rocket/HardSet/OneEngine/AgentRocket_HS_OneEngine_Receptor.h"
+#include "Problems/Rocket/OneEngine/AgentRocket_OneEngine_Emitter.h"
+#include "Problems/Rocket/OneEngine/AgentRocket_OneEngine_Receptor.h"
 
 // Rocket problem 2
-#include "Problems/Rocket/HardSet/TwoEngines/AgentRocket_HS_TwoEngines_Emitter.h"
-#include "Problems/Rocket/HardSet/TwoEngines/AgentRocket_HS_TwoEngines_Receptor.h"
+#include "Problems/Rocket/TwoEngines/AgentRocket_TwoEngines_Emitter.h"
+#include "Problems/Rocket/TwoEngines/AgentRocket_TwoEngines_Receptor.h"
 
 
 /*

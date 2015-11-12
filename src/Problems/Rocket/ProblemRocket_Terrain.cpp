@@ -19,6 +19,16 @@ vector<pair<int, int>>::iterator ProblemRocket_Terrain::getPointBefore(double x)
 	return this->terrain.end();
 }
 
+double ProblemRocket_Terrain::getTerrainPoint(double x, pair<int, int> p1, pair<int, int> p2)
+{
+	int distanceP1P2 = p2.first - p1.first;
+	double distanceP1X = x - p1.first;
+
+	double distRatio = distanceP1X / distanceP1P2;
+
+	return p1.second + (p2.second - p1.second)*distRatio;
+}
+
 ProblemRocket_Terrain::ProblemRocket_Terrain(int width, int height, int maxTerrainHeight, int minTerrainHeight, double rocketStartX, double rocketStartY, double rocketStartHSpeed, double rocketStartVSpeed, double gravity) : mapWidth(width), mapHeight(height), terrainMaxHeight(maxTerrainHeight), terrainMinHeight(minTerrainHeight), rocketStartX(rocketStartX), rocketStartY(rocketStartY), rocketStartHSpeed(rocketStartHSpeed), rocketStartVSpeed(rocketStartVSpeed), gravity(gravity)
 {
 	this->generateRandomTerrain();
@@ -93,8 +103,8 @@ void ProblemRocket_Terrain::loadTerrain(std::string path)
 		this->windVertical = 0;
 
 		// Rocket start
-		this->rocketStartX = 100;
-		this->rocketStartY = 900;
+		this->rocketStartX = 200;
+		this->rocketStartY = 800;
 		this->rocketStartHSpeed = 0;
 		this->rocketStartVSpeed = 0;
 	}
@@ -217,7 +227,10 @@ bool ProblemRocket_Terrain::isOnMap(double x, double y)
 bool ProblemRocket_Terrain::collides(double x, double y)
 {
 	if (!this->isOnMap(x, y))
+	{
 		return false;
+	}
+		
 
 	// Getting the terrain's y at coordinate x
 	vector<pair<int, int>>::iterator p;
@@ -231,19 +244,26 @@ bool ProblemRocket_Terrain::collides(double x, double y)
 		return false;
 }
 
-double ProblemRocket_Terrain::getTerrainPoint(double x, pair<int, int> p1, pair<int, int> p2)
+double ProblemRocket_Terrain::getTerrainPoint(double x)
 {
-	int distanceP1P2 = p2.first - p1.first;
-	double distanceP1X = x - p1.first;
+	vector<pair<int, int>>::iterator p;
+	p = this->getPointBefore(x);
 
-	double distRatio = distanceP1X / distanceP1P2;
-
-	return p1.second + (p2.second - p1.second)*distRatio;
+	if (p != this->terrain.end())
+		return this->getTerrainPoint(x, *p, *(p + 1));
+	else
+		return -1;
 }
 
 double ProblemRocket_Terrain::getGravity()
 {
 	return this->gravity;
+}
+
+void ProblemRocket_Terrain::getLandingZone(double & landing1, double & landing2)
+{
+	landing1 = this->terrainFlatZone1;
+	landing2 = this->terrainFlatZone2;
 }
 
 int ProblemRocket_Terrain::getWidth()
@@ -254,4 +274,12 @@ int ProblemRocket_Terrain::getWidth()
 int ProblemRocket_Terrain::getHeight()
 {
 	return this->mapHeight;
+}
+
+void ProblemRocket_Terrain::getRocketStart(double & rocketX, double & rocketY, double & rocketHorizontalSpeed, double & rocketVerticalSpeed)
+{
+	rocketX = this->rocketStartX;
+	rocketY = this->rocketStartY;
+	rocketHorizontalSpeed = this->rocketStartHSpeed;
+	rocketVerticalSpeed = this->rocketStartVSpeed;
 }

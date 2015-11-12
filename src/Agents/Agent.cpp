@@ -8,7 +8,13 @@ float Agent::convertToRange(float value, float valueOffset, float valueRange, fl
 	{
 		cout << "ERROR : Agent::convertToRange : invalid parameters" << endl;
 		cout << "    Parameters were : " << value << ", " << valueOffset << ", " << valueRange << ", " << targetOffset << ", " << targetRange << endl;
-		return -1.0f;
+
+		if (value < 0)
+			return -1.0f;
+		if (value > valueOffset + valueRange)
+			value = valueOffset + valueRange;
+		else if (value < valueOffset)
+			value = valueOffset;
 	}
 
 	//valueOffset		-> value				-> valueRange+valueOffset
@@ -28,6 +34,7 @@ float Agent::convertToRange(float value, float valueOffset, float valueRange, fl
 
 Agent::Agent(Problem* problem, Body* body) : problem(problem), body(body)
 {
+
 }
 
 Agent::~Agent(void)

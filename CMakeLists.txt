@@ -81,32 +81,21 @@ FILE(GLOB_RECURSE SRCS_PROBLEMS_POINTER
 	${IA54_SOURCE_DIR}
 	${IA54_SOURCE_DIR}/src/Problems/Pointer/*.cpp 
 	${IA54_SOURCE_DIR}/src/Problems/Pointer/*.h)
-FILE(GLOB_RECURSE SRCS_PROBLEMS_ROCKET_BASE 
+FILE(GLOB_RECURSE SRCS_PROBLEMS_ROCKET 
 	${IA54_SOURCE_DIR}
 	${IA54_SOURCE_DIR}/src/Problems/Rocket/ProblemRocket_Terrain.cpp 
 	${IA54_SOURCE_DIR}/src/Problems/Rocket/ProblemRocket_Terrain.h
 	${IA54_SOURCE_DIR}/src/Problems/Rocket/ProblemRocket.cpp 
 	${IA54_SOURCE_DIR}/src/Problems/Rocket/ProblemRocket.h)
-FILE(GLOB_RECURSE SRCS_PROBLEMS_ROCKET_R_BASE 
+FILE(GLOB_RECURSE SRCS_PROBLEMS_ROCKET_ONE
 	${IA54_SOURCE_DIR}
-	${IA54_SOURCE_DIR}/src/Problems/Rocket/Reactive/ProblemRocket_R.cpp 
-	${IA54_SOURCE_DIR}/src/Problems/Rocket/Reactive/ProblemRocket_R.h)
-FILE(GLOB_RECURSE SRCS_PROBLEMS_ROCKET_HS_ONE
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/OneEngine/*.cpp 
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/OneEngine/*.h )
+FILE(GLOB_RECURSE SRCS_PROBLEMS_ROCKET_TWO
 	${IA54_SOURCE_DIR}
-	${IA54_SOURCE_DIR}/src/Problems/Rocket/HardSet/OneEngine/*.cpp 
-	${IA54_SOURCE_DIR}/src/Problems/Rocket/HardSet/OneEngine/*.h )
-FILE(GLOB_RECURSE SRCS_PROBLEMS_ROCKET_HS_TWO
-	${IA54_SOURCE_DIR}
-	${IA54_SOURCE_DIR}/src/Problems/Rocket/HardSet/TwoEngines/*.cpp 
-	${IA54_SOURCE_DIR}/src/Problems/Rocket/HardSet/TwoEngines/*.h )
-FILE(GLOB_RECURSE SRCS_PROBLEMS_ROCKET_R_ONE
-	${IA54_SOURCE_DIR}
-	${IA54_SOURCE_DIR}/src/Problems/Rocket/Reactive/OneEngine/*.cpp 
-	${IA54_SOURCE_DIR}/src/Problems/Rocket/Reactive/OneEngine/*.h )
-FILE(GLOB_RECURSE SRCS_PROBLEMS_ROCKET_R_TWO
-	${IA54_SOURCE_DIR}
-	${IA54_SOURCE_DIR}/src/Problems/Rocket/Reactive/TwoEngines/*.cpp 
-	${IA54_SOURCE_DIR}/src/Problems/Rocket/Reactive/TwoEngines/*.h )
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/TwoEngines/*.cpp 
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/TwoEngines/*.h )
+
 
 #Grouping everything
 source_group(Agents FILES ${SRCS_AGENTS})
@@ -124,17 +113,15 @@ source_group(Problems FILES ${SRCS_PROBLEMS_BASE})
 source_group(Problems/Drones FILES ${SRCS_PROBLEMS_DRONES})
 source_group(Problems/Pendulum FILES ${SRCS_PROBLEMS_PENDULUM})
 source_group(Problems/Pointer FILES ${SRCS_PROBLEMS_POINTER})
-source_group(Problems/Rocket FILES ${SRCS_PROBLEMS_ROCKET_BASE})
-source_group(Problems/Rocket/Reactive FILES ${SRCS_PROBLEMS_ROCKET_R_BASE})
-source_group(Problems/Rocket/HardSet/OneEngine FILES ${SRCS_PROBLEMS_ROCKET_HS_ONE})
-source_group(Problems/Rocket/HardSet/TwoEngines FILES ${SRCS_PROBLEMS_ROCKET_HS_TWO})
-source_group(Problems/Rocket/Reactive/OneEngine FILES ${SRCS_PROBLEMS_ROCKET_R_ONE})
-source_group(Problems/Rocket/Reactive/TwoEngines FILES ${SRCS_PROBLEMS_ROCKET_R_TWO})
+source_group(Problems/Rocket FILES ${SRCS_PROBLEMS_ROCKET})
+source_group(Problems/Rocket/OneEngine FILES ${SRCS_PROBLEMS_ROCKET_ONE})
+source_group(Problems/Rocket/TwoEngines FILES ${SRCS_PROBLEMS_ROCKET_TWO})
+
 
 
 #ADD_EXECUTABLE(${EXE_NAME} ${SRC_SOURCES} ${SRC_HEADER})
 
-ADD_EXECUTABLE(${EXE_NAME} ${SRCS_AGENTS} ${SRCS_BODIES} ${SRCS_GRAPHICS} ${SRCS_SIMULATOR} ${SRCS_UTILITIES} ${SRCS_WORLD} ${SRCS_PUGI} ${SRCS_MAIN} ${SRCS_PROBLEMS} ${SRCS_PROBLEMS_DRONES} ${SRCS_PROBLEMS_PENDULUM} ${SRCS_PROBLEMS_POINTER} ${SRCS_PROBLEMS_ROCKET_R_BASE} ${SRCS_PROBLEMS_ROCKET_HS_ONE} ${SRCS_PROBLEMS_ROCKET_HS_TWO} ${SRCS_PROBLEMS_ROCKET_R_ONE} ${SRCS_PROBLEMS_ROCKET_R_TWO} ${SRCS_PROBLEMS_BASE} ${SRCS_PROBLEMS_ROCKET_BASE})
+ADD_EXECUTABLE(${EXE_NAME} ${SRCS_AGENTS} ${SRCS_BODIES} ${SRCS_GRAPHICS} ${SRCS_SIMULATOR} ${SRCS_UTILITIES} ${SRCS_WORLD} ${SRCS_PUGI} ${SRCS_MAIN} ${SRCS_PROBLEMS} ${SRCS_PROBLEMS_DRONES} ${SRCS_PROBLEMS_PENDULUM} ${SRCS_PROBLEMS_POINTER}  ${SRCS_PROBLEMS_BASE} ${SRCS_PROBLEMS_ROCKET} ${SRCS_PROBLEMS_ROCKET_ONE} ${SRCS_PROBLEMS_ROCKET_TWO})
 
 FIND_FILE(SFML_CMAKE_DIR "cmake/Modules/FindSFML.cmake")
 if(SFML_CMAKE_DIR)

@@ -9,20 +9,26 @@ void Problem::checkEvents(sf::RenderWindow * window)
 	sf::Event event;
 	while (window->pollEvent(event))
 	{
-		switch (event.type)
+		handleEvent(window, event);
+	}
+}
+
+bool Problem::handleEvent(sf::RenderWindow* window, sf::Event event)
+{
+	switch (event.type)
+	{
+	case sf::Event::Closed:
+		window->close();
+		return true;
+	case sf::Event::KeyPressed:
+		switch (event.key.code)
 		{
-		case sf::Event::Closed:
+		case::sf::Keyboard::Escape:
 			window->close();
-			return;
-		case sf::Event::KeyPressed:
-			switch (event.key.code)
-			{
-			case::sf::Keyboard::Escape:
-				window->close();
-				break;
-			}
+			return true;
 		}
 	}
+	return false;
 }
 
 float Problem::getAmplitudeLoss()

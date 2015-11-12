@@ -1,10 +1,10 @@
-#include "Problems/Rocket/HardSet/OneEngine/AgentRocket_HS_OneEngine_Emitter.h"
+#include "Problems/Rocket/OneEngine/AgentRocket_OneEngine_Emitter.h"
 
-AgentRocket_HS_OneEngine_Emitter::AgentRocket_HS_OneEngine_Emitter(ProblemRocket_HS_OneEngine * problem, BodyEmitter * body, AGENTTYPE_ROCKET_HS_ONE type) : AgentEmitter(problem,body), castedProblem(problem), agentType(type)
+AgentRocket_OneEngine_Emitter::AgentRocket_OneEngine_Emitter(ProblemRocket_OneEngine * problem, BodyEmitter * body, PROBLEMROCKET_AGENTTYPE_ONE type) : AgentEmitter(problem,body), castedProblem(problem), agentType(type)
 {
 }
 
-void AgentRocket_HS_OneEngine_Emitter::live()
+void AgentRocket_OneEngine_Emitter::live()
 {
 	if (!this->problem->getProblemLive())
 	{
@@ -14,86 +14,84 @@ void AgentRocket_HS_OneEngine_Emitter::live()
 	}
 
 	// Getting problem data
-	double x, y, power, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat;
-	this->castedProblem->getProblemData(x, y, hSpeed, vSpeed, angle, power, distanceToGround, distanceToCenterFlat);
+	double x, y, power, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat, lzSize;
 
+	this->castedProblem->getRocketPosition(x, y);
+	power = this->castedProblem->getRocketEnginesPower()->at(0);
+	angle = this->castedProblem->getRocketAngle();
+	this->castedProblem->getRocketSpeed(hSpeed, vSpeed);
+	distanceToGround = this->castedProblem->getRocketDistanceToGround();
+	distanceToCenterFlat = this->castedProblem->getRocketDistanceToLandingZoneCenter();
+	lzSize = this->castedProblem->getLandingZoneSize();
+
+	// Variables
 	double desiredAngle = 0;
 	double desiredPower = 0;
-	double temp;
 
 	double amplitude;
 	double frequency;
 	
 	switch (this->agentType)
 	{
-	case AGENTTYPE_ROCKET_HS_ONE::ROCKET_HS_ONE_DIRECTION:
-		// We send the distance to flat zone. This is converted to amplitude : positive amplitude means towards right
+	case PROBLEMROCKET_AGENTTYPE_ONE::ROCKET_HS_ONE_DIRECTION:
 
-		// -maxDist		dist	maxDist
-		// -maxAngle	angle	maxAngle
-
-		if (distanceToCenterFlat >= ROCKET_PROBLEM_MAXDISTANCE)
+		// Direct the rocket towards the flatzone
+		if (abs(distanceToCenterFlat) >= lzSize/2)
 		{
-			// Positive max angle
-			desiredAngle = ROCKET_PROBLEM_MAXANGLE;
-		}
-		else if (distanceToCenterFlat <= -ROCKET_PROBLEM_MAXDISTANCE)
-		{
-			// Negative max angle
-			desiredAngle = -ROCKET_PROBLEM_MAXANGLE;
+			desiredAngle = PROBLEMROCKET_ONE_PROBLEM_MAXANGLE;
+			if (distanceToCenterFlat > 0)
+				desiredAngle *= -1;
 		}
 		else
-		{
-			// Compute angle
 			desiredAngle = 0;
-		}
 
 		desiredPower = 50;
-			// Power = half
 
 		break;
-	case AGENTTYPE_ROCKET_HS_ONE::ROCKET_HS_ONE_REGULATOR:
-
+	case PROBLEMROCKET_AGENTTYPE_ONE::ROCKET_HS_ONE_REGULATOR:
 		
 		desiredAngle = 0;
 		
-		if (hSpeed > ROCKET_PROBLEM_MAXHSPEED || hSpeed < -ROCKET_PROBLEM_MAXHSPEED)
+		// If we're too fast : regain control
+		if (abs(hSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED || abs(vSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED)
 		{
-			temp = abs(hSpeed);
-			desiredAngle = this->convertToRange(hSpeed,
-				0,
-				ROCKET_PROBLEM_MAXHSPEED,
-				0,
-				ROCKET_PROBLEM_MAXANGLE);
-
+			if (abs(hSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED)
+			{
+				desiredAngle = PROBLEMROCKET_ONE_PROBLEM_MAXANGLE;
+			}
+			else
+			{
+				desiredAngle = this->convertToRange(abs(hSpeed),
+					0,
+					PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED / 2,	// That 0.5 factor makes it brake faster
+					0,
+					PROBLEMROCKET_ONE_PROBLEM_MAXANGLE);
+			}
+			
 			if (hSpeed < 0)
 				desiredAngle *= -1;
 
 			desiredPower = 100;
 		}
-		// We're in the landing area : slow down to a halt on hSpeed, and begin descent
-		else if (distanceToCenterFlat > -ROCKET_PROBLEM_MAXDISTANCE && x < ROCKET_PROBLEM_MAXDISTANCE)
+		// If we're above the flatzone
+		else if (abs(distanceToCenterFlat) <= lzSize / 2)
 		{
-			// Nullify hSpeed
-			temp = abs(hSpeed);
-			desiredAngle = this->convertToRange(temp,
-				0,
-				ROCKET_PROBLEM_MAXHSPEED,
-				0,
-				ROCKET_PROBLEM_MAXANGLE);
-
-			if (hSpeed < 0)
-				desiredAngle *= -1;
-			
-			// Start dropping 
-			if (vSpeed < ROCKET_PROBLEM_MAXVSPEED / 2)
-			{
-				desiredPower = 75;
-			}
-			else
-			{
+			// Nullify hSpeed, and start descent
+			if (vSpeed > 0)
 				desiredPower = 0;
-			}
+			else if (abs(hSpeed) < PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED / 2 || abs(vSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXVSPEED)
+				desiredPower = 75;
+			else
+				desiredPower = 25;
+				
+
+			desiredAngle = this->convertToRange(abs(hSpeed),
+						0,
+						PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED / 2,	// That 0.5 factor makes it brake faster
+						0,
+						PROBLEMROCKET_ONE_PROBLEM_MAXANGLE);
+
+
 		}
 		else
 		{
@@ -104,33 +102,33 @@ void AgentRocket_HS_OneEngine_Emitter::live()
 	}
 
 	// Sending
-	amplitude = this->convertToRange(desiredAngle + ROCKET_PROBLEM_MAXANGLE,
+	amplitude = this->convertToRange(desiredAngle + PROBLEMROCKET_ONE_PROBLEM_MAXANGLE,
 		0,
-		ROCKET_PROBLEM_MAXANGLE * 2,
-		ROCKET_WAVE_AMPLITUDE_OFFSET,
-		ROCKET_WAVE_AMPLITUDE_RANGE);
+		PROBLEMROCKET_ONE_PROBLEM_MAXANGLE * 2,
+		this->castedProblem->getWaveAmplitudeOffset(),
+		this->castedProblem->getWaveAmplitudeRange());
 
 	frequency = this->convertToRange(desiredPower,
 		0,
-		ROCKET_SPECS_POWER_MAX,
-		ROCKET_WAVE_FREQUENCY_OFFSET,
-		ROCKET_WAVE_FREQUENCY_RANGE);
+		this->castedProblem->getPowerMax(),
+		this->castedProblem->getWaveFrequencyOffset(),
+		this->castedProblem->getWaveFrequencyRange());
 
 	//cout << "SENDING : " << frequency << "," << amplitude << endl;
 	this->castedBody->send(frequency, amplitude);
 }
 
-bool AgentRocket_HS_OneEngine_Emitter::isLinked()
+bool AgentRocket_OneEngine_Emitter::isLinked()
 {
 	return AgentEmitter::isLinked();
 }
 
-bool AgentRocket_HS_OneEngine_Emitter::isProblemLinked()
+bool AgentRocket_OneEngine_Emitter::isProblemLinked()
 {
 	return this->castedProblem != NULL;
 }
 
-void AgentRocket_HS_OneEngine_Emitter::setAgentType(AGENTTYPE_ROCKET_HS_ONE type)
+void AgentRocket_OneEngine_Emitter::setAgentType(PROBLEMROCKET_AGENTTYPE_ONE type)
 {
 	this->agentType = type;
 }

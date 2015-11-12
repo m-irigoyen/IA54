@@ -1,78 +1,115 @@
 #include "ProblemRocket.h"
 
+/*
+Checks if the rocket landed correctly.
+We assume that a correct landing means :
+|hSpeed| < 20
+|vSpeed| < 40
+-5 <= rocketAngle <= 5
+*/
 bool ProblemRocket::correctLanding(double hSpeed, double vSpeed, double angle)
 {
+	if (angle >= PROBLEMROCKET_GUI_ANGLE_OFFSET - 10 && angle <= PROBLEMROCKET_GUI_ANGLE_OFFSET + 10)	// Don't forget to check for the angle offset
+	{
+		if (hSpeed >= -20.0f && hSpeed <= 20.0f)
+		{
+			if (vSpeed <= 0.0f && vSpeed >= -40.0f)	// Can't collide going up
+			{
+				cout << "Rocket landed successfully!" << endl;
+				return true;
+			}
+			else
+				cout << "Rocket crashed : verticalSpeed was too big!" << endl;
+		}
+		else
+			cout << "Rocket crashed : horizontalSpeed was too big!" << endl;
+	}
+	else
+		cout << "Rocket crashed : angle was bigger than 5 (or smaller than -5)!" << endl;
 	return false;
 }
 
 // Given the hSpeed and vSpeed values, move the Rocket
 void ProblemRocket::moveRocket(sf::Time elapsedTime, double hEnginesForce, double vEnginesForce)
 {
+	this->rocket_hSpeed += hEnginesForce * elapsedTime.asSeconds();
+	this->rocket_vSpeed += (vEnginesForce - this->terrain.getGravity()) * elapsedTime.asSeconds();
+
 	// Moving the rocket
 	this->rocket_x += this->rocket_hSpeed * elapsedTime.asSeconds();
-	this->rocket_y += this->rocket_vSpeed * elapsedTime.asSeconds() - (this->terrain.getGravity()*elapsedTime.asSeconds());
+	this->rocket_y += this->rocket_vSpeed * elapsedTime.asSeconds();
 
 	//cout << hSpeed << " / " << vSpeed << endl;
 
-	// If collides with terrain
-	if (this->terrain.collides(this->rocket_x, this->rocket_y))
+	// If rocket is out of map
+	if (!this->terrain.isOnMap(this->rocket_x, this->rocket_y))
 	{
-		// If is on flat zone
-		double flat1, flat2;
-		this->terrain.getLandingZone(flat1, flat2);
-		if (this->rocket_x >= flat1 && rocket_y <= flat2)
+		this->hasGoneMissing = true;
+		cout << "Rocket has gone missing!" << endl;
+	}
+	else
+	{
+		if (this->terrain.collides(this->rocket_x, this->rocket_y))
 		{
-			if (this->correctLanding(this->rocket_hSpeed, this->rocket_vSpeed, this->rocket_angle))
+			// If is on flat zone
+			double flat1, flat2;
+			this->terrain.getLandingZone(flat1, flat2);
+			if (this->rocket_x >= flat1 && rocket_y <= flat2)
 			{
-				this->hasLanded = true;
-				cout << "Rocket has landed safely!" << endl;
+				if (this->correctLanding(this->rocket_hSpeed, this->rocket_vSpeed, this->rocket_angle))
+				{
+					this->hasLanded = true;
+					cout << "Rocket has landed safely!" << endl;
+				}
+				else
+				{
+					this->hasCrashed = true;
+					cout << "Rocket has crashed ! The landing wasn't safe enough!" << endl;
+				}
 			}
 			else
 			{
 				this->hasCrashed = true;
-				cout << "Rocket has crashed ! The landing wasn't safe enough!" << endl;
+				cout << "Rocket crashed : landed on non flat zone!" << endl;
 			}
 		}
-		else
-		{
-			this->hasCrashed = true;
-			cout << "Rocket crashed : landed on non flat zone!" << endl;
-		}
 	}
-}
-
-void ProblemRocket::getThrustersForce(double& hForce, double& vForce)
-{
-	//TODO : override that in child classes
-	hForce = 0;
-	vForce = 0;
+	
 }
 
 // Checks for user input
 void ProblemRocket::checkEvents(sf::RenderWindow* window)
 {
-	// Calling parent class event check
-	Problem::checkEvents(window);
-
 	if (window != NULL)
 	{
 		sf::Event event;
 		while (window->pollEvent(event))
 		{
-			switch (event.type)
+			handleEvent(window, event);
+		}
+	}
+}
+
+bool ProblemRocket::handleEvent(sf::RenderWindow * window, sf::Event event)
+{
+	if (Problem::handleEvent(window, event))
+		return true;
+	else
+	{
+		switch (event.type)
+		{
+		case sf::Event::KeyPressed:
+			switch (event.key.code)
 			{
-			case sf::Event::KeyPressed:
-				switch (event.key.code)
-				{
-				case::sf::Keyboard::F1:
-					this->userControlled = true;
-					break;
-				case::sf::Keyboard::F2:
-					this->userControlled = false;
-					break;
-				}
+			case::sf::Keyboard::F1:
+				this->userControlled = true;
+				return true;
+			case::sf::Keyboard::F2:
+				this->userControlled = false;
+				return true;
 			}
 		}
+		return false;
 	}
 }
 
@@ -87,18 +124,97 @@ double ProblemRocket::constrainAngle(double angle)
 	return angle;
 }
 
-ProblemRocket::ProblemRocket(float waveAmplLossPerSec, bool useAttenuation) : Problem(waveAmplLossPerSec, useAttenuation), userControlled(false), rocketRotationRate(-1), engineChangeRate(-1)
+// Call this function only if the rocket_rotationRate > 0. Rotates the rocket from the given amount, or less if its above the rocket's rotation capabilities
+double ProblemRocket::constrainAngleChange(double currentAngle, double desiredRotation)
 {
+	if (this->userControlled || this->useGradualChange || rocket_rotationRate < 0)
+		return desiredRotation;
+	else
+	{
+		// Rotate only of the asked amount
+		if (abs(desiredRotation) < this->rocket_rotationRate)
+			currentAngle += desiredRotation;
+		// Rotate by the change rate
+		else
+		{
+			if (desiredRotation < 0)
+				currentAngle -= this->rocket_rotationRate;
+			else
+				currentAngle += this->rocket_rotationRate;
+		}
+		currentAngle = this->constrainAngle(currentAngle);
+		return currentAngle;
+	}
+	
 }
 
-void ProblemRocket::run(sf::Time elapsedTime)
+int ProblemRocket::constrainPower(int power)
 {
-	double hOffset, vOffset;
-	this->getThrustersForce(hOffset, vOffset);
-	this->rotateRocket();
-
-	this->moveRocket(elapsedTime, hOffset, vOffset);
+	if (power < 0)
+		return 0;
+	else if (power > 100)
+		return 100;
+	else
+		return power;
 }
+
+// Call this function only if the engineChangeRate > 0. Rotates the rocket from the given amount, or less if its above the rocket's rotation capabilities
+int ProblemRocket::constrainPowerChange(int currentPower, int desiredPowerChange)
+{
+	if (this->userControlled || this->useGradualChange || rocket_engineChangeRate < 0)
+		return desiredPowerChange;
+	else
+	{
+		// If desiredChange is lower than the change rate, change by the asked amount
+		if (abs(desiredPowerChange) < this->rocket_engineChangeRate)
+			currentPower += desiredPowerChange;
+		// Else, change by the change rate
+		else
+		{
+			if (desiredPowerChange < 0)
+				currentPower -= this->rocket_engineChangeRate;
+			else
+				currentPower += this->rocket_engineChangeRate;
+		}
+		return currentPower;
+	}
+}
+
+void ProblemRocket::resetDesiredChanges()
+{
+	for (vector<int>::iterator it = this->desiredPower.begin(); it != this->desiredPower.end(); ++it)
+	{
+		*it = 0;
+	}
+	for (vector<int>::iterator it = this->powerChange.begin(); it != this->powerChange.end(); ++it)
+	{
+		*it = 0;
+	}
+}
+
+ProblemRocket::ProblemRocket(float waveAmplLossPerSec, bool useAttenuation) : Problem(waveAmplLossPerSec, useAttenuation), userControlled(false), rocket_rotationRate(-1), rocket_engineChangeRate(-1), useGradualChange(false)
+{
+	// Setting base variables
+	this->rocket_x = 0;
+	this->rocket_y = 0;
+	this->rocket_hSpeed = 0;
+	this->rocket_vSpeed = 0;
+	this->desiredRotation = 0;
+	this->hasCrashed = false;
+	this->hasGoneMissing = false;
+	this->hasLanded = false;
+	this->numberOfEmitters = 0;
+	this->numberOfReceptors = 0;
+
+	this->rotationChange = 0;
+
+	this->setAngle(0);
+	this->wave_amplitude_offset = 10.0f;
+	this->wave_amplitude_range = 10.0f;
+	this->wave_frequency_offset = 10.0f;
+	this->wave_frequency_range = 10.0f;
+}
+
 
 void ProblemRocket::clean()
 {
@@ -125,7 +241,7 @@ void ProblemRocket::initGraphics(std::vector<sf::Font>* fonts)
 
 	// Rocket sprite
 	string path;
-	path += PATH_RES_FONTS;
+	path += PATH_RES;
 	path += "Rocket.png";
 	if (!this->hud_rocketTexture.loadFromFile(path))
 	{
@@ -133,15 +249,23 @@ void ProblemRocket::initGraphics(std::vector<sf::Font>* fonts)
 	}
 	this->hud_rocketSprite.setTexture(hud_rocketTexture);
 	this->hud_rocketSprite.setOrigin(hud_rocketTexture.getSize().x / 2, hud_rocketTexture.getSize().y / 2);
-
-	// Engine fire
-	this->hud_engineFire.setFillColor(sf::Color::Yellow);
-	this->hud_engineFire.setOutlineColor(sf::Color::Red);
-	this->hud_engineFire.setOutlineThickness(1);
-	this->hud_engineFire.setSize(sf::Vector2f(50, 6));
 }
 
-void ProblemRocket::draw(sf::RenderWindow * window, std::vector<sf::Font>* fonts)
+void ProblemRocket::setRocketRotationRate(double rocketRotationRate)
+{
+	if (rocketRotationRate < 0)
+		rocketRotationRate = -1;
+	this->rocket_rotationRate = rocketRotationRate;
+}
+
+void ProblemRocket::setRocketengineChangeRate(int engineChangeRate)
+{
+	if (engineChangeRate < 0)
+		engineChangeRate = -1;
+	this->rocket_engineChangeRate = engineChangeRate;
+}
+
+void ProblemRocket::draw(sf::RenderWindow * window)
 {
 	this->checkEvents(window);
 
@@ -202,6 +326,31 @@ void ProblemRocket::generateTerrain(int width, int height)
 	this->resetRocket();
 }
 
+void ProblemRocket::setPower(int engineNumber, int power)
+{
+	if (engineNumber >= 0 && engineNumber < this->rocket_enginesPower.size())
+	{
+		if (power > PROBLEMROCKET_ROCKET_POWER_MAX)
+			power = PROBLEMROCKET_ROCKET_POWER_MAX;
+		else if (power < 0)
+			power = 0;
+		this->rocket_enginesPower.at(engineNumber) = power;
+	}
+}
+
+void ProblemRocket::setAngle(double angle)
+{
+	angle += PROBLEMROCKET_GUI_ANGLE_OFFSET;	// Applying offset to have 0° be up
+	angle = constrainAngle(angle);
+
+	this->rocket_angle = angle;
+}
+
+bool ProblemRocket::getUserControlled()
+{
+	return this->userControlled;
+}
+
 bool ProblemRocket::getHasLanded()
 {
 	return this->hasLanded;
@@ -217,32 +366,86 @@ bool ProblemRocket::getHasGoneMissing()
 	return this->hasGoneMissing;
 }
 
-// Sets the desired power : the rocket will power up (or down) its engines until they reach the given value
+void ProblemRocket::getRocketPosition(double & rocketX, double & rocketY)
+{
+	rocketX = this->rocket_x;
+	rocketY = this->rocket_y;
+}
+
+void ProblemRocket::getRocketSpeed(double & rocketHSpeed, double & rocketVSpeed)
+{
+	rocketHSpeed = this->rocket_hSpeed;
+	rocketVSpeed = this->rocket_vSpeed;
+}
+
+double ProblemRocket::getRocketAngle()
+{
+	return this->rocket_angle;
+}
+
+vector<int>* ProblemRocket::getRocketEnginesPower()
+{
+	return &this->rocket_enginesPower;
+}
+
+double ProblemRocket::getRocketDistanceToGround()
+{
+	
+	return (this->rocket_y - this->terrain.getTerrainPoint(this->rocket_x));
+}
+
+double ProblemRocket::getRocketDistanceToLandingZoneCenter()
+{
+	double flat1, flat2;
+	this->terrain.getLandingZone(flat1, flat2);
+	double center = flat1 + (flat2 - flat1) / 2;
+	return center - this->rocket_x;
+}
+
+double ProblemRocket::getLandingZoneSize()
+{
+	double landing1, landing2;
+	this->terrain.getLandingZone(landing1, landing2);
+	return landing2 - landing1;
+}
+
+int ProblemRocket::getPowerMax()
+{
+	return 100;
+}
+
+double ProblemRocket::getWaveAmplitudeOffset()
+{
+	return this->wave_amplitude_offset;
+}
+
+double ProblemRocket::getWaveAmplitudeRange()
+{
+	return this->wave_amplitude_range;
+}
+
+double ProblemRocket::getWaveFrequencyOffset()
+{
+	return this->wave_frequency_offset;
+}
+
+double ProblemRocket::getWaveFrequencyRange()
+{
+	return this->wave_frequency_range;
+}
+
+// Sets the power influence
 void ProblemRocket::setDesiredPower(int engineNumber, int power)
 {
 	if (engineNumber >= 0 && engineNumber < this->desiredPower.size())
 		this->desiredPower.at(engineNumber) = power;
+	else
+		cout << "ERROR : ProblemRocket::setDesiredPower : given engine number is out of range" << endl;
 }
 
-// Sets the desired angle : the rocket will rotate until it reaches the given angle
+// Sets the angle influence
 void ProblemRocket::setDesiredAngle(double angle)
 {
-	angle += PROBLEMROCKET_GUI_ANGLE_OFFSET;	// Applying offset to have 0° be up
 	angle = constrainAngle(angle);
 	this->desiredRotation = angle;
 }
-
-// Sets the desired power change : the rocket will power up (or down) by the given amount (limited by the rocket's capabilities)
-void ProblemRocket::setDesiredPowerChange(int engineNumber, int power)
-{
-	if (engineNumber >= 0 && engineNumber < this->desiredPower.size())
-		this->desiredPower.at(engineNumber) = power;
-}
-
-// Sets the desired angle change : the rocket will rotate by the given amount (limited by the rocket's capabilities)
-void ProblemRocket::setDesiredAngleChange(double angle)
-{
-	this->desiredRotationChange = angle;
-}
-
-

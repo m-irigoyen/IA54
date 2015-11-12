@@ -133,7 +133,7 @@ void GraphicView::Draw()
 		// Drawing the problem
 		if (this->displayProblem)
 		{
-			this->problem->draw(this->problemWindow, &this->fonts);
+			this->problem->draw(this->problemWindow);
 			this->problemWindow->display();
 		}
 	}

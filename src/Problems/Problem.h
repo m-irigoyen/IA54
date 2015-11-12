@@ -43,8 +43,9 @@ public:
 	virtual void initGraphics(std::vector<sf::Font>* fonts) = 0;
 
 	// GUI
-	virtual void draw(sf::RenderWindow* window, std::vector<sf::Font>* fonts) = 0;	// Draw the problem on the given window
+	virtual void draw(sf::RenderWindow* window) = 0;	// Draw the problem on the given window
 	virtual void checkEvents(sf::RenderWindow* window);	// Checking for events
+	virtual bool handleEvent(sf::RenderWindow* window, sf::Event event);	// Returns true if event has been dealt with
 	
 	// Getters
 	float getAmplitudeLoss();
