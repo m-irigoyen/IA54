@@ -1,7 +1,7 @@
-#include "Bodies/BodyReceptor_Composition.h"
+#include "Bodies/BodyReceptor_Medium.h"
 
 
-BodyReceptor_Composition::BodyReceptor_Composition(Semantic type, float x, float y) : BodyReceptor(type, x, y)
+BodyReceptor_Medium::BodyReceptor_Medium(Semantic type, float x, float y) : BodyReceptor(type, x, y)
 {
 	this->currentPerception.frequency = -1.0f;
 	this->currentPerception.amplitude = 0.0f;
@@ -10,17 +10,16 @@ BodyReceptor_Composition::BodyReceptor_Composition(Semantic type, float x, float
 	//Receptor functions
 
 // Initialises the receptor
-void BodyReceptor_Composition::initialise()
+void BodyReceptor_Medium::initialise()
 {
 
 }
 
 // Returns what the receptor can make of all it has recieved. This is the wave composition method
-WAVE BodyReceptor_Composition::getPerception()
+WAVE BodyReceptor_Medium::getPerception()
 {
-	// Resetting values
-	this->currentPerception.frequency = -1.0f;
-	this->currentPerception.amplitude = 0.0f;
+	WAVE waves;
+	int nbWaves = 0;
 
 	// For each perceived wave
 	for (std::map<int, std::pair<sf::Time, std::pair<float, float>>>::iterator it = this->perception.getWaves()->begin();
@@ -29,22 +28,19 @@ WAVE BodyReceptor_Composition::getPerception()
 	{
 		if (it->second.second.first > 0.0f)	// Frequency isn't null : we can update that wave
 		{
-			// If its the first percieved one : set it to that frequency
-			if (this->currentPerception.frequency < 0.0f)
-				this->currentPerception.frequency = it->second.second.first;
-			// Else, treat it normally
-			else if (it->second.second.first < this->currentPerception.frequency)
-				this->currentPerception.frequency = it->second.second.first;
-
-			// Then update the ammplitude
-			this->currentPerception.amplitude += it->second.second.second;
+			waves.frequency += it->second.second.first;
+			waves.amplitude += it->second.second.second;
+			++nbWaves;
 		}
     }
 	//std::cout << "Returning : " << this->currentPerception.frequency << "," << this->currentPerception.amplitude << std::endl;
+	waves.amplitude = waves.amplitude / nbWaves;
+	waves.frequency = waves.frequency / nbWaves;
+	this->currentPerception = waves;
 	return this->currentPerception;
 }
 
-float BodyReceptor_Composition::calculateValueAtT(sf::Time t)
+float BodyReceptor_Medium::calculateValueAtT(sf::Time t)
 {
 	float result = 0.0f;
 	for (std::map<int, std::pair<sf::Time, std::pair<float, float>>>::iterator it = this->perception.getWaves()->begin();
@@ -58,7 +54,7 @@ float BodyReceptor_Composition::calculateValueAtT(sf::Time t)
 }
 
 // Calculates value for given wave at given time
-float BodyReceptor_Composition::calculateValueAtT(sf::Time t, sf::Time firstContact, float frequency, float amplitude)
+float BodyReceptor_Medium::calculateValueAtT(sf::Time t, sf::Time firstContact, float frequency, float amplitude)
 {
     sf::Time elapsedTime = t - firstContact;
 	if (frequency < 0.0f)
@@ -77,7 +73,7 @@ float BodyReceptor_Composition::calculateValueAtT(sf::Time t, sf::Time firstCont
 	}
 }
 
-void BodyReceptor_Composition::updateComputedValues(sf::Time currentTime)
+void BodyReceptor_Medium::updateComputedValues(sf::Time currentTime)
 {
     this->computedValues.push_front(std::pair<sf::Time, float>(currentTime, calculateValueAtT(currentTime)));
     sf::Time differenceTime = currentTime - this->computedValues.back().first;
@@ -90,7 +86,7 @@ void BodyReceptor_Composition::updateComputedValues(sf::Time currentTime)
 }
 
 //Body functions
-void BodyReceptor_Composition::update(sf::Time elapsedTime)
+void BodyReceptor_Medium::update(sf::Time elapsedTime)
 {
 
 }

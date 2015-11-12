@@ -14,6 +14,21 @@ void ProblemRocket_TwoEngines::getThrustForce(double & hForce, double & vForce)
 	hForce = ((this->rocket_enginesPower.at(0) * this->rocket_engineThrust.at(0) * vecX) + (this->rocket_enginesPower.at(1) * this->rocket_engineThrust.at(1) * vecX)) / 100;
 	vForce = ((this->rocket_enginesPower.at(0) * this->rocket_engineThrust.at(0) * vecY) + (this->rocket_enginesPower.at(1) * this->rocket_engineThrust.at(1) * vecY)) / 100;
 	
+
+	double angleLeft = convertToRange(this->rocket_enginesPower.at(0),
+		0,
+		this->getPowerMax(),
+		0,
+		PROBLEMROCKET_TWO_MAXENGINEROTATION);
+
+	double angleRight = convertToRange(this->rocket_enginesPower.at(1),
+		0,
+		this->getPowerMax(),
+		0,
+		PROBLEMROCKET_TWO_MAXENGINEROTATION);
+
+	this->rotationChange = angleRight - angleLeft;
+
 	//TODO: IF : calculer la rotation que donne la puissance des moteurs actuelles
 
 	// this->rocket_enginePower.at(0) : moteur gauche
@@ -77,34 +92,25 @@ bool ProblemRocket_TwoEngines::handleEvent(sf::RenderWindow * window, sf::Event 
 		return false;
 }
 
+void ProblemRocket_TwoEngines::initUserControl(bool userControl)
+{
+	if (userControl)
+		this->userControlled = true;
+	else
+		this->userControlled = false;
+}
+
 void ProblemRocket_TwoEngines::resolveRocketPowerChange()
 {
-	for (int i = 0; i < this->powerChange.size(); ++i)
+	for (int i = 0; i < this->rocket_enginesPower.size(); ++i)
 	{
-		if (this->userControlled || this->useGradualChange)
-		{
-			this->rocket_enginesPower.at(i) += this->constrainPowerChange(this->rocket_enginesPower.at(i), this->powerChange.at(i));
-			this->rocket_enginesPower.at(i) = this->constrainPower(this->rocket_enginesPower.at(i));
-
-			// Resetting the change
-			this->desiredPower.at(i) = 0;
-			this->powerChange.at(i) = 0;
-		}
-		else
-		{
-			this->rocket_enginesPower.at(i) += this->constrainPowerChange(this->rocket_enginesPower.at(i), this->powerChange.at(i) - this->rocket_enginesPower.at(i));
-			this->rocket_enginesPower.at(i) = this->constrainPower(this->rocket_enginesPower.at(i));
-		}
+		this->rocket_enginesPower.at(i) = this->constrainPowerChange(this->rocket_enginesPower.at(i), this->powerChange.at(i));
 	}
 }
 
 void ProblemRocket_TwoEngines::resolveRocketAngleChange()
 {
-	this->rocket_angle += this->rotationChange;
-	this->rotationChange = 0;
-	this->desiredRotation = 0;
-
-	this->rocket_angle = this->constrainAngle(this->rocket_angle);
+	this->rocket_angle = this->constrainAngleChange(this->rocket_angle, this->rotationChange);
 }
 
 void ProblemRocket_TwoEngines::resolveInfluences()
@@ -196,6 +202,14 @@ void ProblemRocket_TwoEngines::init()
 	this->powerChange.push_back(0);
 	this->desiredPower.push_back(0);
 	this->powerChange.push_back(0);
+
+	// Rocket specs
+	this->rocket_engineChangeRate = 1;
+	this->rocket_rotationRate = 0.5;
+
+	// Control mode
+	this->userControlled = true;
+	this->useRelativeChange = true;
 
 	this->loadTerrain("Default");
 }

@@ -102,12 +102,10 @@ bool ProblemRocket::handleEvent(sf::RenderWindow * window, sf::Event event)
 			switch (event.key.code)
 			{
 			case::sf::Keyboard::F1:
-				this->userControlled = true;
-				this->desiredRotation = 0;
-				this->desiredPower.at(0) = 0;
+				this->initUserControl(true);
 				return true;
 			case::sf::Keyboard::F2:
-				this->userControlled = false;
+				this->initUserControl(false);
 				return true;
 			}
 		}
@@ -129,8 +127,11 @@ double ProblemRocket::constrainAngle(double angle)
 // Call this function only if the rocket_rotationRate > 0. Rotates the rocket from the given amount, or less if its above the rocket's rotation capabilities
 double ProblemRocket::constrainAngleChange(double currentAngle, double desiredRotationChange)
 {
-	if (this->userControlled || this->useGradualChange || rocket_rotationRate < 0)
-		return desiredRotationChange;
+	if (!this->useRelativeChange)
+		desiredRotationChange -= currentAngle;
+
+	if (this->rocket_rotationRate < 0)
+		currentAngle += desiredRotationChange;
 	else
 	{
 		// Rotate only of the asked amount
@@ -144,27 +145,30 @@ double ProblemRocket::constrainAngleChange(double currentAngle, double desiredRo
 			else
 				currentAngle += this->rocket_rotationRate;
 		}
-		currentAngle = this->constrainAngle(currentAngle);
-		return currentAngle;
 	}
-	
+
+	currentAngle = this->constrainAngle(currentAngle);
+	return currentAngle;
 }
 
-int ProblemRocket::constrainPower(int power)
+double ProblemRocket::constrainPower(double power)
 {
-	if (power < 0)
-		return 0;
-	else if (power > 100)
-		return 100;
+	if (power < 0.0)
+		return 0.0;
+	else if (power > this->getPowerMax())
+		return this->getPowerMax();
 	else
 		return power;
 }
 
 // Call this function only if the engineChangeRate > 0. Rotates the rocket from the given amount, or less if its above the rocket's rotation capabilities
-int ProblemRocket::constrainPowerChange(int currentPower, int desiredPowerChange)
+double ProblemRocket::constrainPowerChange(double currentPower, double desiredPowerChange)
 {
-	if (this->userControlled || this->useGradualChange || rocket_engineChangeRate < 0)
-		return desiredPowerChange;
+	if (!this->useRelativeChange)
+		desiredPowerChange -= currentPower;
+
+	if (this->rocket_engineChangeRate < 0)
+		currentPower += desiredPowerChange;
 	else
 	{
 		// If desiredChange is lower than the change rate, change by the asked amount
@@ -173,28 +177,30 @@ int ProblemRocket::constrainPowerChange(int currentPower, int desiredPowerChange
 		// Else, change by the change rate
 		else
 		{
-			if (desiredPowerChange < 0)
+			if (desiredPowerChange < 0.0)
 				currentPower -= this->rocket_engineChangeRate;
 			else
 				currentPower += this->rocket_engineChangeRate;
 		}
-		return currentPower;
 	}
+	currentPower = this->constrainPower(currentPower);
+	return currentPower;
 }
 
 void ProblemRocket::resetDesiredChanges()
 {
-	for (vector<int>::iterator it = this->desiredPower.begin(); it != this->desiredPower.end(); ++it)
+	for (vector<double>::iterator it = this->desiredPower.begin(); it != this->desiredPower.end(); ++it)
 	{
 		*it = 0;
 	}
-	for (vector<int>::iterator it = this->powerChange.begin(); it != this->powerChange.end(); ++it)
+	for (vector<double>::iterator it = this->powerChange.begin(); it != this->powerChange.end(); ++it)
 	{
 		*it = 0;
 	}
+	this->desiredRotation = 0;
 }
 
-ProblemRocket::ProblemRocket(float waveAmplLossPerSec, bool useAttenuation) : Problem(waveAmplLossPerSec, useAttenuation), userControlled(false), rocket_rotationRate(-1), rocket_engineChangeRate(-1), useGradualChange(false)
+ProblemRocket::ProblemRocket(float waveAmplLossPerSec, bool useAttenuation) : Problem(waveAmplLossPerSec, useAttenuation), userControlled(false), rocket_rotationRate(-1), rocket_engineChangeRate(-1), useRelativeChange(false)
 {
 	// Setting base variables
 	this->rocket_x = 0;
@@ -328,14 +334,14 @@ void ProblemRocket::generateTerrain(int width, int height)
 	this->resetRocket();
 }
 
-void ProblemRocket::setPower(int engineNumber, int power)
+void ProblemRocket::setPower(int engineNumber, double power)
 {
 	if (engineNumber >= 0 && engineNumber < this->rocket_enginesPower.size())
 	{
 		if (power > PROBLEMROCKET_ROCKET_POWER_MAX)
 			power = PROBLEMROCKET_ROCKET_POWER_MAX;
-		else if (power < 0)
-			power = 0;
+		else if (power < 0.0)
+			power = 0.0;
 		this->rocket_enginesPower.at(engineNumber) = power;
 	}
 }
@@ -385,7 +391,7 @@ double ProblemRocket::getRocketAngle()
 	return this->rocket_angle;
 }
 
-vector<int>* ProblemRocket::getRocketEnginesPower()
+vector<double>* ProblemRocket::getRocketEnginesPower()
 {
 	return &this->rocket_enginesPower;
 }
@@ -411,33 +417,13 @@ double ProblemRocket::getLandingZoneSize()
 	return landing2 - landing1;
 }
 
-int ProblemRocket::getPowerMax()
+double ProblemRocket::getPowerMax()
 {
-	return 100;
-}
-
-double ProblemRocket::getWaveAmplitudeOffset()
-{
-	return this->wave_amplitude_offset;
-}
-
-double ProblemRocket::getWaveAmplitudeRange()
-{
-	return this->wave_amplitude_range;
-}
-
-double ProblemRocket::getWaveFrequencyOffset()
-{
-	return this->wave_frequency_offset;
-}
-
-double ProblemRocket::getWaveFrequencyRange()
-{
-	return this->wave_frequency_range;
+	return 100.0;
 }
 
 // Sets the power influence
-void ProblemRocket::setDesiredPower(int engineNumber, int power)
+void ProblemRocket::setDesiredPower(int engineNumber, double power)
 {
 	if (engineNumber >= 0 && engineNumber < this->desiredPower.size())
 		this->desiredPower.at(engineNumber) = power;
@@ -448,7 +434,5 @@ void ProblemRocket::setDesiredPower(int engineNumber, int power)
 // Sets the angle influence
 void ProblemRocket::setDesiredAngle(double angle)
 {
-	if (!this->userControlled && !this->useGradualChange)
-		angle = constrainAngle(angle);
 	this->desiredRotation = angle;
 }

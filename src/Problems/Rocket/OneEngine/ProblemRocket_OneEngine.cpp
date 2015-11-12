@@ -3,7 +3,7 @@
 
 ProblemRocket_OneEngine::ProblemRocket_OneEngine(float waveAmplLossPerSec) : ProblemRocket(waveAmplLossPerSec)
 {
-	this->userControlled = true;
+	
 }
 
 void ProblemRocket_OneEngine::getThrustForce(double & hForce, double & vForce)
@@ -56,45 +56,31 @@ bool ProblemRocket_OneEngine::handleEvent(sf::RenderWindow * window, sf::Event e
 		return false;
 }
 
+void ProblemRocket_OneEngine::initUserControl(bool userControl)
+{
+	if (userControl)
+		this->userControlled = true;
+	else
+		this->userControlled = false;
+}
+
 void ProblemRocket_OneEngine::resolveRocketPowerChange()
 {
-	for (int i = 0; i < this->powerChange.size(); ++i)
+	for (int i = 0; i < this->rocket_enginesPower.size(); ++i)
 	{
-		if (this->userControlled || this->useGradualChange)
-		{
-			this->rocket_enginesPower.at(i) += this->constrainPowerChange(this->rocket_enginesPower.at(i), this->powerChange.at(i));
-			this->rocket_enginesPower.at(i) = this->constrainPower(this->rocket_enginesPower.at(i));
-
-			// Resetting the change
-			this->desiredPower.at(i) = 0;
-			this->powerChange.at(i) = 0;
-		}
-		else
-		{
-			this->rocket_enginesPower.at(i) += this->constrainPowerChange(this->rocket_enginesPower.at(i), this->powerChange.at(i) - this->rocket_enginesPower.at(i));
-			this->rocket_enginesPower.at(i) = this->constrainPower(this->rocket_enginesPower.at(i));
-		}
+		this->rocket_enginesPower.at(i) = this->constrainPowerChange(this->rocket_enginesPower.at(i), this->powerChange.at(i));
 	}
 }
 
 void ProblemRocket_OneEngine::resolveRocketAngleChange()
-{
-	// Gradual change : rotate by the desiredRotation
-	if (this->userControlled || this->useGradualChange)
-	{
-		this->rocket_angle += this->rotationChange;
-		this->rotationChange = 0;
-		this->desiredRotation = 0;
-	}
-		
-	// Hard change : set angle to desiredRotation
-	else
+{		
+	// If the rotationChange is not a relative value, add the GUI offset
+	if (!this->useRelativeChange)
 	{
 		this->rotationChange += PROBLEMROCKET_GUI_ANGLE_OFFSET;
-		this->rocket_angle = this->rotationChange;
 	}
 		
-	this->rocket_angle = this->constrainAngle(this->rocket_angle);
+	this->rocket_angle = this->constrainAngleChange(this->rocket_angle, this->rotationChange);
 }
 
 void ProblemRocket_OneEngine::resolveInfluences()
@@ -159,11 +145,19 @@ void ProblemRocket_OneEngine::clean()
 
 void ProblemRocket_OneEngine::init()
 {
+	// Engines
 	this->rocket_enginesPower.push_back(0);
 	this->rocket_engineThrust.push_back(PROBLEMROCKET_ROCKET_THRUST_BASE);
-
 	this->desiredPower.push_back(0);
 	this->powerChange.push_back(0);
+
+	// Rocket specs
+	this->rocket_engineChangeRate = 1;
+	this->rocket_rotationRate = 0.5;
+
+	// Control mode
+	this->userControlled = false;
+	this->useRelativeChange = true;
 
 	this->loadTerrain("Default");
 }

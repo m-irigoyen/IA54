@@ -18,7 +18,7 @@ void Simulator::init()
 	/*std::map<int, DRONE_BEHAVIOURS> behaviourTable;
 	this->problem = new ProblemDrones(behaviourTable, 1);*/
 
-	this->initProblem(PROBLEM_TYPE::ROCKET_HS_TWO);
+	this->initProblem(PROBLEM_TYPE::ROCKET_ONE);
 
 	std::cout << "Init done" << std::endl;
 }
@@ -38,7 +38,7 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 		this->problemType = newProblem;
 
 		// ROCKET PROBLEM
-		if (this->problemType == PROBLEM_TYPE::ROCKET_HS_ONE)
+		if (this->problemType == PROBLEM_TYPE::ROCKET_ONE)
 		{
 			this->problem = new ProblemRocket_OneEngine();
 
@@ -46,14 +46,14 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 			AgentRocket_OneEngine_Emitter* newAgent;
 			newAgent = static_cast<AgentRocket_OneEngine_Emitter*>(addEmitter(200, 200));
 			if (newAgent != NULL)
-				newAgent->setAgentType(PROBLEMROCKET_AGENTTYPE_ONE::ROCKET_HS_ONE_DIRECTION);
+				newAgent->setAgentType(PROBLEMROCKET_AGENTTYPE_ONE::ROCKET_ONE_DIRECTION);
 			else
 				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
 
 			// Adding emitters : regulator
-			newAgent = static_cast<AgentRocket_OneEngine_Emitter*>(addEmitter(220, 200));
+			newAgent = static_cast<AgentRocket_OneEngine_Emitter*>(addEmitter(300, 200));
 			if (newAgent != NULL)
-				newAgent->setAgentType(PROBLEMROCKET_AGENTTYPE_ONE::ROCKET_HS_ONE_REGULATOR);
+				newAgent->setAgentType(PROBLEMROCKET_AGENTTYPE_ONE::ROCKET_ONE_REGULATOR);
 			else
 				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
 
@@ -61,12 +61,12 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 			//TODO:
 
 			// Adding
-			addReceptorFullComposition(210, 200);
+			addReceptorFullComposition(250, 200);
 
 			((ProblemRocket_OneEngine*)this->problem)->setNumberOfEmitters(2);
 		}
 		// ROCKET2 PROBLEM
-		else if (this->problemType == PROBLEM_TYPE::ROCKET_HS_TWO)
+		else if (this->problemType == PROBLEM_TYPE::ROCKET_TWO)
 		{
 			this->problem = new ProblemRocket_TwoEngines();
 
@@ -96,7 +96,7 @@ Agent* Simulator::addEmitter(float xPos, float yPos)
 		ProblemRocket_TwoEngines* castedRocket2Problem;
 		switch (this->problemType)
 		{
-		case PROBLEM_TYPE::ROCKET_HS_ONE:
+		case PROBLEM_TYPE::ROCKET_ONE:
 			castedRocketProblem = static_cast<ProblemRocket_OneEngine*>(this->problem);
 			if (castedRocketProblem != NULL)
 			{
@@ -107,7 +107,7 @@ Agent* Simulator::addEmitter(float xPos, float yPos)
 			else
 				std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
 			break;
-		case PROBLEM_TYPE::ROCKET_HS_TWO:
+		case PROBLEM_TYPE::ROCKET_TWO:
 			ProblemRocket_TwoEngines* castedRocket2Problem = static_cast<ProblemRocket_TwoEngines*>(this->problem);
 			if (castedRocket2Problem != NULL)
 			{
@@ -138,7 +138,7 @@ Agent* Simulator::addReceptorComposition(float xPos, float yPos)
 		ProblemRocket_TwoEngines* castedRocket2Problem;
 		switch (this->problemType)
 		{
-		case PROBLEM_TYPE::ROCKET_HS_ONE :
+		case PROBLEM_TYPE::ROCKET_ONE :
 			castedRocketProblem = static_cast<ProblemRocket_OneEngine*>(this->problem);
 			if (castedRocketProblem != NULL)
 			{
@@ -149,7 +149,7 @@ Agent* Simulator::addReceptorComposition(float xPos, float yPos)
 			else
 				std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
 			break;
-		case PROBLEM_TYPE::ROCKET_HS_TWO :
+		case PROBLEM_TYPE::ROCKET_TWO :
 			castedRocket2Problem = static_cast<ProblemRocket_TwoEngines*>(this->problem);
 			if (castedRocket2Problem != NULL)
 			{
@@ -178,7 +178,7 @@ Agent * Simulator::addReceptorFullComposition(float xPos, float yPos)
 		ProblemRocket_TwoEngines* castedRocket2Problem;
 		switch (this->problemType)
 		{
-		case PROBLEM_TYPE::ROCKET_HS_ONE:
+		case PROBLEM_TYPE::ROCKET_ONE:
 			castedRocketProblem = static_cast<ProblemRocket_OneEngine*>(this->problem);
 			if (castedRocketProblem != NULL)
 			{
@@ -189,7 +189,7 @@ Agent * Simulator::addReceptorFullComposition(float xPos, float yPos)
 			else
 				std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
 			break;
-		case PROBLEM_TYPE::ROCKET_HS_TWO:
+		case PROBLEM_TYPE::ROCKET_TWO:
 			castedRocket2Problem = static_cast<ProblemRocket_TwoEngines*>(this->problem);
 			if (castedRocket2Problem != NULL)
 			{
@@ -321,12 +321,12 @@ void Simulator::checkEvents()
 					{
 					// Switch problem to Rocket2
 					case sf::Keyboard::F1:
-						this->initProblem(PROBLEM_TYPE::ROCKET_HS_ONE);
+						this->initProblem(PROBLEM_TYPE::ROCKET_ONE);
 						break;
 
 					// Switch problem to Rocket2
 					case sf::Keyboard::F2:
-						this->initProblem(PROBLEM_TYPE::ROCKET_HS_TWO);
+						this->initProblem(PROBLEM_TYPE::ROCKET_TWO);
 						break;
 
 					// Quit simulation

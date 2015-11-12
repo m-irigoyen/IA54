@@ -10,7 +10,7 @@
 #include<vector>
 #include <SFML/System/Time.hpp>
 
-struct WAVE_COMPOSITION	// The structure representing a wave
+struct WAVE	// The structure representing a wave
 {
 	float frequency;
 	float amplitude;

@@ -40,8 +40,7 @@ public:
 
 	~Agent(void);
 
-	// Helper functions
-	static float convertToRange(float value, float minValue, float maxValue, float targetMinValue, float targetMaxValue);	// Converts given value from its range to the given range
+	
 };
 
 #endif

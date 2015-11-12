@@ -7,13 +7,12 @@ AgentRocket_TwoEngines_Receptor::AgentRocket_TwoEngines_Receptor(ProblemRocket_T
 void AgentRocket_TwoEngines_Receptor::live()
 {
 	// Getting perception from body
-	WAVE_COMPOSITION perception = this->castedBody->getPerception();
+	WAVE perception = this->castedBody->getPerception();
 
 	switch (agentType)
 	{
-	case AGENTTYPE_ROCKET_TWO::ROCKET_HS_TWO_DIRECTION:
+	case AGENTTYPE_ROCKET_TWO::ROCKET_TWO_DIRECTION:
 		
-		//this->castedBody->
 		break;
 	}
 }

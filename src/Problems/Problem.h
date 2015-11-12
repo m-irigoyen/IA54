@@ -16,8 +16,8 @@ enum PROBLEM_TYPE
 	NONE,
 	POINTER,
 	DRONE,
-	ROCKET_HS_ONE,
-	ROCKET_HS_TWO
+	ROCKET_ONE,
+	ROCKET_TWO
 };
 
 class Problem
@@ -28,6 +28,12 @@ protected:
 	bool useWaveAttenuation;
 	int numberOfEmitters;
 	int numberOfReceptors;
+
+	// Agents influence
+	double wave_amplitude_offset;
+	double wave_amplitude_range;
+	double wave_frequency_offset;
+	double wave_frequency_range;
 
 
 public:
@@ -53,10 +59,17 @@ public:
 	virtual bool isUsingAttenuation();
 	virtual int getNumberOfEmitters();
 	virtual int getNumberOfReceptors();
+	// Problem data
+	double getWaveAmplitudeOffset();
+	double getWaveAmplitudeRange();
+	double getWaveFrequencyOffset();
+	double getWaveFrequencyRange();
 
 	// Setters
 	virtual void setNumberOfEmitters(int nb);
 	virtual void setNumberOfReceptors(int nb);
+
+
 };
 
 #endif

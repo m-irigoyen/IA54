@@ -18,7 +18,7 @@ void AgentPointer_Receptor::live()
 		return;
 	}
 
-	WAVE_COMPOSITION perception = this->castedBody->getPerception();
+	WAVE perception = this->castedBody->getPerception();
 
 	float mouseX, mouseY;
 	int windowWidth, windowHeight;

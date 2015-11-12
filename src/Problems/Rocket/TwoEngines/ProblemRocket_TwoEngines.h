@@ -19,6 +19,7 @@
 // Rocket values
 #define THRUSTER_STRENGTH 10	// Strength of each thruster in meters/seconds
 #define ANGLE_OFFSET 90	// Offset to have 0° be up
+#define PROBLEMROCKET_TWO_MAXENGINEROTATION 1
 
 /*
 * The Problem class creates and run the problem to be solved. (pendulum, drone, etc)
@@ -26,9 +27,9 @@
 
 enum AGENTTYPE_ROCKET_TWO
 {
-	ROCKET_HS_TWO_DEFAULT,
-	ROCKET_HS_TWO_DIRECTION,
-	ROCKET_HS_TWO_POWER
+	ROCKET_TWO_DEFAULT,
+	ROCKET_TWO_DIRECTION,
+	ROCKET_TWO_POWER
 };
 
 using namespace std;
@@ -49,6 +50,7 @@ protected:
 	virtual bool handleEvent(sf::RenderWindow* window, sf::Event event);	// Returns true if event has been dealt with
 
 			//Rocket control
+	virtual void initUserControl(bool userControl);
 	virtual void resolveRocketPowerChange();	// Based on the desired power and rotation, resolve what's happening
 	virtual void resolveRocketAngleChange();
 

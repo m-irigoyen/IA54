@@ -10,37 +10,36 @@ void AgentRocket_OneEngine_Receptor::live()
 		return;
 
 	// Getting perception from body
-	WAVE_COMPOSITION perception = this->castedBody->getPerception();
-	perception.amplitude = perception.amplitude / this->castedProblem->getNumberOfEmitters();
-	perception.frequency = perception.frequency / this->castedProblem->getNumberOfEmitters();
+	WAVE perception = this->castedBody->getPerception();
+	/*perception.amplitude = perception.amplitude / this->castedProblem->getNumberOfEmitters();
+	perception.frequency = perception.frequency / this->castedProblem->getNumberOfEmitters();*/
 
 	// Checking error in parameters
 	if (perception.amplitude < this->castedProblem->getWaveAmplitudeOffset())
 	{
 		perception.amplitude = this->castedProblem->getWaveAmplitudeOffset();
-		cout << "ERROR : AgentReceptorRocket::Live : amplitude was sub offset" << endl;
+		//cout << "ERROR : AgentReceptorRocket::Live : amplitude was sub offset" << endl;
 	}
 	else if (perception.amplitude > (this->castedProblem->getWaveAmplitudeOffset() + this->castedProblem->getWaveAmplitudeRange()))
 	{
 		perception.amplitude = this->castedProblem->getWaveAmplitudeOffset() + this->castedProblem->getWaveAmplitudeRange();
-		cout << "ERROR : AgentReceptorRocket::Live : amplitude was bigger than range + offset" << endl;
+		//cout << "ERROR : AgentReceptorRocket::Live : amplitude was bigger than range + offset" << endl;
 	}
 
 	if (perception.frequency < this->castedProblem->getWaveFrequencyOffset())
 	{
 		perception.frequency = this->castedProblem->getWaveFrequencyOffset();
-		cout << "ERROR : AgentReceptorRocket::Live : frequency was sub offset" << endl;
+		//cout << "ERROR : AgentReceptorRocket::Live : frequency was sub offset" << endl;
 	}
 	else if (perception.frequency > (this->castedProblem->getWaveFrequencyOffset() + this->castedProblem->getWaveFrequencyRange()))
 	{
 		perception.frequency = this->castedProblem->getWaveFrequencyOffset() + this->castedProblem->getWaveFrequencyRange();
-		cout << "ERROR : AgentReceptorRocket::Live : frequency was bigger than range + offset" << endl;
+		//cout << "ERROR : AgentReceptorRocket::Live : frequency was bigger than range + offset" << endl;
 	}
-
 
 	// Converting into angle and power values
 	//cout << "RECEIVED : " << perception.frequency << ", " << perception.amplitude << endl;
-	double angle = this->convertToRange(perception.amplitude,
+	double angle = convertToRange(perception.amplitude,
 		this->castedProblem->getWaveAmplitudeOffset(),
 		this->castedProblem->getWaveAmplitudeRange(),
 		0,
@@ -49,7 +48,7 @@ void AgentRocket_OneEngine_Receptor::live()
 
 	// Getting frequency back
 	//perception.frequency -= this->castedProblem->getWaveFrequencyOffset();
-	double power = this->convertToRange(perception.frequency,
+	double power = convertToRange(perception.frequency,
 		this->castedProblem->getWaveFrequencyOffset(),
 		this->castedProblem->getWaveFrequencyRange(),
 		0,

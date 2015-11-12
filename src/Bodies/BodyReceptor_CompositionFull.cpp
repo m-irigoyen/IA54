@@ -16,7 +16,7 @@ void BodyReceptor_CompositionFull::initialise()
 }
 
 // Returns what the receptor can make of all it has recieved. This is the wave composition method
-WAVE_COMPOSITION BodyReceptor_CompositionFull::getPerception()
+WAVE BodyReceptor_CompositionFull::getPerception()
 {
 	// Resetting values
 	this->currentPerception.frequency = 0.0f;

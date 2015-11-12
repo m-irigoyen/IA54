@@ -56,6 +56,28 @@ int Problem::getNumberOfReceptors()
 	return this->numberOfReceptors;
 }
 
+
+double Problem::getWaveAmplitudeOffset()
+{
+	return this->wave_amplitude_offset;
+}
+
+double Problem::getWaveAmplitudeRange()
+{
+	return this->wave_amplitude_range;
+}
+
+double Problem::getWaveFrequencyOffset()
+{
+	return this->wave_frequency_offset;
+}
+
+double Problem::getWaveFrequencyRange()
+{
+	return this->wave_frequency_range;
+}
+
+
 void Problem::setNumberOfEmitters(int nb)
 {
 	if (nb < 0)

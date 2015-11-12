@@ -110,9 +110,9 @@ void GraphicView::Draw()
 					{
 						// Displaying the wave's fade away
 						double ampl = (*it)->getAmplitude();
-						if (ampl > WAVE_AMPLITUDE_MAX)	// Capping to the threshold if amplitude is too high
-							ampl = WAVE_AMPLITUDE_MAX;
-						circle.setOutlineColor(sf::Color(255, 255, 255, (ampl * 255) / WAVE_AMPLITUDE_MAX));
+						if (ampl > (this->problem->getWaveAmplitudeOffset() + this->problem->getWaveAmplitudeRange()))	// Capping to the threshold if amplitude is too high
+							ampl = this->problem->getWaveAmplitudeOffset() + this->problem->getWaveAmplitudeRange();
+						circle.setOutlineColor(sf::Color(255, 255, 255, (ampl * 255) / (this->problem->getWaveAmplitudeOffset() + this->problem->getWaveAmplitudeRange())));
 					}
 
 					std::vector<float> pos = (*it)->GetPosition();	// Getting position

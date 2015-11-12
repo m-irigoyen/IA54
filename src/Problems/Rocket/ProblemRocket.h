@@ -25,7 +25,7 @@ protected:
 
 	// Rocket current values
 	vector<double> rocket_engineThrust;	// How much thrust does each engine generate
-	vector<int> rocket_enginesPower;	// Percentage of power of the given engine, between 0 (no thrust) and 100 (max thrust)
+	vector<double> rocket_enginesPower;	// Percentage of power of the given engine, between 0 (no thrust) and 100 (max thrust)
 	double rocket_angle;
 	double rocket_hSpeed;
 	double rocket_vSpeed;
@@ -42,19 +42,13 @@ protected:
 	// Rocket control
 	// Those values determine how fast the rocket can rotate, and how fast the engine's power can vary. Values < 0 mean the change is immediate.
 	double rocket_rotationRate;
-	int rocket_engineChangeRate;
-	bool useGradualChange;	// If true, rotation and power are resolved using desiredRotationChange and desiredPowerChange. If false, they are resolved with desiredRotation and desiredPower. It's just a matter of choosing how the agents work : with hard values, or with offset changing.
-
-	// Agents influence
-	double wave_amplitude_offset;
-	double wave_amplitude_range;
-	double wave_frequency_offset;
-	double wave_frequency_range;
+	double rocket_engineChangeRate;
+	bool useRelativeChange;	// If true, rotation and power are resolved using desiredRotationChange and desiredPowerChange. If false, they are resolved with desiredRotation and desiredPower. It's just a matter of choosing how the agents work : with hard values, or with offset changing.
 
 	double desiredRotation;	// The influence towards which to go. If useGradualChange == true, that's treated as an offset to apply to the current value. Else, we set the rotation/power directly to the desired value
-	vector<int> desiredPower;
+	vector<double> desiredPower;
 	double rotationChange;	// The result of all influences on rotation change
-	vector<int> powerChange;	// The result of all influences on power change
+	vector<double> powerChange;	// The result of all influences on power change
 
 	// GUI stuff
 	sf::Texture hud_rocketTexture;
@@ -74,11 +68,13 @@ protected:
 	virtual bool handleEvent(sf::RenderWindow* window, sf::Event event);	// Returns true if event has been dealt with
 
 	// Rocket control
+	
+	virtual void initUserControl(bool useControl) = 0;
 	// returns the given angle constrained so 0 <= angle < 360
 	virtual double constrainAngle(double angle);	// Constrains given angle between 0 and 359 degrees
 	virtual double constrainAngleChange(double currentAngle, double desiredRotation);
-	virtual int constrainPower(int power);
-	virtual int constrainPowerChange(int currentPower, int desiredPowerChange);
+	virtual double constrainPower(double power);
+	virtual double constrainPowerChange(double currentPower, double desiredPowerChange);
 
 	virtual void resolveRocketPowerChange() = 0;	// Based on the desired power and rotation, resolve what's happening
 	virtual void resolveRocketAngleChange() = 0;
@@ -121,26 +117,20 @@ public:
 	void getRocketPosition(double& rocketX, double& rocketY);
 	void getRocketSpeed(double& rocketHSpeed, double& rocketVSpeed);
 	double getRocketAngle();
-	vector<int>* getRocketEnginesPower();
+	vector<double>* getRocketEnginesPower();
 	double getRocketDistanceToGround();
 	double getRocketDistanceToLandingZoneCenter();
 	double getLandingZoneSize();
-	int getPowerMax();
-
-		// Problem data
-	double getWaveAmplitudeOffset();
-	double getWaveAmplitudeRange();
-	double getWaveFrequencyOffset();
-	double getWaveFrequencyRange();
+	double getPowerMax();
 
 	// Rocket control
-	void setPower(int engineNumber, int power);
+	void setPower(int engineNumber, double power);
 	void setAngle(double angle);
 
 	bool getUserControlled();
 
 	// Agent influence
-	void setDesiredPower(int engineNumber, int power);
+	void setDesiredPower(int engineNumber, double power);
 	void setDesiredAngle(double angle);
 };
 

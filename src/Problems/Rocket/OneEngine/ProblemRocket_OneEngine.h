@@ -10,7 +10,7 @@
 
 // Problem values
 //TODO: remove those.
-#define PROBLEMROCKET_ONE_PROBLEM_MAXANGLE 45.0f	// The maximum angle the agents will deviate from 0
+#define PROBLEMROCKET_ONE_PROBLEM_MAXANGLE 90.0f	// The maximum angle the agents will deviate from 0
 
 #define PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED 20.0f
 #define PROBLEMROCKET_ONE_PROBLEM_MAXVSPEED 40.0f
@@ -22,10 +22,10 @@
 
 enum PROBLEMROCKET_AGENTTYPE_ONE
 {
-	ROCKET_HS_ONE_DEFAULT,	// Default agents do nothing.
-	ROCKET_HS_ONE_DIRECTION,
-	ROCKET_HS_ONE_REGULATOR,
-	ROCKET_HS_ONE_STABILIZER
+	ROCKET_ONE_DEFAULT,	// Default agents do nothing.
+	ROCKET_ONE_DIRECTION,
+	ROCKET_ONE_REGULATOR,
+	ROCKET_ONE_STABILIZER
 };
 
 using namespace std;
@@ -45,6 +45,8 @@ protected:
 	virtual bool handleEvent(sf::RenderWindow* window, sf::Event event);	// Returns true if event has been dealt with
 
 	//Rocket control
+	virtual void initUserControl(bool userControl);
+
 	virtual void resolveRocketPowerChange();	// Based on the desired power and rotation, resolve what's happening
 	virtual void resolveRocketAngleChange();
 

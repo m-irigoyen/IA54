@@ -22,7 +22,7 @@ public:
 	Receptor();
 
 	virtual void initialise() = 0;	// Initialises the receptor
-	virtual WAVE_COMPOSITION getPerception() = 0;    // Returns what the receptor understands of all it has received.
+	virtual WAVE getPerception() = 0;    // Returns what the receptor understands of all it has received.
 	virtual void onWaveCollision(int emitterId, sf::Time contact, float amplitude);	// Called when the receptor is hit by a wave
 
 	virtual float calculateValueAtT(sf::Time t) = 0;    // Calculates resulting value at given time

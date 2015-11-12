@@ -8,5 +8,7 @@
 double degToRad(double degrees);
 double radToDeg(double radians);
 double computeAngle(double x, double y);	// Computes angle (in degrees) from given
+											// Helper functions
+float convertToRange(float value, float minValue, float maxValue, float targetMinValue, float targetMaxValue);	// Converts given value from its range to the given range
 
 #endif

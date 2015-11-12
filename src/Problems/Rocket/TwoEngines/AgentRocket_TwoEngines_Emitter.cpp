@@ -8,10 +8,10 @@ void AgentRocket_TwoEngines_Emitter::live()
 {
 	switch (this->agentType)
 	{
-	case AGENTTYPE_ROCKET_TWO::ROCKET_HS_TWO_DIRECTION :
+	case AGENTTYPE_ROCKET_TWO::ROCKET_TWO_DIRECTION :
 		this->castedBody->send(10, 100);
 		break;
-	case AGENTTYPE_ROCKET_TWO::ROCKET_HS_TWO_POWER:
+	case AGENTTYPE_ROCKET_TWO::ROCKET_TWO_POWER:
 		this->castedBody->send(10, 100);
 		break;
 	}
