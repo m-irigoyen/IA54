@@ -3,7 +3,7 @@
 
 ProblemRocket_OneEngine::ProblemRocket_OneEngine(float waveAmplLossPerSec) : ProblemRocket(waveAmplLossPerSec)
 {
-	
+	this->userControlled = true;
 }
 
 void ProblemRocket_OneEngine::getThrustForce(double & hForce, double & vForce)

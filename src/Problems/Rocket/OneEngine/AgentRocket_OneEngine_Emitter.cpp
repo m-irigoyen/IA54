@@ -6,7 +6,7 @@ AgentRocket_OneEngine_Emitter::AgentRocket_OneEngine_Emitter(ProblemRocket_OneEn
 
 void AgentRocket_OneEngine_Emitter::live()
 {
-	if (!this->problem->getProblemLive())
+	if (this->castedProblem->getUserControlled() || !this->problem->getProblemLive())
 	{
 		if (this->castedBody->isSending())
 			this->castedBody->stopSending();

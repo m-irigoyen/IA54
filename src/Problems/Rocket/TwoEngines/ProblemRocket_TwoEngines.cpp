@@ -11,8 +11,8 @@ void ProblemRocket_TwoEngines::getThrustForce(double & hForce, double & vForce)
 	double vecX = cos(degToRad(this->rocket_angle));
 	double vecY = sin(degToRad(this->rocket_angle));
 
-	hForce = (this->rocket_enginesPower.at(0) * this->rocket_engineThrust.at(0) * vecX) / 100;
-	vForce = (this->rocket_enginesPower.at(0) * this->rocket_engineThrust.at(0) * vecY) / 100;
+	hForce = ((this->rocket_enginesPower.at(0) * this->rocket_engineThrust.at(0) * vecX) + (this->rocket_enginesPower.at(1) * this->rocket_engineThrust.at(1) * vecX)) / 100;
+	vForce = ((this->rocket_enginesPower.at(0) * this->rocket_engineThrust.at(0) * vecY) + (this->rocket_enginesPower.at(1) * this->rocket_engineThrust.at(1) * vecY)) / 100;
 	
 	//TODO: IF : calculer la rotation que donne la puissance des moteurs actuelles
 
@@ -141,11 +141,13 @@ void ProblemRocket_TwoEngines::draw(sf::RenderWindow * problemWindow)
 {
 	this->checkEvents(problemWindow);
 
+	ProblemRocket::draw(problemWindow);
+
 	// Drawing engine fire left
 	if (this->rocket_enginesPower.at(0) > 0)
 	{
-		this->hud_engineFire.setSize(sf::Vector2f(this->rocket_enginesPower.at(0) * HUD_SIZE_THRUSTER, 6));
-		this->hud_engineFire.setOrigin(this->rocket_enginesPower.at(0) * HUD_SIZE_THRUSTER + this->hud_rocketSprite.getLocalBounds().width / 2, 3 + 10);
+		this->hud_engineFire.setSize(sf::Vector2f(this->rocket_enginesPower.at(0) * HUD_SIZE_THRUSTER/2, 6));
+		this->hud_engineFire.setOrigin(this->rocket_enginesPower.at(0) * HUD_SIZE_THRUSTER/2 + this->hud_rocketSprite.getLocalBounds().width / 2, 3 + 10);
 		this->hud_engineFire.setRotation(-this->rocket_angle);
 		this->hud_engineFire.setPosition(this->rocket_x * problemWindow->getSize().x / this->terrain.getWidth(),
 			problemWindow->getSize().y - (this->rocket_y * problemWindow->getSize().y / this->terrain.getHeight()));
@@ -155,8 +157,8 @@ void ProblemRocket_TwoEngines::draw(sf::RenderWindow * problemWindow)
 	// Drawing engine fire right
 	if (this->rocket_enginesPower.at(1) > 0)
 	{
-		this->hud_engineFire.setSize(sf::Vector2f(this->rocket_enginesPower.at(1) * HUD_SIZE_THRUSTER, 6));
-		this->hud_engineFire.setOrigin(this->rocket_enginesPower.at(1) * HUD_SIZE_THRUSTER + this->hud_rocketSprite.getLocalBounds().width / 2, 3 - 10);
+		this->hud_engineFire.setSize(sf::Vector2f(this->rocket_enginesPower.at(1) * HUD_SIZE_THRUSTER/2, 6));
+		this->hud_engineFire.setOrigin(this->rocket_enginesPower.at(1) * HUD_SIZE_THRUSTER/2 + this->hud_rocketSprite.getLocalBounds().width / 2, 3 - 10);
 		this->hud_engineFire.setRotation(-this->rocket_angle);
 		this->hud_engineFire.setPosition(this->rocket_x*problemWindow->getSize().x / this->terrain.getWidth(),
 			problemWindow->getSize().y - (this->rocket_y*problemWindow->getSize().y / this->terrain.getHeight()));
@@ -185,10 +187,10 @@ void ProblemRocket_TwoEngines::init()
 {
 	// Init engines
 	this->rocket_enginesPower.push_back(0);
-	this->rocket_engineThrust.push_back(PROBLEMROCKET_ROCKET_THRUST_BASE);
+	this->rocket_engineThrust.push_back(PROBLEMROCKET_ROCKET_THRUST_BASE/2);
 
 	this->rocket_enginesPower.push_back(0);
-	this->rocket_engineThrust.push_back(PROBLEMROCKET_ROCKET_THRUST_BASE);
+	this->rocket_engineThrust.push_back(PROBLEMROCKET_ROCKET_THRUST_BASE/2);
 
 	this->desiredPower.push_back(0);
 	this->powerChange.push_back(0);
@@ -206,6 +208,6 @@ void ProblemRocket_TwoEngines::initGraphics(std::vector<sf::Font>* fonts)
 	this->hud_engineFire.setFillColor(sf::Color::Yellow);
 	this->hud_engineFire.setOutlineColor(sf::Color::Red);
 	this->hud_engineFire.setOutlineThickness(1);
-	this->hud_engineFire.setSize(sf::Vector2f(50,6));
+	this->hud_engineFire.setSize(sf::Vector2f(50/2,6));
 	this->hud_engineFire.setOrigin(0, 3);
 }

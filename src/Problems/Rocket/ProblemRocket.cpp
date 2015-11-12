@@ -103,6 +103,8 @@ bool ProblemRocket::handleEvent(sf::RenderWindow * window, sf::Event event)
 			{
 			case::sf::Keyboard::F1:
 				this->userControlled = true;
+				this->desiredRotation = 0;
+				this->desiredPower.at(0) = 0;
 				return true;
 			case::sf::Keyboard::F2:
 				this->userControlled = false;
@@ -117,27 +119,27 @@ bool ProblemRocket::handleEvent(sf::RenderWindow * window, sf::Event event)
 double ProblemRocket::constrainAngle(double angle)
 {
 	// constrain angle
-	while (angle >= 360)
-		angle -= 360;
-	while (angle < 0)
-		angle += 360;
+	while (angle >= 360.0)
+		angle -= 360.0;
+	while (angle < 0.0)
+		angle += 360.0;
 	return angle;
 }
 
 // Call this function only if the rocket_rotationRate > 0. Rotates the rocket from the given amount, or less if its above the rocket's rotation capabilities
-double ProblemRocket::constrainAngleChange(double currentAngle, double desiredRotation)
+double ProblemRocket::constrainAngleChange(double currentAngle, double desiredRotationChange)
 {
 	if (this->userControlled || this->useGradualChange || rocket_rotationRate < 0)
-		return desiredRotation;
+		return desiredRotationChange;
 	else
 	{
 		// Rotate only of the asked amount
-		if (abs(desiredRotation) < this->rocket_rotationRate)
-			currentAngle += desiredRotation;
+		if (abs(desiredRotationChange) < this->rocket_rotationRate)
+			currentAngle += desiredRotationChange;
 		// Rotate by the change rate
 		else
 		{
-			if (desiredRotation < 0)
+			if (desiredRotationChange < 0)
 				currentAngle -= this->rocket_rotationRate;
 			else
 				currentAngle += this->rocket_rotationRate;
@@ -446,6 +448,7 @@ void ProblemRocket::setDesiredPower(int engineNumber, int power)
 // Sets the angle influence
 void ProblemRocket::setDesiredAngle(double angle)
 {
-	angle = constrainAngle(angle);
+	if (!this->userControlled && !this->useGradualChange)
+		angle = constrainAngle(angle);
 	this->desiredRotation = angle;
 }

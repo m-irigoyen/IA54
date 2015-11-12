@@ -6,7 +6,7 @@ AgentRocket_OneEngine_Receptor::AgentRocket_OneEngine_Receptor(ProblemRocket_One
 
 void AgentRocket_OneEngine_Receptor::live()
 {
-	if (!this->problem->getProblemLive())
+	if (this->castedProblem->getUserControlled() || !this->problem->getProblemLive())
 		return;
 
 	// Getting perception from body
