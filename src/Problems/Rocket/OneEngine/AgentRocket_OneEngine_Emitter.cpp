@@ -13,8 +13,6 @@ void AgentRocket_OneEngine_Emitter::live()
 		return;
 	}
 
-	cout << "Agenttype : " << this->agentType << endl;
-
 	// Getting problem data
 	float x, y, power, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat, lzSize;
 
@@ -34,19 +32,23 @@ void AgentRocket_OneEngine_Emitter::live()
 
 	float amplitude;
 	float frequency;
+	bool ceaseTransmission = false;
 	
 	if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DIRECTION)
 	{
 		// Direct the rocket towards the flatzone
-		desiredAngle = convertToRange(abs(distanceToCenterFlat),
+		/*desiredAngle = convertToRange(abs(distanceToCenterFlat),
 			0,
 			lzSize / 2,
 			0,
-			PROBLEMROCKET_ONE_PROBLEM_MAXANGLE);
+			PROBLEMROCKET_ONE_PROBLEM_MAXANGLE);*/
+		desiredAngle = -45;
 
-		if (distanceToCenterFlat > 0)
-			desiredAngle *= -1;
-		cout << "DESIRED ANGLE " << desiredAngle << endl;
+		/*if (distanceToCenterFlat > 0)
+			desiredAngle *= -1;*/
+
+		if (abs(desiredAngle) > PROBLEMROCKET_ONE_PROBLEM_MAXANGLE)
+			ceaseTransmission = true;
 		desiredPower = 50;
 	}
 	else if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_REGULATOR)
@@ -103,16 +105,25 @@ void AgentRocket_OneEngine_Emitter::live()
 		}
 	}
 
+	if (ceaseTransmission)
+	{
+		this->castedBody->stopSending();
+		return;
+	}
+
 	// Sending
 	desiredAngle -= angle;
+	desiredPower -= power;
+	cout << "DESIRED : " << desiredPower << ", " << desiredAngle << endl;
 	desiredAngle += PROBLEMROCKET_ONE_PROBLEM_MAXANGLE;
+
 	amplitude = convertToRange(desiredAngle,
 		0,
 		PROBLEMROCKET_ONE_PROBLEM_MAXANGLE * 2,
 		this->castedProblem->getWaveAmplitudeOffset(),
 		this->castedProblem->getWaveAmplitudeRange());
 
-	desiredPower -= power;
+	
 	desiredPower += this->castedProblem->getPowerMax();
 	frequency = convertToRange(desiredPower,
 		0,
