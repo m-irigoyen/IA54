@@ -1,0 +1,3 @@
+FIX
+- Memory system is flawed : removing an emitter won't remove its wave into the receptor's memory. need some kind of delete system.
+- Relative angles are still buggy as fuck.
