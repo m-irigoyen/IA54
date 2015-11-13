@@ -59,40 +59,50 @@ Body* World::getClosestBodyFromLocation(float x, float y, float rangeThreshold)
 // Creates a body with the given type
 Body* World::createBody(BODY_TYPE bodyType, float xPos, float yPos)
 {
-    Body* body;
-	BodyReceptor* tempBodyReceptor;
-	BodyEmitter* tempBodyEmitter;
+    Body* body = NULL;
+	BodyReceptor* tempBodyReceptor = NULL;
+	BodyEmitter* tempBodyEmitter = NULL;
 	//BodyHybrid* tempBodyHybrid;
 
 	// Switching body type. For the given type : create the Body with correct tag at correct position, and add it to the list of bodies
     switch (bodyType)
     {
-	case BODY_TYPE::EMITTER :
+	case BODY_TYPE::BODY_EMITTER :
 		tempBodyEmitter = new BodyEmitter(Semantic(Tags::emitter), xPos, yPos);
-		body = tempBodyEmitter;
-		this->emitters.push_back(tempBodyEmitter);
         break;
-	case BODY_TYPE::RECEPTOR_COMPOSITION :
+	case BODY_TYPE::BODY_RECEPTOR_COMPOSITION:
 		tempBodyReceptor = new BodyReceptor_Composition(Semantic(Tags::receptor), xPos, yPos);
-		body = tempBodyReceptor;
-		this->receptors.push_back(tempBodyReceptor);
         break;
-	case BODY_TYPE::RECEPTOR_FULLCOMPOSITION:
+	case BODY_TYPE::BODY_RECEPTOR_FULLCOMPOSITION:
 		tempBodyReceptor = new BodyReceptor_CompositionFull(Semantic(Tags::receptor), xPos, yPos);
-		body = tempBodyReceptor;
-		this->receptors.push_back(tempBodyReceptor);
 		break;
-	case BODY_TYPE::HYBRID:
+	case BODY_TYPE::BODY_RECEPTOR_MEDIUM:
+		tempBodyReceptor = new BodyReceptor_Medium(Semantic(Tags::receptor), xPos, yPos);
+		break;
+	case BODY_TYPE::BODY_HYBRID:
 		/*tempBodyHybrid = new BodyHybrid(Semantic(Tags::hybrid), xPos, yPos);
-		body = tempBodyHybrid;
-		this->receptors.push_back(tempBodyHybrid);
-		//this->emitters.push_back(tempBodyHybrid);
-		*/
+		body = tempBodyHybrid;*/
 		break;
     }
 
-	// We've placed a new body : the max distance between an emitter and receptor may have changed
-	updateMaxWaveDistance();
+
+	if (tempBodyEmitter != NULL)
+	{
+		body = tempBodyEmitter;
+		this->emitters.push_back(tempBodyEmitter);
+		cout << "PUSHED EMITTER BACK" << endl;
+
+		// We've placed a new body : the max distance between an emitter and receptor may have changed
+		updateMaxWaveDistance();
+	}
+	else if (tempBodyReceptor != NULL)
+	{
+		body = tempBodyReceptor;
+		this->receptors.push_back(tempBodyReceptor);
+
+		// We've placed a new body : the max distance between an emitter and receptor may have changed
+		updateMaxWaveDistance();
+	}
 
 	return body;
 }
@@ -126,6 +136,27 @@ Wave* World::createWave(float x, float y, int emitterId, float speed, float ampl
 Wave* World::createWave(std::vector<float> position, int emitterId, float speed, float amplitude)
 {
 	return createWave(position.at(0), position.at(1), emitterId, speed, amplitude);
+}
+
+void World::removeBody(Body * body)
+{
+	for (vector<BodyEmitter*>::iterator it = this->emitters.begin(); it != this->emitters.end(); ++it)
+	{
+		if ((*it) == body)
+		{
+			this->emitters.erase(it);
+			return;
+		}
+	}
+
+	for (vector<BodyReceptor*>::iterator it = this->receptors.begin(); it != this->receptors.end(); ++it)
+	{
+		if ((*it) == body)
+		{
+			this->receptors.erase(it);
+			return;
+		}
+	}
 }
 
 /*
@@ -353,6 +384,8 @@ void World::checkWaveCreation(BodyEmitter* emitter)
 		// Compute the delay between when the emitter wanted to send, and the current frame
 		sf::Time newLastSendTime = emitter->getNextSendTime();
 		sf::Time delay = this->currentFrameTime - newLastSendTime;
+		cout << "Delay " << delay.asSeconds() << endl;
+		
 
 		// Compensate that delay on the wave : Since it should have spawned earlier, so it should have traveled farther too.
         w->setRadius(delay.asSeconds()*w->getSpeed());

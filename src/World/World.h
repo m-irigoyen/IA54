@@ -7,6 +7,7 @@
 
 #include "Bodies/BodyReceptor_Composition.h"
 #include "Bodies/BodyReceptor_CompositionFull.h"
+#include "Bodies/BodyReceptor_Medium.h"
 #include "Bodies/BodyEmitter.h"
 #include "Bodies/BodyHybrid.h"
 #include "World/Wave.h"
@@ -22,11 +23,11 @@
 
 enum BODY_TYPE	// The types of bodies that exist in the world
 {
-    EMITTER = 0,
-    RECEPTOR_COMPOSITION,
-	RECEPTOR_FULLCOMPOSITION,
-	RECEPTOR_MEDIUM,
-	HYBRID	// Currently unsupported.
+    BODY_EMITTER = 0,
+	BODY_RECEPTOR_COMPOSITION,
+	BODY_RECEPTOR_FULLCOMPOSITION,
+	BODY_RECEPTOR_MEDIUM,
+	BODY_HYBRID	// Currently unsupported.
 };
 
 class World
@@ -73,6 +74,7 @@ public:
 	// Wave creation function
 	Wave* createWave(float x, float y, int emitterId, float speed, float amplitude);
 	Wave* createWave(std::vector<float> position, int emitterId, float speed, float amplitude);
+	void removeBody(Body* body);
 
 	// Update the world : emitters, receptors, waves
 	void update(sf::Time elapsedTime, sf::Time currentFrameTime);

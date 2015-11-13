@@ -1,6 +1,6 @@
 #include "Problems/Rocket/OneEngine/AgentRocket_OneEngine_Receptor.h"
 
-AgentRocket_OneEngine_Receptor::AgentRocket_OneEngine_Receptor(ProblemRocket_OneEngine * problem, BodyReceptor_CompositionFull* body, PROBLEMROCKET_AGENTTYPE_ONE type) : AgentReceptor(problem,body), castedProblem(problem), agentType(type)
+AgentRocket_OneEngine_Receptor::AgentRocket_OneEngine_Receptor(ProblemRocket_OneEngine * problem, BodyReceptor_CompositionFull* body, AGENTTYPE_ROCKET_ONE type) : AgentReceptor(problem,body), castedProblem(problem), agentType(type)
 {
 }
 
@@ -39,7 +39,7 @@ void AgentRocket_OneEngine_Receptor::live()
 
 	// Converting into angle and power values
 	//cout << "RECEIVED : " << perception.frequency << ", " << perception.amplitude << endl;
-	double angle = convertToRange(perception.amplitude,
+	float angle = convertToRange(perception.amplitude,
 		this->castedProblem->getWaveAmplitudeOffset(),
 		this->castedProblem->getWaveAmplitudeRange(),
 		0,
@@ -48,14 +48,14 @@ void AgentRocket_OneEngine_Receptor::live()
 
 	// Getting frequency back
 	//perception.frequency -= this->castedProblem->getWaveFrequencyOffset();
-	double power = convertToRange(perception.frequency,
+	float power = convertToRange(perception.frequency,
 		this->castedProblem->getWaveFrequencyOffset(),
 		this->castedProblem->getWaveFrequencyRange(),
 		0,
 		this->castedProblem->getPowerMax()*2);
 	power -= this->castedProblem->getPowerMax();
 
-	cout << "TRANSLATED : " << power << ", " << angle << endl << endl;
+	//cout << "TRANSLATED : " << power << ", " << angle << endl << endl;
 	
 	this->castedProblem->setDesiredAngle(angle);
 	this->castedProblem->setDesiredPower(0, power);
@@ -71,7 +71,7 @@ bool AgentRocket_OneEngine_Receptor::isProblemLinked()
 	return this->castedProblem != NULL;
 }
 
-void AgentRocket_OneEngine_Receptor::setAgentType(PROBLEMROCKET_AGENTTYPE_ONE type)
+void AgentRocket_OneEngine_Receptor::setAgentType(AGENTTYPE_ROCKET_ONE type)
 {
 	this->agentType = type;
 }

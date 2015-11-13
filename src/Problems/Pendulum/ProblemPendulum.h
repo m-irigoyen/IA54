@@ -3,15 +3,15 @@
 
 class ProblemPendulum{
     private:
-        double angle;
-        double speed;
+        float angle;
+        float speed;
 
     public:
         ProblemPendulum();
-        virtual void run(double elapsedTime);
-        void act(double dSpeed);
-        double getAngle();
-        double getSpeed();
+        virtual void run(float elapsedTime);
+        void act(float dSpeed);
+        float getAngle();
+        float getSpeed();
         ~ProblemPendulum();
 };
 

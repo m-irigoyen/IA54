@@ -67,7 +67,7 @@ float BodyReceptor_CompositionFull::calculateValueAtT(sf::Time t, sf::Time first
 		float period = 2 * PI*frequency;
 		while (elapsedTime.asSeconds() > period)
 		{
-			elapsedTime = sf::seconds(elapsedTime.asSeconds() - period);
+			elapsedTime = sf::seconds(elapsedTime.asSeconds() - static_cast<float>(period));
 		}
 		return amplitude*sin(elapsedTime.asSeconds() / frequency);
 	}

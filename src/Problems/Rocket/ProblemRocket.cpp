@@ -7,7 +7,7 @@ We assume that a correct landing means :
 |vSpeed| < 40
 -5 <= rocketAngle <= 5
 */
-bool ProblemRocket::correctLanding(double hSpeed, double vSpeed, double angle)
+bool ProblemRocket::correctLanding(float hSpeed, float vSpeed, float angle)
 {
 	if (angle >= PROBLEMROCKET_GUI_ANGLE_OFFSET - 10 && angle <= PROBLEMROCKET_GUI_ANGLE_OFFSET + 10)	// Don't forget to check for the angle offset
 	{
@@ -30,7 +30,7 @@ bool ProblemRocket::correctLanding(double hSpeed, double vSpeed, double angle)
 }
 
 // Given the hSpeed and vSpeed values, move the Rocket
-void ProblemRocket::moveRocket(sf::Time elapsedTime, double hEnginesForce, double vEnginesForce)
+void ProblemRocket::moveRocket(sf::Time elapsedTime, float hEnginesForce, float vEnginesForce)
 {
 	this->rocket_hSpeed += hEnginesForce * elapsedTime.asSeconds();
 	this->rocket_vSpeed += (vEnginesForce - this->terrain.getGravity()) * elapsedTime.asSeconds();
@@ -52,7 +52,7 @@ void ProblemRocket::moveRocket(sf::Time elapsedTime, double hEnginesForce, doubl
 		if (this->terrain.collides(this->rocket_x, this->rocket_y))
 		{
 			// If is on flat zone
-			double flat1, flat2;
+			float flat1, flat2;
 			this->terrain.getLandingZone(flat1, flat2);
 			if (this->rocket_x >= flat1 && rocket_y <= flat2)
 			{
@@ -114,7 +114,7 @@ bool ProblemRocket::handleEvent(sf::RenderWindow * window, sf::Event event)
 }
 
 // returns the given angle constrained so 0 <= angle < 360
-double ProblemRocket::constrainAngle(double angle)
+float ProblemRocket::constrainAngle(float angle)
 {
 	// constrain angle
 	while (angle >= 360.0)
@@ -125,7 +125,7 @@ double ProblemRocket::constrainAngle(double angle)
 }
 
 // Call this function only if the rocket_rotationRate > 0. Rotates the rocket from the given amount, or less if its above the rocket's rotation capabilities
-double ProblemRocket::constrainAngleChange(double currentAngle, double desiredRotationChange)
+float ProblemRocket::constrainAngleChange(float currentAngle, float desiredRotationChange)
 {
 	if (!this->useRelativeChange)
 		desiredRotationChange -= currentAngle;
@@ -151,7 +151,7 @@ double ProblemRocket::constrainAngleChange(double currentAngle, double desiredRo
 	return currentAngle;
 }
 
-double ProblemRocket::constrainPower(double power)
+float ProblemRocket::constrainPower(float power)
 {
 	if (power < 0.0)
 		return 0.0;
@@ -162,7 +162,7 @@ double ProblemRocket::constrainPower(double power)
 }
 
 // Call this function only if the engineChangeRate > 0. Rotates the rocket from the given amount, or less if its above the rocket's rotation capabilities
-double ProblemRocket::constrainPowerChange(double currentPower, double desiredPowerChange)
+float ProblemRocket::constrainPowerChange(float currentPower, float desiredPowerChange)
 {
 	if (!this->useRelativeChange)
 		desiredPowerChange -= currentPower;
@@ -189,11 +189,11 @@ double ProblemRocket::constrainPowerChange(double currentPower, double desiredPo
 
 void ProblemRocket::resetDesiredChanges()
 {
-	for (vector<double>::iterator it = this->desiredPower.begin(); it != this->desiredPower.end(); ++it)
+	for (vector<float>::iterator it = this->desiredPower.begin(); it != this->desiredPower.end(); ++it)
 	{
 		*it = 0;
 	}
-	for (vector<double>::iterator it = this->powerChange.begin(); it != this->powerChange.end(); ++it)
+	for (vector<float>::iterator it = this->powerChange.begin(); it != this->powerChange.end(); ++it)
 	{
 		*it = 0;
 	}
@@ -259,14 +259,14 @@ void ProblemRocket::initGraphics(std::vector<sf::Font>* fonts)
 	this->hud_rocketSprite.setOrigin(hud_rocketTexture.getSize().x / 2, hud_rocketTexture.getSize().y / 2);
 }
 
-void ProblemRocket::setRocketRotationRate(double rocketRotationRate)
+void ProblemRocket::setRocketRotationRate(float rocketRotationRate)
 {
 	if (rocketRotationRate < 0)
 		rocketRotationRate = -1;
 	this->rocket_rotationRate = rocketRotationRate;
 }
 
-void ProblemRocket::setRocketengineChangeRate(int engineChangeRate)
+void ProblemRocket::setRocketengineChangeRate(float engineChangeRate)
 {
 	if (engineChangeRate < 0)
 		engineChangeRate = -1;
@@ -334,7 +334,7 @@ void ProblemRocket::generateTerrain(int width, int height)
 	this->resetRocket();
 }
 
-void ProblemRocket::setPower(int engineNumber, double power)
+void ProblemRocket::setPower(int engineNumber, float power)
 {
 	if (engineNumber >= 0 && engineNumber < this->rocket_enginesPower.size())
 	{
@@ -346,7 +346,7 @@ void ProblemRocket::setPower(int engineNumber, double power)
 	}
 }
 
-void ProblemRocket::setAngle(double angle)
+void ProblemRocket::setAngle(float angle)
 {
 	angle += PROBLEMROCKET_GUI_ANGLE_OFFSET;	// Applying offset to have 0° be up
 	angle = constrainAngle(angle);
@@ -374,56 +374,56 @@ bool ProblemRocket::getHasGoneMissing()
 	return this->hasGoneMissing;
 }
 
-void ProblemRocket::getRocketPosition(double & rocketX, double & rocketY)
+void ProblemRocket::getRocketPosition(float & rocketX, float & rocketY)
 {
 	rocketX = this->rocket_x;
 	rocketY = this->rocket_y;
 }
 
-void ProblemRocket::getRocketSpeed(double & rocketHSpeed, double & rocketVSpeed)
+void ProblemRocket::getRocketSpeed(float & rocketHSpeed, float & rocketVSpeed)
 {
 	rocketHSpeed = this->rocket_hSpeed;
 	rocketVSpeed = this->rocket_vSpeed;
 }
 
-double ProblemRocket::getRocketAngle()
+float ProblemRocket::getRocketAngle()
 {
 	return this->rocket_angle;
 }
 
-vector<double>* ProblemRocket::getRocketEnginesPower()
+vector<float>* ProblemRocket::getRocketEnginesPower()
 {
 	return &this->rocket_enginesPower;
 }
 
-double ProblemRocket::getRocketDistanceToGround()
+float ProblemRocket::getRocketDistanceToGround()
 {
 	
 	return (this->rocket_y - this->terrain.getTerrainPoint(this->rocket_x));
 }
 
-double ProblemRocket::getRocketDistanceToLandingZoneCenter()
+float ProblemRocket::getRocketDistanceToLandingZoneCenter()
 {
-	double flat1, flat2;
+	float flat1, flat2;
 	this->terrain.getLandingZone(flat1, flat2);
-	double center = flat1 + (flat2 - flat1) / 2;
+	float center = flat1 + (flat2 - flat1) / 2;
 	return center - this->rocket_x;
 }
 
-double ProblemRocket::getLandingZoneSize()
+float ProblemRocket::getLandingZoneSize()
 {
-	double landing1, landing2;
+	float landing1, landing2;
 	this->terrain.getLandingZone(landing1, landing2);
 	return landing2 - landing1;
 }
 
-double ProblemRocket::getPowerMax()
+float ProblemRocket::getPowerMax()
 {
 	return 100.0;
 }
 
 // Sets the power influence
-void ProblemRocket::setDesiredPower(int engineNumber, double power)
+void ProblemRocket::setDesiredPower(int engineNumber, float power)
 {
 	if (engineNumber >= 0 && engineNumber < this->desiredPower.size())
 		this->desiredPower.at(engineNumber) = power;
@@ -432,7 +432,7 @@ void ProblemRocket::setDesiredPower(int engineNumber, double power)
 }
 
 // Sets the angle influence
-void ProblemRocket::setDesiredAngle(double angle)
+void ProblemRocket::setDesiredAngle(float angle)
 {
 	this->desiredRotation = angle;
 }

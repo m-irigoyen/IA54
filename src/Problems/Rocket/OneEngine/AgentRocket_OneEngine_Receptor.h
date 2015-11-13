@@ -13,17 +13,17 @@ class AgentRocket_OneEngine_Receptor : public AgentReceptor
 protected:
 	ProblemRocket_OneEngine* castedProblem;
 
-	PROBLEMROCKET_AGENTTYPE_ONE agentType;
+	AGENTTYPE_ROCKET_ONE agentType;
 
 public:
 
-	AgentRocket_OneEngine_Receptor(ProblemRocket_OneEngine* problem, BodyReceptor_CompositionFull* body = NULL, PROBLEMROCKET_AGENTTYPE_ONE type = PROBLEMROCKET_AGENTTYPE_ONE::ROCKET_ONE_DEFAULT);
+	AgentRocket_OneEngine_Receptor(ProblemRocket_OneEngine* problem, BodyReceptor_CompositionFull* body = NULL, AGENTTYPE_ROCKET_ONE type = AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DEFAULT);
 
 	virtual void live();
 	virtual bool isLinked();
 	virtual bool isProblemLinked();
 
-	void setAgentType(PROBLEMROCKET_AGENTTYPE_ONE type);
+	void setAgentType(AGENTTYPE_ROCKET_ONE type);
 
 	~AgentRocket_OneEngine_Receptor(void);
 };

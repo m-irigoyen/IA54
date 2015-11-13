@@ -52,6 +52,10 @@ private:
 
 	vector<sf::Font> fonts;
 
+	//GUI
+	sf::Text text;
+	sf::Text placingAgentText;	// Data given by the simulator
+
 public:
 	GraphicView();
 
@@ -75,6 +79,9 @@ public:
 	void toggleDisplayEmitters();
 	void toggleDisplaySimulator();
 	void toggleDisplayProblem();
+
+	// GUI
+	void setCurrentlyPlacingAgent(std::string text);
 
 	~GraphicView(void);
 };

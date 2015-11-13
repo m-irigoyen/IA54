@@ -33,6 +33,15 @@ void GraphicView::Init(int width, int height, Problem* problem)
 
 	this->fonts.push_back(temp);
 
+	// Text
+	this->text.setFont(this->fonts.at(0));
+	this->text.setCharacterSize(20);
+	this->text.setColor(sf::Color::White);
+	
+	this->placingAgentText.setFont(this->fonts.at(0));
+	this->placingAgentText.setCharacterSize(20);
+	this->placingAgentText.setColor(sf::Color::White);
+
 	// Init problem
 	if (this->problemWindow != NULL)
 		this->problemWindow->close();
@@ -69,7 +78,7 @@ void GraphicView::Draw()
 				for (std::vector<BodyReceptor*>::iterator it = worldReceptors->begin(); it != worldReceptors->end(); ++it)
 				{
 					std::vector<float> pos = (*it)->GetPosition();	// Getting position
-					circle.setPosition(pos[0], pos[1]);				// Placing wave accordingly on screen
+					circle.setPosition(static_cast<float>(pos[0]), static_cast<float>(pos[1]));				// Placing wave accordingly on screen
 					window->draw(circle);							// Drawing
 				}
 			}
@@ -87,7 +96,7 @@ void GraphicView::Draw()
 				for (std::vector<BodyEmitter*>::iterator it = worldEmitters->begin(); it != worldEmitters->end(); ++it)
 				{
 					std::vector<float> pos = (*it)->GetPosition();	// Getting position
-					circle.setPosition(pos[0], pos[1]);				// Placing wave accordingly on screen
+					circle.setPosition(static_cast<float>(pos[0]), static_cast<float>(pos[1]));				// Placing wave accordingly on screen
 					window->draw(circle);							// Drawing
 				}
 			}
@@ -102,14 +111,14 @@ void GraphicView::Draw()
 				std::vector<Wave*>* worldWaves = this->world->getWaves();
 				for (std::vector<Wave*>::iterator it = worldWaves->begin(); it != worldWaves->end(); ++it)
 				{
-					double rad = (*it)->getRadius();
+					float rad = (*it)->getRadius();
 					circle.setRadius(rad);				// Setting radius
 					circle.setOrigin(rad, rad);	// Setting new origin
 
 					if (this->displayWaveOpacity)
 					{
 						// Displaying the wave's fade away
-						double ampl = (*it)->getAmplitude();
+						float ampl = (*it)->getAmplitude();
 						if (ampl > (this->problem->getWaveAmplitudeOffset() + this->problem->getWaveAmplitudeRange()))	// Capping to the threshold if amplitude is too high
 							ampl = this->problem->getWaveAmplitudeOffset() + this->problem->getWaveAmplitudeRange();
 						circle.setOutlineColor(sf::Color(255, 255, 255, (ampl * 255) / (this->problem->getWaveAmplitudeOffset() + this->problem->getWaveAmplitudeRange())));
@@ -121,6 +130,10 @@ void GraphicView::Draw()
 					window->draw(circle);							// Drawing
 				}
 			}
+
+			// Displaying GUI
+			this->placingAgentText.setPosition(10, window->getSize().y - 30);
+			window->draw(this->placingAgentText);
 
 			// Displaying the whole thing
 			window->display();
@@ -219,6 +232,11 @@ void GraphicView::setProblemType(PROBLEM_TYPE type)
 sf::RenderWindow* GraphicView::getWindow()
 {
 	return this->window;
+}
+
+void GraphicView::setCurrentlyPlacingAgent(std::string text)
+{
+	this->placingAgentText.setString ("Currently placing : " + text);
 }
 
 GraphicView::~GraphicView(void)

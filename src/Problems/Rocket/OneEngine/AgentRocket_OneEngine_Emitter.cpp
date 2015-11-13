@@ -1,6 +1,6 @@
 #include "Problems/Rocket/OneEngine/AgentRocket_OneEngine_Emitter.h"
 
-AgentRocket_OneEngine_Emitter::AgentRocket_OneEngine_Emitter(ProblemRocket_OneEngine * problem, BodyEmitter * body, PROBLEMROCKET_AGENTTYPE_ONE type) : AgentEmitter(problem,body), castedProblem(problem), agentType(type)
+AgentRocket_OneEngine_Emitter::AgentRocket_OneEngine_Emitter(ProblemRocket_OneEngine * problem, BodyEmitter * body, AGENTTYPE_ROCKET_ONE type) : AgentEmitter(problem,body), castedProblem(problem), agentType(type)
 {
 }
 
@@ -13,8 +13,10 @@ void AgentRocket_OneEngine_Emitter::live()
 		return;
 	}
 
+	cout << "Agenttype : " << this->agentType << endl;
+
 	// Getting problem data
-	double x, y, power, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat, lzSize;
+	float x, y, power, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat, lzSize;
 
 	this->castedProblem->getRocketPosition(x, y);
 	power = this->castedProblem->getRocketEnginesPower()->at(0);
@@ -26,14 +28,14 @@ void AgentRocket_OneEngine_Emitter::live()
 	lzSize = this->castedProblem->getLandingZoneSize();
 
 	// Variables
-	double desiredAngle = 0;
-	double desiredPower = 0;
-	double temp = 0;
+	float desiredAngle = 0;
+	float desiredPower = 0;
+	float temp = 0;
 
-	double amplitude;
-	double frequency;
+	float amplitude;
+	float frequency;
 	
-	if (this->agentType == PROBLEMROCKET_AGENTTYPE_ONE::ROCKET_ONE_DIRECTION)
+	if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DIRECTION)
 	{
 		// Direct the rocket towards the flatzone
 		desiredAngle = convertToRange(abs(distanceToCenterFlat),
@@ -44,11 +46,10 @@ void AgentRocket_OneEngine_Emitter::live()
 
 		if (distanceToCenterFlat > 0)
 			desiredAngle *= -1;
-
+		cout << "DESIRED ANGLE " << desiredAngle << endl;
 		desiredPower = 50;
-		cout << "OH JACQUY, REVEIL!" << endl;
 	}
-	else if (this->agentType == PROBLEMROCKET_AGENTTYPE_ONE::ROCKET_ONE_REGULATOR)
+	else if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_REGULATOR)
 	{
 		desiredAngle = 0;
 
@@ -133,7 +134,7 @@ bool AgentRocket_OneEngine_Emitter::isProblemLinked()
 	return this->castedProblem != NULL;
 }
 
-void AgentRocket_OneEngine_Emitter::setAgentType(PROBLEMROCKET_AGENTTYPE_ONE type)
+void AgentRocket_OneEngine_Emitter::setAgentType(AGENTTYPE_ROCKET_ONE type)
 {
 	this->agentType = type;
 }

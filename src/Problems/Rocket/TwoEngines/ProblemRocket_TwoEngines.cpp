@@ -6,22 +6,22 @@ ProblemRocket_TwoEngines::ProblemRocket_TwoEngines(float waveAmplLossPerSec) : P
 	
 }
 
-void ProblemRocket_TwoEngines::getThrustForce(double & hForce, double & vForce)
+void ProblemRocket_TwoEngines::getThrustForce(float & hForce, float & vForce)
 {
-	double vecX = cos(degToRad(this->rocket_angle));
-	double vecY = sin(degToRad(this->rocket_angle));
+	float vecX = cos(degToRad(this->rocket_angle));
+	float vecY = sin(degToRad(this->rocket_angle));
 
 	hForce = ((this->rocket_enginesPower.at(0) * this->rocket_engineThrust.at(0) * vecX) + (this->rocket_enginesPower.at(1) * this->rocket_engineThrust.at(1) * vecX)) / 100;
 	vForce = ((this->rocket_enginesPower.at(0) * this->rocket_engineThrust.at(0) * vecY) + (this->rocket_enginesPower.at(1) * this->rocket_engineThrust.at(1) * vecY)) / 100;
 	
 
-	double angleLeft = convertToRange(this->rocket_enginesPower.at(0),
+	float angleLeft = convertToRange(this->rocket_enginesPower.at(0),
 		0,
 		this->getPowerMax(),
 		0,
 		PROBLEMROCKET_TWO_MAXENGINEROTATION);
 
-	double angleRight = convertToRange(this->rocket_enginesPower.at(1),
+	float angleRight = convertToRange(this->rocket_enginesPower.at(1),
 		0,
 		this->getPowerMax(),
 		0,
@@ -124,7 +124,7 @@ void ProblemRocket_TwoEngines::run(sf::Time elapsedTime)
 	if (!hasLanded && !hasCrashed && !hasGoneMissing && this->problemLive)
 	{
 		// First off : get the thrust force
-		double hOffset, vOffset;
+		float hOffset, vOffset;
 		this->getThrustForce(hOffset, vOffset);
 
 		// Move the rocket by this force

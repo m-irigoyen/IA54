@@ -57,22 +57,22 @@ int Problem::getNumberOfReceptors()
 }
 
 
-double Problem::getWaveAmplitudeOffset()
+float Problem::getWaveAmplitudeOffset()
 {
 	return this->wave_amplitude_offset;
 }
 
-double Problem::getWaveAmplitudeRange()
+float Problem::getWaveAmplitudeRange()
 {
 	return this->wave_amplitude_range;
 }
 
-double Problem::getWaveFrequencyOffset()
+float Problem::getWaveFrequencyOffset()
 {
 	return this->wave_frequency_offset;
 }
 
-double Problem::getWaveFrequencyRange()
+float Problem::getWaveFrequencyRange()
 {
 	return this->wave_frequency_range;
 }

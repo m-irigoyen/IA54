@@ -30,10 +30,10 @@ protected:
 	int numberOfReceptors;
 
 	// Agents influence
-	double wave_amplitude_offset;
-	double wave_amplitude_range;
-	double wave_frequency_offset;
-	double wave_frequency_range;
+	float wave_amplitude_offset;
+	float wave_amplitude_range;
+	float wave_frequency_offset;
+	float wave_frequency_range;
 
 
 public:
@@ -60,10 +60,10 @@ public:
 	virtual int getNumberOfEmitters();
 	virtual int getNumberOfReceptors();
 	// Problem data
-	double getWaveAmplitudeOffset();
-	double getWaveAmplitudeRange();
-	double getWaveFrequencyOffset();
-	double getWaveFrequencyRange();
+	float getWaveAmplitudeOffset();
+	float getWaveAmplitudeRange();
+	float getWaveFrequencyOffset();
+	float getWaveFrequencyRange();
 
 	// Setters
 	virtual void setNumberOfEmitters(int nb);

@@ -26,7 +26,7 @@ public:
 	Emitter();
 
 	virtual void initialise() = 0;	// Perform initialisation specific tasks
-	virtual void send(double frequency, double amplitude, double speed = -1.0f);	// Send a wave
+	virtual void send(float frequency, float amplitude, float speed = -1.0f);	// Send a wave
 
 	/**
 	*	This will check if the emitter is sending, and if it is, if a new peak needs to be sent.

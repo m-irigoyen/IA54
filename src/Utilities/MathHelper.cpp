@@ -1,16 +1,16 @@
 #include "Utilities/MathHelper.h"
 
-double degToRad(double degrees)
+float degToRad(float degrees)
 {
 	return (degrees * 2*PI ) / 360;
 }
 
-double radToDeg(double radians)
+float radToDeg(float radians)
 {
 	return (radians * 360) / (2*PI);
 }
 
-double computeAngle(double x, double y)
+float computeAngle(float x, float y)
 {
 	if (x == 0 && y >= 0)
 		return 90;
@@ -36,7 +36,11 @@ float convertToRange(float value, float valueOffset, float valueRange, float tar
 		//cout << "    Parameters were : " << value << ", " << valueOffset << ", " << valueRange << ", " << targetOffset << ", " << targetRange << endl;
 
 		if (value < 0)
-			return -1.0f;
+		{
+			std::cout << "WWOWOWO CEYLAMERDE : " << value << std::endl;
+				return -1.0f;
+		}
+			
 		if (value > valueOffset + valueRange)
 			value = valueOffset + valueRange;
 		else if (value < valueOffset)

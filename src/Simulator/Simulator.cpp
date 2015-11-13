@@ -1,6 +1,93 @@
 #include "Simulator.h"
 
 
+void Simulator::userAddAgent(int x, int y, int agentType)
+{
+	Agent* newAgent;
+
+	switch (this->problemType)
+	{
+	case PROBLEM_TYPE::ROCKET_ONE :
+
+		switch (agentType)
+		{
+		case 0:
+			this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_RECEPTOR, BODY_TYPE::BODY_RECEPTOR_MEDIUM);
+			break;
+		case 1:
+			newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
+			((AgentRocket_OneEngine_Emitter*)newAgent)->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DIRECTION);
+			cout << "Placing direction agent" << endl;
+			break;
+		case 2:
+			newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
+			((AgentRocket_OneEngine_Emitter*)newAgent)->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_REGULATOR);
+			cout << "Placing regulator agent" << endl;
+			break;
+		default:
+			cout << "ERROR : Simulator::userAddAgent : unexpected agent type" << endl;
+		}
+		
+		break;
+	case PROBLEM_TYPE::ROCKET_TWO:
+		//TODO: implement that
+		break;
+	}
+	
+}
+
+void Simulator::userEraseAgent(Body * body)
+{
+	for (vector<Agent*>::iterator it = this->agents.begin(); it != this->agents.end(); ++it)
+	{
+		if ((*it)->getBody() == body)
+		{
+			// Update the problem for the destruction
+			switch (this->problemType)
+			{
+			case PROBLEM_TYPE::ROCKET_ONE:
+				if (static_cast<AgentRocket_OneEngine_Emitter*>(*it))
+					((ProblemRocket*)this->problem)->setNumberOfEmitters(((ProblemRocket*)this->problem)->getNumberOfEmitters() - 1);
+				else
+					((ProblemRocket*)this->problem)->setNumberOfReceptors(((ProblemRocket*)this->problem)->getNumberOfReceptors() - 1);
+				break;
+			case PROBLEM_TYPE::ROCKET_TWO:
+				//TODO: implement that when agents are done
+				break;
+			}
+
+			// Destroy the agent and its body
+			this->agents.erase(it);
+			this->world.removeBody(body);
+			return;
+		}
+	}
+}
+
+void Simulator::updateGUIAgentPlacingText()
+{
+	switch (this->problemType)
+	{
+	case PROBLEM_TYPE::ROCKET_ONE :
+		switch (this->currentAgentType)
+		{
+		case 0 :
+			this->SFMLView.setCurrentlyPlacingAgent("Receptor");
+			break;
+		case 1:
+			this->SFMLView.setCurrentlyPlacingAgent("Emitter direction");
+			break;
+		case 2:
+			this->SFMLView.setCurrentlyPlacingAgent("Emitter regulator");
+			break;
+		default:
+			this->SFMLView.setCurrentlyPlacingAgent("");
+			break;
+		}
+		break;
+	}
+}
+
 Simulator::Simulator() : world(&simulationClock, 800, 600), finishSimulation(false), frameFlag(true), problem(NULL), selectedBody(NULL), problemType(PROBLEM_TYPE::NONE)
 {
 	init();
@@ -44,16 +131,16 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 
 			// Adding emitters : direction
 			AgentRocket_OneEngine_Emitter* newAgent;
-			newAgent = static_cast<AgentRocket_OneEngine_Emitter*>(addEmitter(200, 200));
+			newAgent = static_cast<AgentRocket_OneEngine_Emitter*>(addAgent(200, 200, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
 			if (newAgent != NULL)
-				newAgent->setAgentType(PROBLEMROCKET_AGENTTYPE_ONE::ROCKET_ONE_DIRECTION);
+				newAgent->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DIRECTION);
 			else
 				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
 
 			// Adding emitters : regulator
-			newAgent = static_cast<AgentRocket_OneEngine_Emitter*>(addEmitter(300, 200));
+			newAgent = static_cast<AgentRocket_OneEngine_Emitter*>(addAgent(300, 200, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
 			if (newAgent != NULL)
-				newAgent->setAgentType(PROBLEMROCKET_AGENTTYPE_ONE::ROCKET_ONE_REGULATOR);
+				newAgent->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_REGULATOR);
 			else
 				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
 
@@ -61,19 +148,21 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 			//TODO:
 
 			// Adding
-			addReceptorFullComposition(250, 200);
+			addAgent(250, 200, AGENT_TYPE::AGENT_RECEPTOR, BODY_TYPE::BODY_RECEPTOR_MEDIUM);
 
 			((ProblemRocket_OneEngine*)this->problem)->setNumberOfEmitters(2);
+			((ProblemRocket_OneEngine*)this->problem)->setNumberOfReceptors(1);
 		}
 		// ROCKET2 PROBLEM
 		else if (this->problemType == PROBLEM_TYPE::ROCKET_TWO)
 		{
 			this->problem = new ProblemRocket_TwoEngines();
 
+			//TODO: redo that
 			// Adding initial agents
-			addEmitter(200, 200);
+			/*addEmitter(200, 200);
 			addEmitter(200, 400);
-			addReceptorFullComposition(600, 400);
+			addReceptorFullComposition(600, 400);*/
 		}
 
 		this->problem->init();
@@ -86,42 +175,37 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 	}
 }
 
-Agent * Simulator::addAgent(float xPos, float yPos, AGENT_TYPE agentType, BODY_TYPE type)
+Agent * Simulator::addAgent(float xPos, float yPos, AGENT_TYPE agentType, BODY_TYPE bodyType)
 {
 	Agent* agent = NULL;
 
 	BodyReceptor* receptor = NULL;
 	BodyEmitter* emitter = NULL;
 
-	ProblemRocket_OneEngine* castedRocketProblem = NULL;
-	ProblemRocket_TwoEngines* castedRocket2Problem = NULL;
+	ProblemRocket_OneEngine* castedRocketProblem = static_cast<ProblemRocket_OneEngine*>(this->problem);;
+	ProblemRocket_TwoEngines* castedRocket2Problem = static_cast<ProblemRocket_TwoEngines*>(this->problem);
 
-	if (agentType == AGENT_TYPE::EMITTER)
+	if (agentType == AGENT_TYPE::AGENT_EMITTER)
 	{
-		emitter = static_cast<BodyEmitter*>(this->world.createBody(BODY_TYPE::EMITTER, xPos, yPos));
+		emitter = static_cast<BodyEmitter*>(this->world.createBody(BODY_TYPE::BODY_EMITTER, xPos, yPos));
 		if (emitter != NULL)
 		{
-			
 			switch (this->problemType)
 			{
 			case PROBLEM_TYPE::ROCKET_ONE:
-				castedRocketProblem = static_cast<ProblemRocket_OneEngine*>(this->problem);
 				if (castedRocketProblem != NULL)
 				{
 					agent = new AgentRocket_OneEngine_Emitter(castedRocketProblem);
 					((AgentRocket_OneEngine_Emitter*)agent)->connectCasted(emitter);
-					this->agents.push_back(agent);
 				}
 				else
 					std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
 				break;
 			case PROBLEM_TYPE::ROCKET_TWO:
-				ProblemRocket_TwoEngines* castedRocket2Problem = static_cast<ProblemRocket_TwoEngines*>(this->problem);
 				if (castedRocket2Problem != NULL)
 				{
 					agent = new AgentRocket_TwoEngines_Emitter(castedRocket2Problem);
 					((AgentRocket_TwoEngines_Emitter*)agent)->connectCasted(emitter);
-					this->agents.push_back(agent);
 				}
 				else
 					std::cout << "ERROR : couldn't cast problem to ProblemRocket2" << std::endl;
@@ -134,153 +218,103 @@ Agent * Simulator::addAgent(float xPos, float yPos, AGENT_TYPE agentType, BODY_T
 			return NULL;
 		}
 	}
-	else if (agentType == AGENT_TYPE::RECEPTOR)
+	else if (agentType == AGENT_TYPE::AGENT_RECEPTOR)
 	{
-
-	}
-
-	return agent;
-}
-
-Agent* Simulator::addEmitter(float xPos, float yPos, BODY_TYPE type)
-{
-	Agent* agent;
-	BodyEmitter* body = static_cast<BodyEmitter*>(this->world.createBody(BODY_TYPE::EMITTER, xPos, yPos));
-	if (body != NULL)
-	{
-		ProblemRocket_OneEngine* castedRocketProblem;
-		ProblemRocket_TwoEngines* castedRocket2Problem;
-		switch (this->problemType)
+		if (bodyType == BODY_TYPE::BODY_RECEPTOR_COMPOSITION)
 		{
-		case PROBLEM_TYPE::ROCKET_ONE:
-			castedRocketProblem = static_cast<ProblemRocket_OneEngine*>(this->problem);
-			if (castedRocketProblem != NULL)
+			receptor = static_cast<BodyReceptor_Composition*>(this->world.createBody(BODY_TYPE::BODY_RECEPTOR_COMPOSITION, xPos, yPos));
+			if (receptor != NULL)
 			{
-				agent = new AgentRocket_OneEngine_Emitter(castedRocketProblem);
-				((AgentRocket_OneEngine_Emitter*)agent)->connectCasted(body);
-				this->agents.push_back(agent);
+				switch (this->problemType)
+				{
+				case PROBLEM_TYPE::ROCKET_ONE:
+					if (castedRocketProblem != NULL)
+					{
+						agent = new AgentRocket_OneEngine_Receptor(castedRocketProblem);
+						((AgentRocket_OneEngine_Receptor*)agent)->connectCasted(receptor);
+					}
+					else
+						std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
+					break;
+				case PROBLEM_TYPE::ROCKET_TWO:
+					if (castedRocket2Problem != NULL)
+					{
+						agent = new AgentRocket_TwoEngines_Receptor(castedRocket2Problem);
+						((AgentRocket_TwoEngines_Receptor*)agent)->connectCasted(receptor);
+					}
+					else
+						std::cout << "ERROR : couldn't cast problem to ProblemRocket2" << std::endl;
+					break;
+				}
 			}
 			else
-				std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
-			break;
-		case PROBLEM_TYPE::ROCKET_TWO:
-			ProblemRocket_TwoEngines* castedRocket2Problem = static_cast<ProblemRocket_TwoEngines*>(this->problem);
-			if (castedRocket2Problem != NULL)
+				std::cout << "ERROR : couldn't cast resulting body" << std::endl;
+		}
+		else if (bodyType == BODY_TYPE::BODY_RECEPTOR_FULLCOMPOSITION)
+		{
+			receptor = static_cast<BodyReceptor_CompositionFull*>(this->world.createBody(BODY_TYPE::BODY_RECEPTOR_FULLCOMPOSITION, xPos, yPos));
+			if (receptor != NULL)
 			{
-				agent = new AgentRocket_TwoEngines_Emitter(castedRocket2Problem);
-				((AgentRocket_TwoEngines_Emitter*)agent)->connectCasted(body);
-				this->agents.push_back(agent);
+				switch (this->problemType)
+				{
+				case PROBLEM_TYPE::ROCKET_ONE:
+					if (castedRocketProblem != NULL)
+					{
+						agent = new AgentRocket_OneEngine_Receptor(castedRocketProblem);
+						((AgentRocket_OneEngine_Receptor*)agent)->connectCasted(receptor);
+					}
+					else
+						std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
+					break;
+				case PROBLEM_TYPE::ROCKET_TWO:
+					if (castedRocket2Problem != NULL)
+					{
+						agent = new AgentRocket_TwoEngines_Receptor(castedRocket2Problem);
+						((AgentRocket_TwoEngines_Receptor*)agent)->connectCasted(receptor);
+					}
+					else
+						std::cout << "ERROR : couldn't cast problem to ProblemRocket2" << std::endl;
+					break;
+				}
 			}
 			else
-				std::cout << "ERROR : couldn't cast problem to ProblemRocket2" << std::endl;
-			break;
+				std::cout << "ERROR : couldn't cast resulting body" << std::endl;
+		}
+		else if (bodyType == BODY_TYPE::BODY_RECEPTOR_MEDIUM)
+		{
+			receptor = static_cast<BodyReceptor_Medium*>(this->world.createBody(BODY_TYPE::BODY_RECEPTOR_MEDIUM, xPos, yPos));
+			if (receptor != NULL)
+			{
+				switch (this->problemType)
+				{
+				case PROBLEM_TYPE::ROCKET_ONE:
+					if (castedRocketProblem != NULL)
+					{
+						agent = new AgentRocket_OneEngine_Receptor(castedRocketProblem);
+						((AgentRocket_OneEngine_Receptor*)agent)->connectCasted(receptor);
+					}
+					else
+						std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
+					break;
+				case PROBLEM_TYPE::ROCKET_TWO:
+					if (castedRocket2Problem != NULL)
+					{
+						agent = new AgentRocket_TwoEngines_Receptor(castedRocket2Problem);
+						((AgentRocket_TwoEngines_Receptor*)agent)->connectCasted(receptor);
+					}
+					else
+						std::cout << "ERROR : couldn't cast problem to ProblemRocket2" << std::endl;
+					break;
+				}
+			}
+			else
+				std::cout << "ERROR : couldn't cast resulting body" << std::endl;
 		}
 	}
-	else
-	{
-		std::cout << "ERROR : couldn't cast resulting body" << std::endl;
-		return NULL;
-	}
+
+	if (agent != NULL)
+		this->agents.push_back(agent);
 	return agent;
-}
-
-Agent* Simulator::addReceptorComposition(float xPos, float yPos)
-{
-	Agent* agent;
-	BodyReceptor_Composition* body = static_cast<BodyReceptor_Composition*>(this->world.createBody(BODY_TYPE::RECEPTOR_COMPOSITION, xPos, yPos));
-	if (body != NULL)
-	{
-		ProblemRocket_OneEngine* castedRocketProblem;
-		ProblemRocket_TwoEngines* castedRocket2Problem;
-		switch (this->problemType)
-		{
-		case PROBLEM_TYPE::ROCKET_ONE :
-			castedRocketProblem = static_cast<ProblemRocket_OneEngine*>(this->problem);
-			if (castedRocketProblem != NULL)
-			{
-				agent = new AgentRocket_OneEngine_Receptor(castedRocketProblem);
-				((AgentRocket_OneEngine_Receptor*)agent)->connectCasted(body);
-				this->agents.push_back(agent);
-			}
-			else
-				std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
-			break;
-		case PROBLEM_TYPE::ROCKET_TWO :
-			castedRocket2Problem = static_cast<ProblemRocket_TwoEngines*>(this->problem);
-			if (castedRocket2Problem != NULL)
-			{
-				agent = new AgentRocket_TwoEngines_Receptor(castedRocket2Problem);
-				((AgentRocket_TwoEngines_Receptor*)agent)->connectCasted(body);
-				this->agents.push_back(agent);
-			}
-			else
-				std::cout << "ERROR : couldn't cast problem to ProblemRocket2" << std::endl;
-			break;
-		}
-	}
-	else
-		std::cout << "ERROR : couldn't cast resulting body" << std::endl;
-
-	return agent;
-}
-
-Agent * Simulator::addReceptorFullComposition(float xPos, float yPos)
-{
-	Agent* agent;
-	BodyReceptor_CompositionFull* body = static_cast<BodyReceptor_CompositionFull*>(this->world.createBody(BODY_TYPE::RECEPTOR_FULLCOMPOSITION, xPos, yPos));
-	if (body != NULL)
-	{
-		ProblemRocket_OneEngine* castedRocketProblem;
-		ProblemRocket_TwoEngines* castedRocket2Problem;
-		switch (this->problemType)
-		{
-		case PROBLEM_TYPE::ROCKET_ONE:
-			castedRocketProblem = static_cast<ProblemRocket_OneEngine*>(this->problem);
-			if (castedRocketProblem != NULL)
-			{
-				agent = new AgentRocket_OneEngine_Receptor(castedRocketProblem);
-				((AgentRocket_OneEngine_Receptor*)agent)->connectCasted(body);
-				this->agents.push_back(agent);
-			}
-			else
-				std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
-			break;
-		case PROBLEM_TYPE::ROCKET_TWO:
-			castedRocket2Problem = static_cast<ProblemRocket_TwoEngines*>(this->problem);
-			if (castedRocket2Problem != NULL)
-			{
-				agent = new AgentRocket_TwoEngines_Receptor(castedRocket2Problem);
-				((AgentRocket_TwoEngines_Receptor*)agent)->connectCasted(body);
-				this->agents.push_back(agent);
-			}
-			else
-				std::cout << "ERROR : couldn't cast problem to ProblemRocket2" << std::endl;
-			break;
-		}
-	}
-	else
-		std::cout << "ERROR : couldn't cast resulting body" << std::endl;
-
-	return agent;
-}
-
-void Simulator::addHybrid(float xPos, float yPos)
-{
-	/*BodyHybrid* body = static_cast<BodyHybrid*>(this->world.createBody(BODY_TYPE::HYBRID, xPos, yPos));
-	if (body != NULL)
-	{
-		ProblemDrones* castedProblem = static_cast<ProblemDrones*>(this->problem);
-		if (castedProblem != NULL)
-		{
-			AgentHybridProblemDrones* agent = new AgentHybridProblemDrones(castedProblem);
-			agent->connectCasted(body);
-			this->agents.push_back(agent);
-		}
-		else
-			std::cout << "Simulator::addHybrid : ERROR : couldn't cast problem to ProblemDrones" << std::endl;
-	}
-	else
-		std::cout << "Simulator::addHybrid : ERROR : couldn't cast resulting body" << std::endl;*/
 }
 
 void Simulator::run(sf::Time refreshRate)
@@ -292,6 +326,8 @@ void Simulator::run(sf::Time refreshRate)
 	sf::Time startTime, endTime;
 
 	// VI51 VERSION
+
+	//FIXME : THIS! THIS IS WHY EVERYTHING IS SO FUCKING IMPRECISE! Replace "refreshRate" being send to everything by the ACTUAL FUCKING ELAPSED TIME u_u
 	std::cout << "Starting program loop" << std::endl;
 	while (!finishSimulation)
 	{
@@ -423,23 +459,70 @@ void Simulator::checkEvents()
 					case sf::Keyboard::S:
 						this->SFMLView.toggleDisplaySimulator();
 						break;
+
+					// Agent placement
+					case sf::Keyboard::Num0 :
+						this->currentAgentType = 0;
+						this->updateGUIAgentPlacingText();
+						break;
+					case sf::Keyboard::Num1:
+						this->currentAgentType = 1;
+						this->updateGUIAgentPlacingText();
+						break;
+					case sf::Keyboard::Num2:
+						this->currentAgentType = 2;
+						this->updateGUIAgentPlacingText();
+						break;
+					case sf::Keyboard::Num3 :						
+						this->currentAgentType = 3;
+						this->updateGUIAgentPlacingText();
+						break;
+					case sf::Keyboard::Num4:
+						this->currentAgentType = 4;
+						this->updateGUIAgentPlacingText();
+						break;
+					case sf::Keyboard::Num5:
+						this->currentAgentType = 5;
+						this->updateGUIAgentPlacingText();
+						break;
+					case sf::Keyboard::Num6:
+						this->currentAgentType = 6;
+						this->updateGUIAgentPlacingText();
+						break;
+					case sf::Keyboard::Num7:
+						this->currentAgentType = 7;
+						this->updateGUIAgentPlacingText();
+						break;
+					case sf::Keyboard::Num8:
+						this->currentAgentType = 8;
+						this->updateGUIAgentPlacingText();
+						break;
+					case sf::Keyboard::Num9:						
+						this->currentAgentType = 9;
+						this->updateGUIAgentPlacingText();
+						break;
+
+					// Agent suppression
+					case sf::Keyboard::Delete :
+						if (selectedBody != NULL)
+							this->userEraseAgent(selectedBody);
+						break;
 					}
                     break;
 
 				// Emitter/receptor drag & drop
                 case sf::Event::MouseButtonPressed :
-                    if (event.mouseButton.button == sf::Mouse::Left)
-                    {
-                        //std::cout << "Searching body in " <<
-                        selectedBody = this->world.getClosestBodyFromLocation(
-                            event.mouseButton.x,event.mouseButton.y,2*EMITTER_RADIUSSIZE);
-                    }
+					if (event.mouseButton.button == sf::Mouse::Left)
+					{
+						//std::cout << "Searching body in " <<
+						selectedBody = this->world.getClosestBodyFromLocation(
+							event.mouseButton.x, event.mouseButton.y, 2 * EMITTER_RADIUSSIZE);
+					}
 					else if (event.mouseButton.button == sf::Mouse::Right)
-                        this->addEmitter(event.mouseButton.x,event.mouseButton.y);
-                    else if (event.mouseButton.button == sf::Mouse::Middle)
-                        this->addReceptorComposition(event.mouseButton.x,event.mouseButton.y);
-                    break;
-
+					{
+						this->userAddAgent(event.mouseButton.x, event.mouseButton.y, this->currentAgentType);
+					}
+					break;
 				// Emitter/receptor drag and drop
                 case sf::Event::MouseMoved :
                     if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && selectedBody != NULL)

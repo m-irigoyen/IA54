@@ -16,6 +16,11 @@ void Agent::connect(Body* body)
 	this->body = body;
 }
 
+Body * Agent::getBody()
+{
+	return this->body;
+}
+
 // Checks if agent is linked to a body
 bool Agent::isLinked()
 {

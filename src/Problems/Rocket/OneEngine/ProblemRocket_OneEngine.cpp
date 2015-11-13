@@ -6,10 +6,10 @@ ProblemRocket_OneEngine::ProblemRocket_OneEngine(float waveAmplLossPerSec) : Pro
 	
 }
 
-void ProblemRocket_OneEngine::getThrustForce(double & hForce, double & vForce)
+void ProblemRocket_OneEngine::getThrustForce(float & hForce, float & vForce)
 {
-	double vecX = cos(degToRad(this->rocket_angle));
-	double vecY = sin(degToRad(this->rocket_angle));
+	float vecX = cos(degToRad(this->rocket_angle));
+	float vecY = sin(degToRad(this->rocket_angle));
 
 	hForce = (this->rocket_enginesPower.at(0) * this->rocket_engineThrust.at(0) * vecX) / 100;
 	vForce = (this->rocket_enginesPower.at(0) * this->rocket_engineThrust.at(0) * vecY) / 100;
@@ -94,7 +94,7 @@ void ProblemRocket_OneEngine::run(sf::Time elapsedTime)
 	if (!hasLanded && !hasCrashed && !hasGoneMissing && this->problemLive)
 	{
 		// First off : get the thrust force
-		double hOffset, vOffset;
+		float hOffset, vOffset;
 		this->getThrustForce(hOffset, vOffset);
 
 		// Move the rocket by this force

@@ -7,7 +7,7 @@ Emitter::Emitter() : sending(false), currentAmplitude(-1.0f), currentFrequency(-
 }
 
 
-void Emitter::send(double frequency, double amplitude, double speed)
+void Emitter::send(float frequency, float amplitude, float speed)
 {
 	if (frequency <= 0.0f || amplitude <= 0.0f)
 		return;	//Can't have negative values
@@ -31,8 +31,11 @@ bool Emitter::checkForSend(sf::Time currentTime)
 	{
 		// If time was zero, just send already
 		if (this->lastSendTime == sf::Time::Zero)
+		{
+			cout << "FIRST SEND" << endl;
 			return true;
-
+		}
+			
 		// Else check if new send is needed
 		sf::Time check = currentTime - this->lastSendTime;
 		if (check >= getTimeFromFrequency(this->currentFrequency))

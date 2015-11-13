@@ -9,18 +9,18 @@ ProblemPendulum::ProblemPendulum(){
     this->speed = 0.0;
 }
 
-void ProblemPendulum::run(double elapsedTime){
+void ProblemPendulum::run(float elapsedTime){
     this->angle = angle + speed;
 }
 
-void ProblemPendulum::act(double dSpeed){
+void ProblemPendulum::act(float dSpeed){
     this->speed = this->speed + dSpeed;
 }
 
-double ProblemPendulum::getAngle(){
+float ProblemPendulum::getAngle(){
     return this->angle;
 }
 
-double ProblemPendulum::getSpeed(){
+float ProblemPendulum::getSpeed(){
     return this->speed;
 }

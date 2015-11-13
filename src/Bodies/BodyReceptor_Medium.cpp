@@ -19,6 +19,9 @@ void BodyReceptor_Medium::initialise()
 WAVE BodyReceptor_Medium::getPerception()
 {
 	WAVE waves;
+	waves.amplitude = 0;
+	waves.frequency = 0;
+
 	int nbWaves = 0;
 
 	// For each perceived wave
@@ -67,7 +70,7 @@ float BodyReceptor_Medium::calculateValueAtT(sf::Time t, sf::Time firstContact, 
 		float period = 2 * PI*frequency;
 		while (elapsedTime.asSeconds() > period)
 		{
-			elapsedTime = sf::seconds(elapsedTime.asSeconds() - period);
+			elapsedTime = sf::seconds(elapsedTime.asSeconds() - static_cast<float>(period));
 		}
 		return amplitude*sin(elapsedTime.asSeconds() / frequency);
 	}

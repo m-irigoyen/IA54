@@ -16,10 +16,12 @@
 #include "Bodies/BodyHybrid.h"
 
 // Rocket problem
+#include "Problems/Rocket/OneEngine/ProblemRocket_OneEngine.h"
 #include "Problems/Rocket/OneEngine/AgentRocket_OneEngine_Emitter.h"
 #include "Problems/Rocket/OneEngine/AgentRocket_OneEngine_Receptor.h"
 
 // Rocket problem 2
+#include "Problems/Rocket/TwoEngines/ProblemRocket_TwoEngines.h"
 #include "Problems/Rocket/TwoEngines/AgentRocket_TwoEngines_Emitter.h"
 #include "Problems/Rocket/TwoEngines/AgentRocket_TwoEngines_Receptor.h"
 
@@ -36,9 +38,9 @@
 
 enum AGENT_TYPE
 {
-	EMITTER,
-	RECEPTOR,
-	HYBRID
+	AGENT_EMITTER,
+	AGENT_RECEPTOR,
+	AGENT_HYBRID
 };
 
 
@@ -57,6 +59,7 @@ private:
 
 	//User interface stuff, only used by the ProblemPointer
 	Body* selectedBody;
+	int currentAgentType;		// The type set to be placed currently. range from 1 to 9
 
 		// Problem
 	//ProblemPointer* problem;   // The instance of the pointer problem.
@@ -65,6 +68,12 @@ private:
 
 	PROBLEM_TYPE problemType;	// The type of the current problem
 
+	// Helper functions
+	void userAddAgent(int x, int y, int agentType);
+	void userEraseAgent(Body* body);
+
+	void updateGUIAgentPlacingText();
+
 public:
 	Simulator();
 	void init();	// Initialise everything. Is called before run()
@@ -72,10 +81,6 @@ public:
 
     // Creates an agent at given position, then add him to the agent list
 	Agent* addAgent(float xPos, float yPos, AGENT_TYPE agentType, BODY_TYPE bodyType);
-	Agent* addEmitter(float xPos, float yPos, BODY_TYPE type);
-	Agent* addReceptorComposition(float xPos, float yPos);
-	Agent* addReceptorFullComposition(float xPos, float yPos);
-	void addHybrid(float xPos, float yPos);
 
 	void checkEvents();					// Check user events
 	void run(sf::Time refreshRate);		// Simulation loop

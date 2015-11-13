@@ -21,15 +21,13 @@ protected:
 	Body* body;
 	Problem* problem;
 
-
-	
-
 public:
 	Agent(Problem* problem = NULL, Body* body = NULL);
 
 	virtual void live() = 0;
 
 	virtual void connect(Body* body);
+	virtual Body* getBody();
 	virtual void disconnect();
 
 	virtual bool isLinked();	// Checks if agent is linked to a body

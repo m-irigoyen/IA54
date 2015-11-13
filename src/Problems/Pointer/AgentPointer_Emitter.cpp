@@ -25,8 +25,8 @@ void AngetPointer_Emitter::live()
 	this->castedProblem->getWindowDimensions(windowWidth, windowHeight);
 
 	// Encoding x/y position
-	double frequency = ((mouseX)*FREQUENCY_RANGE / (double)windowWidth) + this->castedProblem->getFrequencyOffset();	// offsetting a bit, to make sure wave transmission is kept
-	double amplitude = ((mouseY)*AMPLITUDE_RANGE / (double)windowHeight) + AMPLITUDE_OFFSET;
+	float frequency = ((mouseX)*FREQUENCY_RANGE / (float)windowWidth) + this->castedProblem->getFrequencyOffset();	// offsetting a bit, to make sure wave transmission is kept
+	float amplitude = ((mouseY)*AMPLITUDE_RANGE / (float)windowHeight) + AMPLITUDE_OFFSET;
 		
 	this->castedBody->send(frequency, amplitude);
 

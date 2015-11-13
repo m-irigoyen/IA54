@@ -1,6 +1,6 @@
 #include "Problems/Rocket/ProblemRocket_Terrain.h"
 
-vector<pair<int, int>>::iterator ProblemRocket_Terrain::getPointBefore(double x)
+vector<pair<int, int>>::iterator ProblemRocket_Terrain::getPointBefore(float x)
 {
 	if (this->terrain.size() < 2)
 	{
@@ -19,17 +19,17 @@ vector<pair<int, int>>::iterator ProblemRocket_Terrain::getPointBefore(double x)
 	return this->terrain.end();
 }
 
-double ProblemRocket_Terrain::getTerrainPoint(double x, pair<int, int> p1, pair<int, int> p2)
+float ProblemRocket_Terrain::getTerrainPoint(float x, pair<int, int> p1, pair<int, int> p2)
 {
 	int distanceP1P2 = p2.first - p1.first;
-	double distanceP1X = x - p1.first;
+	float distanceP1X = x - p1.first;
 
-	double distRatio = distanceP1X / distanceP1P2;
+	float distRatio = distanceP1X / distanceP1P2;
 
 	return p1.second + (p2.second - p1.second)*distRatio;
 }
 
-ProblemRocket_Terrain::ProblemRocket_Terrain(int width, int height, int maxTerrainHeight, int minTerrainHeight, double rocketStartX, double rocketStartY, double rocketStartHSpeed, double rocketStartVSpeed, double gravity) : mapWidth(width), mapHeight(height), terrainMaxHeight(maxTerrainHeight), terrainMinHeight(minTerrainHeight), rocketStartX(rocketStartX), rocketStartY(rocketStartY), rocketStartHSpeed(rocketStartHSpeed), rocketStartVSpeed(rocketStartVSpeed), gravity(gravity)
+ProblemRocket_Terrain::ProblemRocket_Terrain(int width, int height, int maxTerrainHeight, int minTerrainHeight, float rocketStartX, float rocketStartY, float rocketStartHSpeed, float rocketStartVSpeed, float gravity) : mapWidth(width), mapHeight(height), terrainMaxHeight(maxTerrainHeight), terrainMinHeight(minTerrainHeight), rocketStartX(rocketStartX), rocketStartY(rocketStartY), rocketStartHSpeed(rocketStartHSpeed), rocketStartVSpeed(rocketStartVSpeed), gravity(gravity)
 {
 	this->generateRandomTerrain();
 }
@@ -132,14 +132,14 @@ void ProblemRocket_Terrain::loadTerrain(std::string path)
 		this->mapHeight = terrainNode.attribute("height").as_int();
 		this->terrainFlatZone1 = terrainNode.attribute("flat1").as_int();
 		this->terrainFlatZone2 = terrainNode.attribute("flat2").as_int();
-		this->windHorizontal = terrainNode.attribute("windH").as_int();
-		this->windVertical = terrainNode.attribute("windV").as_int();
+		this->windHorizontal = terrainNode.attribute("windH").as_float();
+		this->windVertical = terrainNode.attribute("windV").as_float();
 
 		// Loading rocket data
-		this->rocketStartX = terrainNode.attribute("rocketX").as_int();
-		this->rocketStartY = terrainNode.attribute("rocketY").as_int();
-		this->rocketStartHSpeed = terrainNode.attribute("rocketH").as_int();
-		this->rocketStartVSpeed = terrainNode.attribute("rocketV").as_int();
+		this->rocketStartX = terrainNode.attribute("rocketX").as_float();
+		this->rocketStartY = terrainNode.attribute("rocketY").as_float();
+		this->rocketStartHSpeed = terrainNode.attribute("rocketH").as_float();
+		this->rocketStartVSpeed = terrainNode.attribute("rocketV").as_float();
 
 		// Loading terrain points
 		pugi::xml_node pointsNode = terrainNode.child("points");
@@ -216,7 +216,7 @@ void ProblemRocket_Terrain::generateRandomTerrain(int width, int height)
 }
 
 // Checks if the given position is colliding with terrain
-bool ProblemRocket_Terrain::isOnMap(double x, double y)
+bool ProblemRocket_Terrain::isOnMap(float x, float y)
 {
 	if (x <= 0 || y <= 0 || x >= this->mapWidth || y >= this->mapHeight)
 		return false;
@@ -224,7 +224,7 @@ bool ProblemRocket_Terrain::isOnMap(double x, double y)
 		return true;
 }
 
-bool ProblemRocket_Terrain::collides(double x, double y)
+bool ProblemRocket_Terrain::collides(float x, float y)
 {
 	if (!this->isOnMap(x, y))
 	{
@@ -235,7 +235,7 @@ bool ProblemRocket_Terrain::collides(double x, double y)
 	// Getting the terrain's y at coordinate x
 	vector<pair<int, int>>::iterator p;
 	p = this->getPointBefore(x);
-	double terrainY = this->getTerrainPoint(x, *p, *(p + 1));
+	float terrainY = this->getTerrainPoint(x, *p, *(p + 1));
 
 	// Checking collision
 	if (y <= terrainY)
@@ -244,7 +244,7 @@ bool ProblemRocket_Terrain::collides(double x, double y)
 		return false;
 }
 
-double ProblemRocket_Terrain::getTerrainPoint(double x)
+float ProblemRocket_Terrain::getTerrainPoint(float x)
 {
 	vector<pair<int, int>>::iterator p;
 	p = this->getPointBefore(x);
@@ -255,12 +255,12 @@ double ProblemRocket_Terrain::getTerrainPoint(double x)
 		return -1;
 }
 
-double ProblemRocket_Terrain::getGravity()
+float ProblemRocket_Terrain::getGravity()
 {
 	return this->gravity;
 }
 
-void ProblemRocket_Terrain::getLandingZone(double & landing1, double & landing2)
+void ProblemRocket_Terrain::getLandingZone(float & landing1, float & landing2)
 {
 	landing1 = this->terrainFlatZone1;
 	landing2 = this->terrainFlatZone2;
@@ -276,7 +276,7 @@ int ProblemRocket_Terrain::getHeight()
 	return this->mapHeight;
 }
 
-void ProblemRocket_Terrain::getRocketStart(double & rocketX, double & rocketY, double & rocketHorizontalSpeed, double & rocketVerticalSpeed)
+void ProblemRocket_Terrain::getRocketStart(float & rocketX, float & rocketY, float & rocketHorizontalSpeed, float & rocketVerticalSpeed)
 {
 	rocketX = this->rocketStartX;
 	rocketY = this->rocketStartY;
