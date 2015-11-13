@@ -25,6 +25,7 @@ enum BODY_TYPE	// The types of bodies that exist in the world
     EMITTER = 0,
     RECEPTOR_COMPOSITION,
 	RECEPTOR_FULLCOMPOSITION,
+	RECEPTOR_MEDIUM,
 	HYBRID	// Currently unsupported.
 };
 

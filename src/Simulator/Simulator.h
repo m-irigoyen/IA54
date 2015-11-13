@@ -34,6 +34,13 @@
 *   It then runs the whole thing via the Run function.
 */
 
+enum AGENT_TYPE
+{
+	EMITTER,
+	RECEPTOR,
+	HYBRID
+};
+
 
 class Simulator
 {
@@ -64,7 +71,8 @@ public:
 	void initProblem(PROBLEM_TYPE newProblem);
 
     // Creates an agent at given position, then add him to the agent list
-	Agent* addEmitter(float xPos, float yPos);
+	Agent* addAgent(float xPos, float yPos, AGENT_TYPE agentType, BODY_TYPE bodyType);
+	Agent* addEmitter(float xPos, float yPos, BODY_TYPE type);
 	Agent* addReceptorComposition(float xPos, float yPos);
 	Agent* addReceptorFullComposition(float xPos, float yPos);
 	void addHybrid(float xPos, float yPos);

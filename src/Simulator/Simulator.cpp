@@ -86,7 +86,63 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 	}
 }
 
-Agent* Simulator::addEmitter(float xPos, float yPos)
+Agent * Simulator::addAgent(float xPos, float yPos, AGENT_TYPE agentType, BODY_TYPE type)
+{
+	Agent* agent = NULL;
+
+	BodyReceptor* receptor = NULL;
+	BodyEmitter* emitter = NULL;
+
+	ProblemRocket_OneEngine* castedRocketProblem = NULL;
+	ProblemRocket_TwoEngines* castedRocket2Problem = NULL;
+
+	if (agentType == AGENT_TYPE::EMITTER)
+	{
+		emitter = static_cast<BodyEmitter*>(this->world.createBody(BODY_TYPE::EMITTER, xPos, yPos));
+		if (emitter != NULL)
+		{
+			
+			switch (this->problemType)
+			{
+			case PROBLEM_TYPE::ROCKET_ONE:
+				castedRocketProblem = static_cast<ProblemRocket_OneEngine*>(this->problem);
+				if (castedRocketProblem != NULL)
+				{
+					agent = new AgentRocket_OneEngine_Emitter(castedRocketProblem);
+					((AgentRocket_OneEngine_Emitter*)agent)->connectCasted(emitter);
+					this->agents.push_back(agent);
+				}
+				else
+					std::cout << "ERROR : couldn't cast problem to ProblemRocket" << std::endl;
+				break;
+			case PROBLEM_TYPE::ROCKET_TWO:
+				ProblemRocket_TwoEngines* castedRocket2Problem = static_cast<ProblemRocket_TwoEngines*>(this->problem);
+				if (castedRocket2Problem != NULL)
+				{
+					agent = new AgentRocket_TwoEngines_Emitter(castedRocket2Problem);
+					((AgentRocket_TwoEngines_Emitter*)agent)->connectCasted(emitter);
+					this->agents.push_back(agent);
+				}
+				else
+					std::cout << "ERROR : couldn't cast problem to ProblemRocket2" << std::endl;
+				break;
+			}
+		}
+		else
+		{
+			std::cout << "ERROR : couldn't cast resulting body" << std::endl;
+			return NULL;
+		}
+	}
+	else if (agentType == AGENT_TYPE::RECEPTOR)
+	{
+
+	}
+
+	return agent;
+}
+
+Agent* Simulator::addEmitter(float xPos, float yPos, BODY_TYPE type)
 {
 	Agent* agent;
 	BodyEmitter* body = static_cast<BodyEmitter*>(this->world.createBody(BODY_TYPE::EMITTER, xPos, yPos));
