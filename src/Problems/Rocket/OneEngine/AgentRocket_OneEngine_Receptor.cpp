@@ -52,9 +52,10 @@ void AgentRocket_OneEngine_Receptor::live()
 		this->castedProblem->getWaveFrequencyOffset(),
 		this->castedProblem->getWaveFrequencyRange(),
 		0,
-		this->castedProblem->getPowerMax());
+		this->castedProblem->getPowerMax()*2);
+	power -= this->castedProblem->getPowerMax();
 
-	//cout << "TRANSLATED : " << power << ", " << angle << endl << endl;
+	cout << "TRANSLATED : " << power << ", " << angle << endl << endl;
 	
 	this->castedProblem->setDesiredAngle(angle);
 	this->castedProblem->setDesiredPower(0, power);

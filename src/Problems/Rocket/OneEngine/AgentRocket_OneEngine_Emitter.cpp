@@ -19,6 +19,7 @@ void AgentRocket_OneEngine_Emitter::live()
 	this->castedProblem->getRocketPosition(x, y);
 	power = this->castedProblem->getRocketEnginesPower()->at(0);
 	angle = this->castedProblem->getRocketAngle();
+	angle -= PROBLEMROCKET_GUI_ANGLE_OFFSET;	// Dont forget that
 	this->castedProblem->getRocketSpeed(hSpeed, vSpeed);
 	distanceToGround = this->castedProblem->getRocketDistanceToGround();
 	distanceToCenterFlat = this->castedProblem->getRocketDistanceToLandingZoneCenter();
@@ -32,27 +33,25 @@ void AgentRocket_OneEngine_Emitter::live()
 	double amplitude;
 	double frequency;
 	
-	switch (this->agentType)
+	if (this->agentType == PROBLEMROCKET_AGENTTYPE_ONE::ROCKET_ONE_DIRECTION)
 	{
-	case PROBLEMROCKET_AGENTTYPE_ONE::ROCKET_ONE_DIRECTION:
-
 		// Direct the rocket towards the flatzone
 		desiredAngle = convertToRange(abs(distanceToCenterFlat),
-			0, 
+			0,
 			lzSize / 2,
 			0,
-			90);
+			PROBLEMROCKET_ONE_PROBLEM_MAXANGLE);
 
 		if (distanceToCenterFlat > 0)
 			desiredAngle *= -1;
 
 		desiredPower = 50;
-
-		break;
-	case PROBLEMROCKET_AGENTTYPE_ONE::ROCKET_ONE_REGULATOR:
-		
+		cout << "OH JACQUY, REVEIL!" << endl;
+	}
+	else if (this->agentType == PROBLEMROCKET_AGENTTYPE_ONE::ROCKET_ONE_REGULATOR)
+	{
 		desiredAngle = 0;
-		
+
 		// If we're too fast : regain control
 		if (abs(hSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED || abs(vSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED)
 		{
@@ -68,7 +67,7 @@ void AgentRocket_OneEngine_Emitter::live()
 					0,
 					PROBLEMROCKET_ONE_PROBLEM_MAXANGLE);
 			}
-			
+
 			if (hSpeed < 0)
 				desiredAngle *= -1;
 
@@ -90,7 +89,7 @@ void AgentRocket_OneEngine_Emitter::live()
 			temp = abs(vSpeed);
 			if (vSpeed > 0)
 				temp = 0;
-			desiredPower = convertToRange(temp, 
+			desiredPower = convertToRange(temp,
 				0,
 				PROBLEMROCKET_ONE_PROBLEM_MAXVSPEED,
 				0,
@@ -101,23 +100,26 @@ void AgentRocket_OneEngine_Emitter::live()
 			desiredAngle = 0;
 			desiredPower = 50;
 		}
-		break;
 	}
 
 	// Sending
-	amplitude = convertToRange(desiredAngle + PROBLEMROCKET_ONE_PROBLEM_MAXANGLE,
+	desiredAngle -= angle;
+	desiredAngle += PROBLEMROCKET_ONE_PROBLEM_MAXANGLE;
+	amplitude = convertToRange(desiredAngle,
 		0,
 		PROBLEMROCKET_ONE_PROBLEM_MAXANGLE * 2,
 		this->castedProblem->getWaveAmplitudeOffset(),
 		this->castedProblem->getWaveAmplitudeRange());
 
+	desiredPower -= power;
+	desiredPower += this->castedProblem->getPowerMax();
 	frequency = convertToRange(desiredPower,
 		0,
-		this->castedProblem->getPowerMax(),
+		this->castedProblem->getPowerMax() * 2,
 		this->castedProblem->getWaveFrequencyOffset(),
 		this->castedProblem->getWaveFrequencyRange());
 
-	//cout << "SENDING : " << frequency << "," << amplitude << endl;
+	cout << "SENDING : " << frequency << "," << amplitude << endl;
 	this->castedBody->send(frequency, amplitude);
 }
 

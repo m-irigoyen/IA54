@@ -10,7 +10,7 @@
 
 // Problem values
 //TODO: remove those.
-#define PROBLEMROCKET_ONE_PROBLEM_MAXANGLE 90.0f	// The maximum angle the agents will deviate from 0
+#define PROBLEMROCKET_ONE_PROBLEM_MAXANGLE 45.0f	// The maximum angle the agents will deviate from 0
 
 #define PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED 20.0f
 #define PROBLEMROCKET_ONE_PROBLEM_MAXVSPEED 40.0f
