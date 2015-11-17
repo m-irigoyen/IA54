@@ -35,9 +35,15 @@ public :
 	//Other
 	void update(sf::Time elapsedTime);	// Update the wave : distance travelled in the given time, and attenuation
 	bool attenuate(sf::Time elapsedTime);	// Returns true if wave has attenuated below 0 and needs to be destroyed
+
+	void setMaxRadius(float maxRadius);
+	bool hasExceededMaxRadius();	// Returns true if this wave's radius has exceeded its max radius
 	
 	bool hasCollided(int receptorId);	// Has this wave collided with that receptor
 	void onCollisionEvent(int receptorId);	// Called when a wave collides with a receptor
+
+	void setEndOfTransmission(bool eot);
+	bool isEndOfTransmission();
 
 private :
 	float m_radius;			// The radius of the wave from its point of origin
@@ -46,9 +52,13 @@ private :
 	const int emitterId;	// The id of the Emitter body ho sent that wave
 	bool useAttenuation;	// If this wave should loose amplitude over time
 
+	float maxRadius; // optimisation
+
 	float amplitudeLossPerSecond;	// How much amplitude is lost per second of travel
 
 	std::vector<int> collidedReceptors;	// All the receptors this wave has hit
+
+	bool endOfTransmission;	// When this flag is true, this wave signals the end of a transmission
 };
 
 #endif

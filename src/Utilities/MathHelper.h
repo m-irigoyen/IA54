@@ -12,4 +12,6 @@ float computeAngle(float x, float y);	// Computes angle (in degrees) from given
 											// Helper functions
 float convertToRange(float value, float minValue, float maxValue, float targetMinValue, float targetMaxValue);	// Converts given value from its range to the given range
 
+bool toggle(bool value);	// If value, returns false. Else, returns true
+
 #endif

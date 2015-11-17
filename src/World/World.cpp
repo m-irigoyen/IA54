@@ -191,12 +191,14 @@ void World::update(sf::Time elapsedTime, sf::Time currentFrameTime)
 		else
 		{
 			// Else, check for collisions
-			checkCollisionEvents((*it), elapsedTime);	
-			if (optimiseWaveTravelDistance && (*it)->getRadius() > this->maxWaveDistance
-				|| (*it)->getRadius() > this->maxWorldDistance)	// If the wave has reached max distance
-			{
+			checkCollisionEvents((*it), elapsedTime);
+
+			// Does this wave needs to be removed : 2 cases
+			// Case 1 : wave optimization on, and the wave's radius is bigger than its maxRadius
+			// Case 2 : the wave's radius has exceeded the max travel distance
+			if ((optimiseWaveTravelDistance && (*it)->hasExceededMaxRadius())
+				|| (*it)->getRadius() > this->maxWorldDistance)
 				it = this->waves.erase(it);
-			}
 			else
 				++it;
 		}
@@ -288,24 +290,32 @@ void World::checkCollisionEvents(Wave* wave, sf::Time elapsedTime)
 			// If the wave hasn't already collided with this receptor in a previous frame
 			if (!wave->hasCollided((*it)->getId()))
 			{
-				// Get the distance between the wave and the receptor
-                float distanceEmitterReceptor = calculateDistance(xWave, yWave, x1, y1);				
-                float distanceWaveReceptor = wave->getRadius() - distanceEmitterReceptor;
+				// 2 possibilities : either the wave is an end of transmission, either it's not.
+				if (wave->isEndOfTransmission())
+				{
 
-				float waveSpeed = wave->getSpeed();
-				if (waveSpeed <= 0.0f)
-					waveSpeed = DEFAULT_PROPAGATION_SPEED;
+				}
+				else
+				{
+					// Get the distance between the wave and the receptor
+					float distanceEmitterReceptor = calculateDistance(xWave, yWave, x1, y1);
+					float distanceWaveReceptor = wave->getRadius() - distanceEmitterReceptor;
 
-				// Computing the exact moment the wave hit the receptor (if it was between 2 frames)
-				sf::Time displayT = this->currentFrameTime - this->calculateTimeElapsedInDistance(waveSpeed, distanceWaveReceptor);
-				
-				// Telling the wave it hit that object
-				wave->onCollisionEvent((*it)->getId());
+					float waveSpeed = wave->getSpeed();
+					if (waveSpeed <= 0.0f)
+						waveSpeed = DEFAULT_PROPAGATION_SPEED;
 
-				// Telling the object it was hit by that wave
-				(*it)->onWaveCollision(wave->getEmitterId(), displayT, wave->getAmplitude());
+					// Computing the exact moment the wave hit the receptor (if it was between 2 frames)
+					sf::Time displayT = this->currentFrameTime - this->calculateTimeElapsedInDistance(waveSpeed, distanceWaveReceptor);
 
-				//cout << "COLLISION : " << wave->getEmitterId() << ", " << wave->getAmplitude() << endl;
+					// Telling the wave it hit that object
+					wave->onCollisionEvent((*it)->getId());
+
+					// Telling the object it was hit by that wave
+					(*it)->onWaveCollision(wave->getEmitterId(), displayT, wave->getAmplitude());
+
+					//cout << "COLLISION : " << wave->getEmitterId() << ", " << wave->getAmplitude() << endl;
+				}
 			}
 		}
 	}
@@ -347,12 +357,14 @@ void World::updateMaxWaveDistance()
 {
 	float maxDistance = 0.0f;
 	float tempDistance = 0.0f;
+	float emitterDistance = 0.0f;
 
 	// For each emitter
 	for (std::vector<BodyEmitter*>::iterator itEmitter = this->emitters.begin();
 		itEmitter != this->emitters.end();
 		++itEmitter)
 	{
+		emitterDistance = 0.0f;
 		// For each receptor
 		for (std::vector<BodyReceptor*>::iterator itReceptor = this->receptors.begin(); itReceptor != this->receptors.end(); ++itReceptor)
 		{
@@ -361,13 +373,14 @@ void World::updateMaxWaveDistance()
 			if (tempDistance > maxDistance)
 				maxDistance = tempDistance;
 
+			if (tempDistance > emitterDistance)
+				emitterDistance = tempDistance;
+
 			// Error checking. (This supposes that the distance will never be bigger than the diagonal of the world)
             if (maxDistance > this->maxWorldDistance)
-            {
                 this->maxWaveDistance = this->maxWorldDistance;
-                return;
-            }
 		}
+		(*itEmitter)->setMaxRadius(emitterDistance);	// Setting the max distance for that emitter
 	}
 	this->maxWaveDistance = maxDistance;
 }
@@ -381,22 +394,40 @@ void World::checkWaveCreation(BodyEmitter* emitter)
 		// Create a new wave
 		Wave* w = createWave(emitter->GetPosition(), emitter->getId(), emitter->getCurrentSpeed(), emitter->getCurrentAmplitude());
 
-		// Compute the delay between when the emitter wanted to send, and the current frame
-		sf::Time newLastSendTime = emitter->getNextSendTime();
-		sf::Time delay = this->currentFrameTime - newLastSendTime;
-		cout << "Delay " << delay.asSeconds() << endl;
-		
+		w->setMaxRadius(emitter->getMaxRadius());
 
-		// Compensate that delay on the wave : Since it should have spawned earlier, so it should have traveled farther too.
-        w->setRadius(delay.asSeconds()*w->getSpeed());
+		// Transmission is just starting, there is no delay
+		if (emitter->getStartOfTransmission())
+			emitter->setLastSendTime(this->currentFrameTime);
+		// Transmission had started before, we need to compute the delay
+		else
+		{
+			// Compute the delay between when the emitter wanted to send, and the current frame
+			sf::Time newLastSendTime = emitter->getNextSendTime();
+			sf::Time delay = this->currentFrameTime - newLastSendTime;
+			//cout << "Delay " << delay.asSeconds() << endl;
 
-		// Update the emitter's send time
-		emitter->setLastSendTime(newLastSendTime);
+			// Compensate that delay on the wave : Since it should have spawned earlier, so it should have traveled farther too.
+			w->setRadius(delay.asSeconds()*w->getSpeed());
+
+			// Update the emitter's send time
+			emitter->setLastSendTime(newLastSendTime);
+		}
 
 		/*std::cout << "Creating new wave : " << std::endl;
 		std::cout << "  NewSendTime  : " << newLastSendTime.asSeconds() << std::endl;
 		std::cout << "  NextSendTime : " << emitter->getNextSendTime().asSeconds() << std::endl;
 		std::cout << "  Delay  : " << delay.asSeconds() << std::endl;
 		std::cout << "  Radius : " << delay.asSeconds()*w->getSpeed() << std::endl;*/
+	}
+	else if (emitter->getEndOfTransmission())
+	{
+		// Create a new wave, and set its endOfTransmission flag
+		Wave* w = createWave(emitter->GetPosition(), emitter->getId(), emitter->getCurrentSpeed(), 1.0f);
+		w->setEndOfTransmission(true);
+		w->setMaxRadius(emitter->getMaxRadius());
+
+		// Drop the emitter's end of transmission flag
+		emitter->acknowledgeEndOfTransmission();
 	}
 }

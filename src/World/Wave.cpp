@@ -2,9 +2,9 @@
 
 //Constructor
 
-Wave::Wave(Semantic type, float x, float y, int emitterId, float speed, float amplitude, 
+Wave::Wave(Semantic type, float x, float y, int emitterId, float speed, float amplitude,
 	float amplitudeLossPerSecond, bool useAttenuation) : PhysicalObject(type, x, y), emitterId(emitterId), m_speed(speed),
-	m_amplitude(amplitude), amplitudeLossPerSecond(amplitudeLossPerSecond), m_radius(0.0f), useAttenuation(useAttenuation)
+	m_amplitude(amplitude), amplitudeLossPerSecond(amplitudeLossPerSecond), m_radius(0.0f), useAttenuation(useAttenuation), endOfTransmission(false), maxRadius(0.0f)
 {
 	//cout << "INIT " << amplitude << endl;
 }
@@ -63,6 +63,17 @@ bool Wave::attenuate(sf::Time elapsedTime)
 	return false;
 }
 
+void Wave::setMaxRadius(float maxRadius)
+{
+	this->maxRadius = maxRadius;
+}
+
+// Returns true if this wave's radius has exceeded its max radius
+bool Wave::hasExceededMaxRadius()
+{
+	return (this->m_radius >= this->maxRadius);
+}
+
 void Wave::setRadius(float r)
 {
 	this->m_radius = r;
@@ -87,4 +98,14 @@ void Wave::onCollisionEvent(int receptorId)
 	{
 		this->collidedReceptors.push_back(receptorId);
 	}
+}
+
+void Wave::setEndOfTransmission(bool eot)
+{
+	this->endOfTransmission = eot;
+}
+
+bool Wave::isEndOfTransmission()
+{
+	return this->endOfTransmission;
 }

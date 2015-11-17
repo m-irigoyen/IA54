@@ -1,3 +1,12 @@
 FIX
-- Memory system is flawed : removing an emitter won't remove its wave into the receptor's memory. need some kind of delete system.
-- Relative angles are still buggy as fuck.
+- Relative angles are still bugged
+- The "Currently placing : " helper text, on the simulator window, is buggy. After switching problems, it display weird
+
+TODO:
+- Wave physics (that's a big one)
+- Solve rocket 2 engines
+- Implement Rocket 3 engines
+- Implement standard force interactions between bodies
+
+PROJECT GOALS : 
+- Check if there is an optimal distance between emitters and receptors to solve the rocket problem

@@ -26,6 +26,9 @@ bool Problem::handleEvent(sf::RenderWindow* window, sf::Event event)
 		case::sf::Keyboard::Escape:
 			window->close();
 			return true;
+		case::sf::Keyboard::P : 
+			this->pause = toggle(this->pause);
+			break;
 		}
 	}
 	return false;
@@ -77,6 +80,11 @@ float Problem::getWaveFrequencyRange()
 	return this->wave_frequency_range;
 }
 
+bool Problem::getPause()
+{
+	return this->pause;
+}
+
 
 void Problem::setNumberOfEmitters(int nb)
 {
@@ -90,4 +98,9 @@ void Problem::setNumberOfReceptors(int nb)
 	if (nb < 0)
 		nb = 0;
 	this->numberOfEmitters = nb;
+}
+
+void Problem::setPause(bool pause)
+{
+	this->pause = pause;
 }

@@ -17,10 +17,14 @@ class Emitter
 private:
 	sf::Time lastSendTime;	// Last time a wave was sent
 	bool sending;			// Is currently broadcasting
+	bool flag_firstSend;	// Set to true when the emitter just started sending
+	bool flag_stopSending;	// When this flag is on, it signals the World to send an end of transmission wave
 
 	float currentAmplitude;	// Amplitude
 	float currentFrequency;	// Frequency in hertz
 	float currentSpeed;		// Speed of the waves to be sent in meters/second
+
+	float maxRadius;	// Optimization
 
 public:
 	Emitter();
@@ -38,6 +42,8 @@ public:
 
 	// Setters
 	void setLastSendTime(sf::Time newLastSendTime);	// When newest peak has ben sent, the world will call this to notify the Emitter
+	void acknowledgeEndOfTransmission();	// Called when the world sends the end of transmission wave
+	void acknowledgeStartTransmission();
 
 	// Getters
 	virtual sf::Time getLastSendTime();
@@ -45,10 +51,16 @@ public:
 	virtual float getCurrentAmplitude();
 	virtual float getCurrentFrequency();
 	virtual float getCurrentSpeed();
+	bool getEndOfTransmission();
+	bool getStartOfTransmission();
 
 	// Static functions
 	// TODO : Comment this
 	static sf::Time getTimeFromFrequency(float frequency);
+
+	// Optimization
+	void setMaxRadius(float maxRadius);	// if wave optimization is on, the emitter won't emit farther than this radius
+	float getMaxRadius();	// if wave optimization is on, the emitter won't emit farther than this radius
 };
 
 #endif

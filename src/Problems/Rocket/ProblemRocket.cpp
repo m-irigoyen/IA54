@@ -223,6 +223,30 @@ ProblemRocket::ProblemRocket(float waveAmplLossPerSec, bool useAttenuation) : Pr
 	this->wave_frequency_range = 10.0f;
 }
 
+void ProblemRocket::run(sf::Time elapsedTime)
+{
+	if (this->pause)
+		return;
+	else if (!hasLanded && !hasCrashed && !hasGoneMissing && this->problemLive)
+	{
+		// First off : get the thrust force
+		float hOffset, vOffset;
+		this->getThrustForce(hOffset, vOffset);
+
+		// Move the rocket by this force
+		this->moveRocket(elapsedTime, hOffset, vOffset);
+
+		// Now, resolve influences
+		this->resolveInfluences();
+
+		this->resolveRocketPowerChange();
+		this->resolveRocketAngleChange();
+
+		this->resetDesiredChanges();
+	}
+	else
+		this->problemLive = false;
+}
 
 void ProblemRocket::clean()
 {

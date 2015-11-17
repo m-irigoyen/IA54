@@ -36,6 +36,7 @@
 *   It then runs the whole thing via the Run function.
 */
 
+// The main agent categories. Each agent has 2 types : this one is the general one, the other is a Problem specific type
 enum AGENT_TYPE
 {
 	AGENT_EMITTER,

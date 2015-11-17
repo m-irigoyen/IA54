@@ -31,6 +31,7 @@ void Perception::addNewWave(int emitterId, sf::Time contact, float amplitude)
 // Removes given id from the list
 void Perception::removeWave(int emitterId)
 {
+	// Search if the given emitterId is contained in the map. If it is : remove it
 	std::map<int, std::pair<sf::Time, std::pair<float, float>>>::iterator it = this->percievedWaves.find(emitterId);
 	if (it != this->percievedWaves.end())
 		this->percievedWaves.erase(it);

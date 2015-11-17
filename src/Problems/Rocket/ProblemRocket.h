@@ -91,7 +91,7 @@ public:
 
 	// Running the problem
 	// TO RUN THE PROBLEM : call getThrustersStrength to get the current force applied to the rocket. Then call moveRocket.
-	virtual void run(sf::Time elapsedTime) = 0;			// Run the problem
+	virtual void run(sf::Time elapsedTime);			// Run the problem
 	virtual void clean();
 	virtual void resetRocket();	// Resets the rocket to its starting position, with starting hSpeed and vSpeed
 

@@ -37,8 +37,18 @@ private:
 	std::vector<BodyReceptor*> receptors;
 	std::vector<BodyEmitter*> emitters;
 
+	float waveAplitudeLoss;
+	bool useWaveAttenuation;
+
     bool optimiseWaveTravelDistance;
 
+	float maxWaveDistance;	// Biggest distance in the world between an emitter and receptor. Passed that distance, all waves are destroyed
+	float maxWorldDistance; // If above variable isn't used, this one will be
+
+	sf::Clock* simulationClock;	// Pointer to the clock
+	sf::Time currentFrameTime;	// Current frame
+
+	// HELPER FUNCTIONS
 	void checkCollisionEvents(Wave* wave, sf::Time elapsedTime);	// Check if a wave collides with a receptor
 	void checkWaveCreation(BodyEmitter* emitter);	// Check if emitters needs to send a wave
 	bool distanceCheck(float x1, float y1, float x2, float y2, float minDistance, float maxDistance);	// Check if a wave has gone too far
@@ -48,16 +58,6 @@ private:
 	float calculateDistance(float x1, float y1, float x2, float y2);	// Helper function : distance between x and y
 	float calculateDistance(std::vector<float> pos1, std::vector<float> pos2);	// Override of the above function
 	float calculateDistance(float x1, float y1, std::vector<float> pos2);	// Override of the above function
-
-	float maxWaveDistance;	// Biggest distance in the world between an emitter and receptor. Passed that distance, all waves are destroyed
-	float maxWorldDistance; // If above variable isn't used, this one will be
-
-	sf::Clock* simulationClock;	// Pointer to the clock
-	sf::Time currentFrameTime;	// Current frame
-
-	float waveAplitudeLoss;
-	bool useWaveAttenuation;
-	
 
 public:
 	World(sf::Clock* clock, float worldLength, float worldHeight);

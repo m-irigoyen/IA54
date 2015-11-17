@@ -4,8 +4,9 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/Graphics.hpp>
 #include <vector>
-
 #include "pugixml\pugixml.hpp"
+
+#include "Utilities/MathHelper.h"
 
 /*
 * The Problem class creates and run the problem to be solved. (pendulum, drone, etc)
@@ -23,9 +24,15 @@ enum PROBLEM_TYPE
 class Problem
 {
 protected:
+	// Physics stuff
 	float waveAmplLossPerSec;
-	bool problemLive; // True if the problem is currently running
 	bool useWaveAttenuation;
+
+	// Problem management
+	bool problemLive; // True if the problem is currently running
+	bool pause;			// True if the problem is paused.
+	
+	// Agents stuff
 	int numberOfEmitters;
 	int numberOfReceptors;
 
@@ -64,11 +71,12 @@ public:
 	float getWaveAmplitudeRange();
 	float getWaveFrequencyOffset();
 	float getWaveFrequencyRange();
+	virtual bool getPause();
 
 	// Setters
 	virtual void setNumberOfEmitters(int nb);
 	virtual void setNumberOfReceptors(int nb);
-
+	virtual void setPause(bool pause);
 
 };
 

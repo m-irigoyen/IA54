@@ -59,6 +59,7 @@ void Simulator::userEraseAgent(Body * body)
 			// Destroy the agent and its body
 			this->agents.erase(it);
 			this->world.removeBody(body);
+			this->world.updateMaxWaveDistance();	// Updating the max wave distance, in case it changed
 			return;
 		}
 	}

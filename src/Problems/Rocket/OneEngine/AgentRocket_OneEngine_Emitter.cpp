@@ -55,8 +55,14 @@ void AgentRocket_OneEngine_Emitter::live()
 	{
 		desiredAngle = 0;
 
+		// Don't go too far up
+		if (vSpeed > 0.0f)
+		{
+			desiredAngle = 0;
+			desiredPower = 0;
+		}
 		// If we're too fast : regain control
-		if (abs(hSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED || abs(vSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED)
+		else if (abs(hSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED || abs(vSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED)
 		{
 			if (abs(hSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED)
 			{
@@ -114,7 +120,7 @@ void AgentRocket_OneEngine_Emitter::live()
 	// Sending
 	desiredAngle -= angle;
 	desiredPower -= power;
-	cout << "DESIRED : " << desiredPower << ", " << desiredAngle << endl;
+	//cout << "DESIRED : " << desiredPower << ", " << desiredAngle << endl;
 	desiredAngle += PROBLEMROCKET_ONE_PROBLEM_MAXANGLE;
 
 	amplitude = convertToRange(desiredAngle,
@@ -131,7 +137,7 @@ void AgentRocket_OneEngine_Emitter::live()
 		this->castedProblem->getWaveFrequencyOffset(),
 		this->castedProblem->getWaveFrequencyRange());
 
-	cout << "SENDING : " << frequency << "," << amplitude << endl;
+	//cout << "SENDING : " << frequency << "," << amplitude << endl;
 	this->castedBody->send(frequency, amplitude);
 }
 

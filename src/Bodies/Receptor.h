@@ -24,6 +24,7 @@ public:
 	virtual void initialise() = 0;	// Initialises the receptor
 	virtual WAVE getPerception() = 0;    // Returns what the receptor understands of all it has received.
 	virtual void onWaveCollision(int emitterId, sf::Time contact, float amplitude);	// Called when the receptor is hit by a wave
+	virtual void onEndOfTransmission(int emitterId, sf::Time contact);	// When the emitter stops transmitting, this signals the receptor that it has lost the signal
 
 	virtual float calculateValueAtT(sf::Time t) = 0;    // Calculates resulting value at given time
 	virtual float calculateValueAtT(sf::Time t, sf::Time firstContact, float frequency, float amplitude) = 0;    // Calculates value for given wave at given time

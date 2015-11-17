@@ -59,6 +59,7 @@ void Emitter::stopSending()
 		this->currentFrequency = -1.0f;
 		this->currentSpeed = -1.0f;
 		this->sending = false;
+		this->flag_stopSending;
 		this->lastSendTime = sf::Time::Zero;
 	}
 }
@@ -67,6 +68,16 @@ void Emitter::stopSending()
 void Emitter::setLastSendTime(sf::Time newLastSendTime)
 {
 	this->lastSendTime = newLastSendTime;
+}
+
+void Emitter::acknowledgeEndOfTransmission()
+{
+	this->flag_stopSending = false;
+}
+
+void Emitter::acknowledgeStartTransmission()
+{
+	this->flag_firstSend = false;
 }
 
 // Getters
@@ -96,9 +107,36 @@ float Emitter::getCurrentSpeed()
 	return this->currentSpeed;
 }
 
+bool Emitter::getEndOfTransmission()
+{
+	// We are not sending, and the stopSending flag is set.
+	if (!this->isSending() && this->flag_stopSending)
+		return true;
+	//else, return false
+	else
+		return false;
+}
+
+bool Emitter::getStartOfTransmission()
+{
+	return this->flag_firstSend;
+}
+
 // Static functions
 sf::Time Emitter::getTimeFromFrequency(float frequency)
 {
 	sf::Time t = sf::seconds(1);
 	return t / frequency;
+}
+
+// if wave optimization is on, the emitter won't emit farther than this radius
+void Emitter::setMaxRadius(float maxRadius)
+{
+	this->maxRadius = maxRadius;
+}
+
+// if wave optimization is on, the emitter won't emit farther than this radius
+float Emitter::getMaxRadius()
+{
+	return this->maxRadius;
 }

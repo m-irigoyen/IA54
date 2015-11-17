@@ -60,7 +60,7 @@ protected:
 public:
 	ProblemRocket_TwoEngines(float waveAmplLossPerSec = 0.0f);
 
-	virtual void run(sf::Time elapsedTime);	// Updating the problem
+	//virtual void run(sf::Time elapsedTime);	// Updating the problem
 	virtual void draw(sf::RenderWindow* problemWindow);
 	virtual void clean();
 	virtual void init();	// init

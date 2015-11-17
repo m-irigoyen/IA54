@@ -119,28 +119,6 @@ void ProblemRocket_TwoEngines::resolveInfluences()
 	// No need to do the angle : it's already computed in the getThrustForce function
 }
 
-void ProblemRocket_TwoEngines::run(sf::Time elapsedTime)
-{
-	if (!hasLanded && !hasCrashed && !hasGoneMissing && this->problemLive)
-	{
-		// First off : get the thrust force
-		float hOffset, vOffset;
-		this->getThrustForce(hOffset, vOffset);
-
-		// Move the rocket by this force
-		this->moveRocket(elapsedTime, hOffset, vOffset);
-
-		// Now, resolve influences
-		this->resolveInfluences();
-
-		this->resolveRocketPowerChange();
-		this->resolveRocketAngleChange();
-
-		this->resetDesiredChanges();
-	}
-	else
-		this->problemLive = false;
-}
 
 // Draw the problem
 void ProblemRocket_TwoEngines::draw(sf::RenderWindow * problemWindow)

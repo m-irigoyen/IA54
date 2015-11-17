@@ -38,7 +38,7 @@ void AgentRocket_OneEngine_Receptor::live()
 	}
 
 	// Converting into angle and power values
-	cout << "RECEIVED : " << perception.frequency << ", " << perception.amplitude << endl;
+	//cout << "RECEIVED : " << perception.frequency << ", " << perception.amplitude << endl;
 	float angle = convertToRange(perception.amplitude,
 		this->castedProblem->getWaveAmplitudeOffset(),
 		this->castedProblem->getWaveAmplitudeRange(),
@@ -55,7 +55,7 @@ void AgentRocket_OneEngine_Receptor::live()
 		this->castedProblem->getPowerMax()*2);
 	power -= this->castedProblem->getPowerMax();
 
-	cout << "TRANSLATED : " << power << ", " << angle << endl << endl;
+	//cout << "TRANSLATED : " << power << ", " << angle << endl << endl;
 	
 	this->castedProblem->setDesiredAngle(angle);
 	this->castedProblem->setDesiredPower(0, power);

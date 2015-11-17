@@ -89,28 +89,6 @@ void ProblemRocket_OneEngine::resolveInfluences()
 	this->powerChange = this->desiredPower;
 }
 
-void ProblemRocket_OneEngine::run(sf::Time elapsedTime)
-{
-	if (!hasLanded && !hasCrashed && !hasGoneMissing && this->problemLive)
-	{
-		// First off : get the thrust force
-		float hOffset, vOffset;
-		this->getThrustForce(hOffset, vOffset);
-
-		// Move the rocket by this force
-		this->moveRocket(elapsedTime, hOffset, vOffset);
-
-		// Now, resolve influences
-		this->resolveInfluences();
-
-		this->resolveRocketPowerChange();
-		this->resolveRocketAngleChange();
-
-		this->resetDesiredChanges();
-	}
-	else
-		this->problemLive = false;
-}
 
 // Draw the problem
 void ProblemRocket_OneEngine::draw(sf::RenderWindow * problemWindow)

@@ -24,8 +24,7 @@ enum AGENTTYPE_ROCKET_ONE
 {
 	ROCKET_ONE_DEFAULT,	// Default agents do nothing.
 	ROCKET_ONE_DIRECTION,
-	ROCKET_ONE_REGULATOR,
-	ROCKET_ONE_STABILIZER
+	ROCKET_ONE_REGULATOR
 };
 
 using namespace std;
@@ -57,7 +56,7 @@ protected:
 public:
 	ProblemRocket_OneEngine(float waveAmplLossPerSec = 0.0f);
 
-	virtual void run(sf::Time elapsedTime);	// Updating the problem
+	//virtual void run(sf::Time elapsedTime);	// Updating the problem
 	virtual void draw(sf::RenderWindow* problemWindow);
 	virtual void clean();
 	virtual void init();	// init 

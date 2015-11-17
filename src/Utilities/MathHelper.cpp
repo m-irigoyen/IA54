@@ -37,7 +37,7 @@ float convertToRange(float value, float valueOffset, float valueRange, float tar
 
 		if (value < 0)
 		{
-			std::cout << "WWOWOWO CEYLAMERDE : " << value << std::endl;
+			//std::cout << "WWOWOWO CEYLAMERDE : " << value << std::endl;
 				return -1.0f;
 		}
 			
@@ -60,4 +60,12 @@ float convertToRange(float value, float valueOffset, float valueRange, float tar
 	// 0		-> translatedOffset		-> range
 	//offset	-> result				-> range+offset
 	return translatedResult + targetOffset;
+}
+
+// If value, returns false. Else, returns true
+bool toggle(bool value)
+{
+	if (value)
+		return false;
+	return true;
 }
