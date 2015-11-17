@@ -58,6 +58,7 @@ void Simulator::userEraseAgent(Body * body)
 
 			// Destroy the agent and its body
 			this->agents.erase(it);
+			this->world.forceEndOfTransmission(static_cast<BodyEmitter*>(body));
 			this->world.removeBody(body);
 			this->world.updateMaxWaveDistance();	// Updating the max wave distance, in case it changed
 			return;
@@ -324,10 +325,9 @@ void Simulator::run(sf::Time refreshRate)
 
 	int eventID = 0;
 
-	sf::Time startTime, endTime;
+	sf::Time startTime, endTime, frameTime;
 
 	// VI51 VERSION
-
 	//FIXME : THIS! THIS IS WHY EVERYTHING IS SO FUCKING IMPRECISE! Replace "refreshRate" being send to everything by the ACTUAL FUCKING ELAPSED TIME u_u
 	std::cout << "Starting program loop" << std::endl;
 	while (!finishSimulation)
@@ -340,9 +340,12 @@ void Simulator::run(sf::Time refreshRate)
 
 			// UPDATE STUFF
 			// updating problem
-			this->problem->run(refreshRate);
 
-			this->world.update(refreshRate, startTime);
+			// Old, unprecise version (but at least partially functionnal
+			//this->problem->run(refreshRate);
+			//this->world.update(refreshRate, startTime);
+			this->problem->run(frameTime);
+			this->world.update(frameTime, startTime);
 
 			// Updating agents
 			for (std::vector<Agent*>::iterator it = this->agents.begin(); it != this->agents.end(); ++it)
@@ -355,7 +358,7 @@ void Simulator::run(sf::Time refreshRate)
 
 			// Ending the frame
 			endTime = simulationClock.getElapsedTime();
-			sf::Time frameTime = endTime - startTime;
+			frameTime = endTime - startTime;
 
 			/*if (frameTime.asMilliseconds() > 17)
 				std::cout << "frame time : " << frameTime.asMilliseconds() << " ms, threshold was " << 1/30 << "ms" << std::endl;*/
@@ -367,7 +370,7 @@ void Simulator::run(sf::Time refreshRate)
 			checkEvents();	// Checking for user input
 
 			endTime = simulationClock.getElapsedTime();
-			sf::Time frameTime = endTime - startTime;
+			frameTime = endTime - startTime;
 
 			if (frameTime > refreshRate)
 				frameFlag = true;

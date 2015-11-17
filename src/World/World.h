@@ -78,6 +78,7 @@ public:
 
 	// Update the world : emitters, receptors, waves
 	void update(sf::Time elapsedTime, sf::Time currentFrameTime);
+	void forceEndOfTransmission(BodyEmitter* body);
 
 	// Set a receptor's perceptions
 	void setPerception(BodyReceptor* receptor);

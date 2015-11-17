@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <vector>
+#include <iostream>
 
 #include "Bodies/BodyReceptor.h"
 #include "Utilities/MathHelper.h"

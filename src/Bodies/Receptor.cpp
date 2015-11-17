@@ -12,6 +12,7 @@ void Receptor::onWaveCollision(int emitterId, sf::Time contact, float amplitude)
 
 void Receptor::onEndOfTransmission(int emitterId, sf::Time contact)
 {
+	std::cout << "Receptor : terminating transmission " << emitterId << std::endl;
 	this->perception.removeWave(emitterId);
 }
 

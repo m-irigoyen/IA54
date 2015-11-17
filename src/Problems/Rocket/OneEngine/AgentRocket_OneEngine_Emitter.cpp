@@ -37,15 +37,14 @@ void AgentRocket_OneEngine_Emitter::live()
 	if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DIRECTION)
 	{
 		// Direct the rocket towards the flatzone
-		/*desiredAngle = convertToRange(abs(distanceToCenterFlat),
+		desiredAngle = convertToRange(abs(distanceToCenterFlat),
 			0,
 			lzSize / 2,
 			0,
-			PROBLEMROCKET_ONE_PROBLEM_MAXANGLE);*/
-		desiredAngle = -45;
+			PROBLEMROCKET_ONE_PROBLEM_MAXANGLE);
 
-		/*if (distanceToCenterFlat > 0)
-			desiredAngle *= -1;*/
+		if (distanceToCenterFlat > 0)
+			desiredAngle *= -1;
 
 		if (abs(desiredAngle) > PROBLEMROCKET_ONE_PROBLEM_MAXANGLE)
 			ceaseTransmission = true;
@@ -117,28 +116,35 @@ void AgentRocket_OneEngine_Emitter::live()
 		return;
 	}
 
-	// Sending
-	desiredAngle -= angle;
-	desiredPower -= power;
-	//cout << "DESIRED : " << desiredPower << ", " << desiredAngle << endl;
-	desiredAngle += PROBLEMROCKET_ONE_PROBLEM_MAXANGLE;
+	if (ceaseTransmission)
+	{
+		this->castedBody->stopSending();
+	}
+	else
+	{
+		// Sending
+		desiredAngle -= angle;
+		desiredPower -= power;
+		//cout << "DESIRED : " << desiredPower << ", " << desiredAngle << endl;
+		desiredAngle += PROBLEMROCKET_ONE_PROBLEM_MAXANGLE;
 
-	amplitude = convertToRange(desiredAngle,
-		0,
-		PROBLEMROCKET_ONE_PROBLEM_MAXANGLE * 2,
-		this->castedProblem->getWaveAmplitudeOffset(),
-		this->castedProblem->getWaveAmplitudeRange());
+		amplitude = convertToRange(desiredAngle,
+			0,
+			PROBLEMROCKET_ONE_PROBLEM_MAXANGLE * 2,
+			this->castedProblem->getWaveAmplitudeOffset(),
+			this->castedProblem->getWaveAmplitudeRange());
 
-	
-	desiredPower += this->castedProblem->getPowerMax();
-	frequency = convertToRange(desiredPower,
-		0,
-		this->castedProblem->getPowerMax() * 2,
-		this->castedProblem->getWaveFrequencyOffset(),
-		this->castedProblem->getWaveFrequencyRange());
 
-	//cout << "SENDING : " << frequency << "," << amplitude << endl;
-	this->castedBody->send(frequency, amplitude);
+		desiredPower += this->castedProblem->getPowerMax();
+		frequency = convertToRange(desiredPower,
+			0,
+			this->castedProblem->getPowerMax() * 2,
+			this->castedProblem->getWaveFrequencyOffset(),
+			this->castedProblem->getWaveFrequencyRange());
+
+		cout << "SENDING : " << frequency << "," << amplitude << endl;
+		this->castedBody->send(frequency, amplitude);
+	}
 }
 
 bool AgentRocket_OneEngine_Emitter::isLinked()

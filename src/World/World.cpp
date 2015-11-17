@@ -215,6 +215,18 @@ void World::update(sf::Time elapsedTime, sf::Time currentFrameTime)
 	}
 }
 
+void World::forceEndOfTransmission(BodyEmitter * body)
+{
+	// Create a new wave, and set its endOfTransmission flag
+	Wave* w = createWave(body->GetPosition(), body->getId(), body->getCurrentSpeed(), 1.0f);
+	w->setEndOfTransmission(true);
+	w->setMaxRadius(body->getMaxRadius());
+
+	// Drop the emitter's end of transmission flag
+	body->stopSending();
+	body->acknowledgeEndOfTransmission();
+}
+
 /*
 For a specific receptor, look for each wave colliding with it, then set the receptor in consequences
 */
@@ -290,24 +302,24 @@ void World::checkCollisionEvents(Wave* wave, sf::Time elapsedTime)
 			// If the wave hasn't already collided with this receptor in a previous frame
 			if (!wave->hasCollided((*it)->getId()))
 			{
+				float waveSpeed = wave->getSpeed();
+				if (waveSpeed <= 0.0f)
+				{
+					waveSpeed = DEFAULT_PROPAGATION_SPEED;
+					cout << "DEFAULT WAVE SPEED" << endl;
+				}
+
+				// Get the distance between the wave and the receptor
+				float distanceWaveReceptor = wave->getRadius() - calculateDistance(xWave, yWave, x1, y1);;
+
+				// Computing the exact moment the wave hit the receptor (if it was between 2 frames)
+				sf::Time displayT = this->currentFrameTime - this->calculateTimeElapsedInDistance(waveSpeed, distanceWaveReceptor);
+
 				// 2 possibilities : either the wave is an end of transmission, either it's not.
 				if (wave->isEndOfTransmission())
-				{
-
-				}
+					(*it)->onEndOfTransmission(wave->getEmitterId(), displayT);
 				else
 				{
-					// Get the distance between the wave and the receptor
-					float distanceEmitterReceptor = calculateDistance(xWave, yWave, x1, y1);
-					float distanceWaveReceptor = wave->getRadius() - distanceEmitterReceptor;
-
-					float waveSpeed = wave->getSpeed();
-					if (waveSpeed <= 0.0f)
-						waveSpeed = DEFAULT_PROPAGATION_SPEED;
-
-					// Computing the exact moment the wave hit the receptor (if it was between 2 frames)
-					sf::Time displayT = this->currentFrameTime - this->calculateTimeElapsedInDistance(waveSpeed, distanceWaveReceptor);
-
 					// Telling the wave it hit that object
 					wave->onCollisionEvent((*it)->getId());
 
@@ -398,7 +410,11 @@ void World::checkWaveCreation(BodyEmitter* emitter)
 
 		// Transmission is just starting, there is no delay
 		if (emitter->getStartOfTransmission())
+		{
 			emitter->setLastSendTime(this->currentFrameTime);
+			emitter->acknowledgeStartTransmission();
+		}
+		
 		// Transmission had started before, we need to compute the delay
 		else
 		{
