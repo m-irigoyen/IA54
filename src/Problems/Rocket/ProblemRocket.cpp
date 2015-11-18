@@ -49,7 +49,8 @@ void ProblemRocket::moveRocket(sf::Time elapsedTime, float hEnginesForce, float 
 	}
 	else
 	{
-		if (this->terrain.collides(this->rocket_x, this->rocket_y))
+		//TODO: replace that 16 by the hitbox size
+		if (this->terrain.collides(this->rocket_x, this->rocket_y, 22))
 		{
 			// If is on flat zone
 			float flat1, flat2;

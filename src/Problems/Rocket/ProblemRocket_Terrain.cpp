@@ -224,7 +224,7 @@ bool ProblemRocket_Terrain::isOnMap(float x, float y)
 		return true;
 }
 
-bool ProblemRocket_Terrain::collides(float x, float y)
+bool ProblemRocket_Terrain::collides(float x, float y, float hitboxHalfSize)
 {
 	if (!this->isOnMap(x, y))
 	{
@@ -238,7 +238,7 @@ bool ProblemRocket_Terrain::collides(float x, float y)
 	float terrainY = this->getTerrainPoint(x, *p, *(p + 1));
 
 	// Checking collision
-	if (y <= terrainY)
+	if (y - hitboxHalfSize <= terrainY)
 		return true;
 	else
 		return false;

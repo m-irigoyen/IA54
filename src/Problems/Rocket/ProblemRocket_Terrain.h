@@ -59,7 +59,7 @@ public:
 
 	// Terrain interaction
 	bool isOnMap(float x, float y);
-	bool collides(float x, float y);	// Checks if the given position is colliding with terrain
+	bool collides(float x, float y, float hitboxHalfSize);	// Checks if the given position is colliding with terrain
 	float getTerrainPoint(float x);	// Gets the Y coordinate for the given X, with p1.x <=x and p2.x >= x
 
 	// Getters
