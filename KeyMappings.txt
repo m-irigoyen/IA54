@@ -8,7 +8,6 @@ W : toggle display waves
 E : toggle display emitters
 R : toggle display receptors
 S : toggle display simulator (equivalent to toggling the 3 above)
-P : toggle display problem
 
 Mouse : draw & drop bodies
 

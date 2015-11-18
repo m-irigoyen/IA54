@@ -24,7 +24,7 @@ void Perception::addNewWave(int emitterId, sf::Time contact, float amplitude)
 			std::pair<int, std::pair<sf::Time, std::pair<float, float>>>(emitterId, std::pair<sf::Time, std::pair<float, float>>(contact, std::pair<float, float>(-1.0f, amplitude)))
 			);
 
-		std::cout << "Perception::addNewWave : first time encountering this id" << std::endl;
+		//std::cout << "Perception::addNewWave : first time encountering this id" << std::endl;
 	}
 }
 

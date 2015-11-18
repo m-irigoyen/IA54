@@ -32,7 +32,7 @@ WAVE BodyReceptor_Medium::getPerception()
 		if (it->second.second.first > 0.0f)	// Frequency isn't null : we can update that wave
 		{
 			waves.frequency += it->second.second.first;
-			std::cout << "COMPUTING FREQUENCY " << it->second.second.first << std::endl;
+			//std::cout << "COMPUTING FREQUENCY " << it->second.second.first << std::endl;
 			waves.amplitude += it->second.second.second;
 			++nbWaves;
 		}
@@ -40,8 +40,8 @@ WAVE BodyReceptor_Medium::getPerception()
 	//std::cout << "Returning : " << this->currentPerception.frequency << "," << this->currentPerception.amplitude << std::endl;
 	waves.amplitude = waves.amplitude / nbWaves;
 	waves.frequency = waves.frequency / nbWaves;
-	std::cout << "Nb waves : " << nbWaves << std::endl;
-	std::cout << "Total frequency : " << waves.frequency << std::endl;
+	//std::cout << "Nb waves : " << nbWaves << std::endl;
+	//std::cout << "Total frequency : " << waves.frequency << std::endl;
 	this->currentPerception = waves;
 	return this->currentPerception;
 }

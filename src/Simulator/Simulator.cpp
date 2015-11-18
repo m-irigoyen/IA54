@@ -24,6 +24,11 @@ void Simulator::userAddAgent(int x, int y, int agentType)
 			((AgentRocket_OneEngine_Emitter*)newAgent)->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_REGULATOR);
 			cout << "Placing regulator agent" << endl;
 			break;
+		case 3 : 
+		newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
+			((AgentRocket_OneEngine_Emitter*)newAgent)->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER);
+			cout << "Placing stabilizer agent" << endl;
+			break;
 		default:
 			cout << "ERROR : Simulator::userAddAgent : unexpected agent type" << endl;
 		}
@@ -83,7 +88,7 @@ void Simulator::updateGUIAgentPlacingText()
 			this->SFMLView.setCurrentlyPlacingAgent("Emitter regulator");
 			break;
 		default:
-			this->SFMLView.setCurrentlyPlacingAgent("");
+			this->SFMLView.setCurrentlyPlacingAgent("Emitter stabilizer");
 			break;
 		}
 		break;
@@ -143,6 +148,12 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 			newAgent = static_cast<AgentRocket_OneEngine_Emitter*>(addAgent(300, 200, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
 			if (newAgent != NULL)
 				newAgent->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_REGULATOR);
+			else
+				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
+
+			newAgent = static_cast<AgentRocket_OneEngine_Emitter*>(addAgent(250, 250, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
+			if (newAgent != NULL)
+				newAgent->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER);
 			else
 				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
 
@@ -452,11 +463,6 @@ void Simulator::checkEvents()
 					// Quit receptor display
 					case sf::Keyboard::R:
 						this->SFMLView.toggleDisplayReceptors();
-						break;
-
-					// Toggle problem display
-					case sf::Keyboard::P :
-						this->SFMLView.toggleDisplayProblem();
 						break;
 
 					// Toggle simulator display

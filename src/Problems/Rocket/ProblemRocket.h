@@ -126,6 +126,8 @@ public:
 	// Rocket control
 	void setPower(int engineNumber, float power);
 	void setAngle(float angle);
+	bool getUseRelativeChange();
+	void setUseRelativeChange(bool relativeChange);
 
 	bool getUserControlled();
 

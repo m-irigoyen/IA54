@@ -36,37 +36,38 @@ void AgentRocket_OneEngine_Emitter::live()
 	
 	if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DIRECTION)
 	{
-		// Direct the rocket towards the flatzone
-		desiredAngle = convertToRange(abs(distanceToCenterFlat),
-			0,
-			lzSize / 2,
-			0,
-			PROBLEMROCKET_ONE_PROBLEM_MAXANGLE);
+		/*if (abs(distanceToCenterFlat) <= lzSize / 2)
+			ceaseTransmission = true;*/
+		/*else
+		{*/
+			// Direct the rocket towards the flatzone
+			desiredAngle = convertToRange(abs(distanceToCenterFlat),
+				0,
+				lzSize / 2,
+				0,
+				PROBLEMROCKET_ONE_PROBLEM_MAXANGLE / 2);
 
-		if (distanceToCenterFlat > 0)
-			desiredAngle *= -1;
+			if (distanceToCenterFlat > 0)
+				desiredAngle *= -1;
 
-		if (abs(desiredAngle) > PROBLEMROCKET_ONE_PROBLEM_MAXANGLE)
-			ceaseTransmission = true;
-		desiredPower = 50;
+			desiredPower = 50;
+		//}
 	}
 	else if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_REGULATOR)
 	{
 		desiredAngle = 0;
 
 		// Don't go too far up
-		if (vSpeed > 0.0f)
+		/*if (vSpeed > 0.0f)
 		{
 			desiredAngle = 0;
 			desiredPower = 0;
-		}
+		}*/
 		// If we're too fast : regain control
-		else if (abs(hSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED || abs(vSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED)
+		if (abs(hSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED || abs(vSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXVSPEED)
 		{
 			if (abs(hSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED)
-			{
 				desiredAngle = PROBLEMROCKET_ONE_PROBLEM_MAXANGLE;
-			}
 			else
 			{
 				desiredAngle = convertToRange(abs(hSpeed),
@@ -81,33 +82,36 @@ void AgentRocket_OneEngine_Emitter::live()
 
 			desiredPower = 100;
 		}
-		// If we're above the flatzone
-		else if (abs(distanceToCenterFlat) <= lzSize / 2)
+		else
+			ceaseTransmission = true;
+	}
+	else if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER)
+	{
+		// The rocket is above the landing zone
+		if (abs(distanceToCenterFlat) <= lzSize / 2)
 		{
-			// Nullify hSpeed, and start descent
 			desiredAngle = convertToRange(abs(hSpeed),
 				0,
-				PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED / 2,	// That 0.5 factor makes it brake faster
+				PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED,	// That 0.5 factor makes it brake faster
 				0,
 				PROBLEMROCKET_ONE_PROBLEM_MAXANGLE);
 
 			if (hSpeed < 0)
 				desiredAngle *= -1;
-
-			temp = abs(vSpeed);
+			
 			if (vSpeed > 0)
-				temp = 0;
-			desiredPower = convertToRange(temp,
-				0,
-				PROBLEMROCKET_ONE_PROBLEM_MAXVSPEED,
-				0,
-				100);
+				desiredPower = 25;
+			else
+			{
+				desiredPower = convertToRange(abs(vSpeed),
+					0,
+					PROBLEMROCKET_ONE_PROBLEM_MAXVSPEED,
+					0,
+					this->castedProblem->getPowerMax());
+			}
 		}
 		else
-		{
-			desiredAngle = 0;
-			desiredPower = 50;
-		}
+			ceaseTransmission = true;
 	}
 
 	if (ceaseTransmission)
@@ -115,16 +119,19 @@ void AgentRocket_OneEngine_Emitter::live()
 		this->castedBody->stopSending();
 		return;
 	}
-
-	if (ceaseTransmission)
-	{
-		this->castedBody->stopSending();
-	}
 	else
 	{
+		// 2 cases : 
+
 		// Sending
-		desiredAngle -= angle;
-		desiredPower -= power;
+
+		// If we're using relative change, convert the desired angle to a relative angle
+		if (this->castedProblem->getUseRelativeChange())
+		{
+			desiredAngle -= angle;
+			desiredPower -= power;
+		}
+		
 		//cout << "DESIRED : " << desiredPower << ", " << desiredAngle << endl;
 		desiredAngle += PROBLEMROCKET_ONE_PROBLEM_MAXANGLE;
 
@@ -142,7 +149,7 @@ void AgentRocket_OneEngine_Emitter::live()
 			this->castedProblem->getWaveFrequencyOffset(),
 			this->castedProblem->getWaveFrequencyRange());
 
-		cout << "SENDING : " << frequency << "," << amplitude << endl;
+		//cout << "SENDING : " << frequency << "," << amplitude << endl;
 		this->castedBody->send(frequency, amplitude);
 	}
 }

@@ -90,7 +90,7 @@ Body* World::createBody(BODY_TYPE bodyType, float xPos, float yPos)
 	{
 		body = tempBodyEmitter;
 		this->emitters.push_back(tempBodyEmitter);
-		cout << "PUSHED EMITTER BACK" << endl;
+		//cout << "PUSHED EMITTER BACK" << endl;
 
 		// We've placed a new body : the max distance between an emitter and receptor may have changed
 		updateMaxWaveDistance();
@@ -306,7 +306,7 @@ void World::checkCollisionEvents(Wave* wave, sf::Time elapsedTime)
 				if (waveSpeed <= 0.0f)
 				{
 					waveSpeed = DEFAULT_PROPAGATION_SPEED;
-					cout << "DEFAULT WAVE SPEED" << endl;
+					cout << "World::checkCollisionEvents : wave speed unset. Applying default" << endl;
 				}
 
 				// Get the distance between the wave and the receptor
@@ -400,8 +400,19 @@ void World::updateMaxWaveDistance()
 // Check if emitters needs to send a wave
 void World::checkWaveCreation(BodyEmitter* emitter)
 {
+
+	if (emitter->getEndOfTransmission())
+	{
+		// Create a new wave, and set its endOfTransmission flag
+		Wave* w = createWave(emitter->GetPosition(), emitter->getId(), emitter->getCurrentSpeed(), 1.0f);
+		w->setEndOfTransmission(true);
+		w->setMaxRadius(emitter->getMaxRadius());
+
+		// Drop the emitter's end of transmission flag
+		emitter->acknowledgeEndOfTransmission();
+	}
 	// If that emitter wants to send a wave
-	if (emitter->checkForSend(this->currentFrameTime))
+	else if (emitter->checkForSend(this->currentFrameTime))
 	{
 		// Create a new wave
 		Wave* w = createWave(emitter->GetPosition(), emitter->getId(), emitter->getCurrentSpeed(), emitter->getCurrentAmplitude());
@@ -435,15 +446,5 @@ void World::checkWaveCreation(BodyEmitter* emitter)
 		std::cout << "  NextSendTime : " << emitter->getNextSendTime().asSeconds() << std::endl;
 		std::cout << "  Delay  : " << delay.asSeconds() << std::endl;
 		std::cout << "  Radius : " << delay.asSeconds()*w->getSpeed() << std::endl;*/
-	}
-	else if (emitter->getEndOfTransmission())
-	{
-		// Create a new wave, and set its endOfTransmission flag
-		Wave* w = createWave(emitter->GetPosition(), emitter->getId(), emitter->getCurrentSpeed(), 1.0f);
-		w->setEndOfTransmission(true);
-		w->setMaxRadius(emitter->getMaxRadius());
-
-		// Drop the emitter's end of transmission flag
-		emitter->acknowledgeEndOfTransmission();
 	}
 }

@@ -107,6 +107,9 @@ bool ProblemRocket::handleEvent(sf::RenderWindow * window, sf::Event event)
 			case::sf::Keyboard::F2:
 				this->initUserControl(false);
 				return true;
+			case::sf::Keyboard::R:
+				this->useRelativeChange = toggle(this->useRelativeChange);
+				return true;
 			}
 		}
 		return false;
@@ -376,6 +379,16 @@ void ProblemRocket::setAngle(float angle)
 	angle = constrainAngle(angle);
 
 	this->rocket_angle = angle;
+}
+
+bool ProblemRocket::getUseRelativeChange()
+{
+	return this->useRelativeChange;
+}
+
+void ProblemRocket::setUseRelativeChange(bool relativeChange)
+{
+	this->useRelativeChange = relativeChange;
 }
 
 bool ProblemRocket::getUserControlled()

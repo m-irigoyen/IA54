@@ -15,6 +15,7 @@ void Emitter::send(float frequency, float amplitude, float speed)
 	if(!sending)
 	{
 		this->sending = true;
+		this->flag_firstSend = true;
 	}
 	this->currentAmplitude = amplitude;
 	this->currentFrequency = frequency;
@@ -31,10 +32,7 @@ bool Emitter::checkForSend(sf::Time currentTime)
 	{
 		// If time was zero, just send already
 		if (this->lastSendTime == sf::Time::Zero)
-		{
-			cout << "FIRST SEND" << endl;
 			return true;
-		}
 			
 		// Else check if new send is needed
 		sf::Time check = currentTime - this->lastSendTime;
@@ -59,7 +57,7 @@ void Emitter::stopSending()
 		this->currentFrequency = -1.0f;
 		this->currentSpeed = -1.0f;
 		this->sending = false;
-		this->flag_stopSending;
+		this->flag_stopSending = true;
 		this->lastSendTime = sf::Time::Zero;
 	}
 }
