@@ -100,7 +100,7 @@ void AgentRocket_OneEngine_Emitter::live()
 				desiredAngle *= -1;
 			
 			if (vSpeed > 0)
-				desiredPower = 25;
+				desiredPower = 10;
 			else
 			{
 				desiredPower = convertToRange(abs(vSpeed),
@@ -121,10 +121,9 @@ void AgentRocket_OneEngine_Emitter::live()
 	}
 	else
 	{
-		// 2 cases : 
+		// 2 cases :
 
 		// Sending
-
 		// If we're using relative change, convert the desired angle to a relative angle
 		if (this->castedProblem->getUseRelativeChange())
 		{
@@ -140,7 +139,6 @@ void AgentRocket_OneEngine_Emitter::live()
 			PROBLEMROCKET_ONE_PROBLEM_MAXANGLE * 2,
 			this->castedProblem->getWaveAmplitudeOffset(),
 			this->castedProblem->getWaveAmplitudeRange());
-
 
 		desiredPower += this->castedProblem->getPowerMax();
 		frequency = convertToRange(desiredPower,
