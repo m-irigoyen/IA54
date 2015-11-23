@@ -3,8 +3,8 @@
 
 #include <string>
 
-#define DEF_DEBUG
-//#define DEF_RELEASE
+//#define DEF_DEBUG
+#define DEF_RELEASE
 
 #ifdef DEF_DEBUG
 	const std::string PATH_RES = "../Project/res/";
