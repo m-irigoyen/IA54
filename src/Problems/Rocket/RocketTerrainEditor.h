@@ -18,6 +18,7 @@ class RocketTerrainEditor : public Problem
 protected:
 	// User interface
 	sf::Text hud_text;
+	std::string currentLevelName;
 
 	// Terrain
 	ProblemRocket_Terrain terrain;

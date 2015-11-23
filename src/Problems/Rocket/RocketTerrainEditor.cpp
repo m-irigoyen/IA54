@@ -1,9 +1,8 @@
 #include "Problems/Rocket/RocketTerrainEditor.h"
 
 
-RocketTerrainEditor::RocketTerrainEditor(float waveAmplLossPerSec) : Problem(waveAmplLossPerSec)
+RocketTerrainEditor::RocketTerrainEditor(float waveAmplLossPerSec) : Problem(waveAmplLossPerSec), currentLevelName("Default")
 {
-	
 }
 
 void RocketTerrainEditor::checkEvents(sf::RenderWindow * window)
@@ -42,6 +41,8 @@ void RocketTerrainEditor::draw(sf::RenderWindow * window)
 {
 	this->checkEvents(window);
 
+	this->terrain.draw(window);
+
 	// Drawing text
 	string temp;
 
@@ -51,8 +52,31 @@ void RocketTerrainEditor::draw(sf::RenderWindow * window)
 	this->hud_text.setPosition(window->getSize().x / 2 - this->hud_text.getLocalBounds().width / 2, 5);
 	window->draw(this->hud_text);
 
-	// Starting rocket values
+	// Terrain data
 	this->hud_text.setCharacterSize(20);
+	this->hud_text.setString("Curently editing : " + this->currentLevelName);
+	this->hud_text.setPosition(10, 5);
+	window->draw(this->hud_text);
+
+	// Starting rocket values
+	float startH, startV, startX, startY;
+	this->terrain.getRocketStart(startX, startY, startH, startV);
+
+	this->hud_text.setString("Starting hSpeed : " + std::to_string(startH));
+	this->hud_text.setPosition(10, 5);
+	window->draw(this->hud_text);
+
+	this->hud_text.setString("Starting vSpeed : " + std::to_string(startV));
+	this->hud_text.setPosition(10, 25);
+	window->draw(this->hud_text);
+
+	this->hud_text.setString("Starting x : " + std::to_string(startX));
+	this->hud_text.setPosition(10, 45);
+	window->draw(this->hud_text);
+
+	this->hud_text.setString("Starting y : " + std::to_string(startY));
+	this->hud_text.setPosition(10, 65);
+	window->draw(this->hud_text);
 }
 
 void RocketTerrainEditor::clean()

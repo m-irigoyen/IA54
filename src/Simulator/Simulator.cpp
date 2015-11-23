@@ -37,8 +37,9 @@ void Simulator::userAddAgent(int x, int y, int agentType)
 	case PROBLEM_TYPE::ROCKET_TWO:
 		//TODO: implement that
 		break;
+	default: 
+		cout << "ERROR : cannot place agents in that mode" << endl;
 	}
-	
 }
 
 void Simulator::userEraseAgent(Body * body)
