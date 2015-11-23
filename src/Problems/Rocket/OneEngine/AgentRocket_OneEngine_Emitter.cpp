@@ -80,7 +80,7 @@ void AgentRocket_OneEngine_Emitter::live()
 			if (hSpeed < 0)
 				desiredAngle *= -1;
 
-			desiredPower = 100;
+			desiredPower = 75;
 		}
 		else
 			ceaseTransmission = true;

@@ -23,6 +23,9 @@ protected:
 	// Terrain
 	ProblemRocket_Terrain terrain;
 
+	// Problem status
+	float problemSpeed;
+
 	// Rocket current values
 	vector<float> rocket_engineThrust;	// How much thrust does each engine generate
 	vector<float> rocket_enginesPower;	// Percentage of power of the given engine, between 0 (no thrust) and 100 (max thrust)

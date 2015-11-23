@@ -215,6 +215,16 @@ void ProblemRocket_Terrain::generateRandomTerrain(int width, int height)
 	//TODO : generate random terrain, with one flat zone, and points between terrainMinHeight and terrainMaxHeight
 }
 
+void ProblemRocket_Terrain::getWorldCoordinates(float screenX, float screenY, sf::RenderWindow * window, float & worldX, float & worldY)
+{
+	convertCoordinates(screenX, screenY, window->getSize().x, window->getSize().y, worldX, worldY, this->mapWidth, this->mapHeight);
+}
+
+void ProblemRocket_Terrain::getScreenCoordinates(float worldX, float worldY, float screenWidth, float screenHeight, float & screenX, float & screenY)
+{
+	convertCoordinates(worldX, worldY, this->mapWidth, this->mapHeight, screenX, screenY, screenWidth, screenHeight);
+}
+
 // Checks if the given position is colliding with terrain
 bool ProblemRocket_Terrain::isOnMap(float x, float y)
 {

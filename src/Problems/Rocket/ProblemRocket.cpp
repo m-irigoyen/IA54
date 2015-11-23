@@ -32,12 +32,12 @@ bool ProblemRocket::correctLanding(float hSpeed, float vSpeed, float angle)
 // Given the hSpeed and vSpeed values, move the Rocket
 void ProblemRocket::moveRocket(sf::Time elapsedTime, float hEnginesForce, float vEnginesForce)
 {
-	this->rocket_hSpeed += hEnginesForce * elapsedTime.asSeconds();
-	this->rocket_vSpeed += (vEnginesForce - this->terrain.getGravity()) * elapsedTime.asSeconds();
+	this->rocket_hSpeed += hEnginesForce * elapsedTime.asSeconds() * this->problemSpeed;
+	this->rocket_vSpeed += (vEnginesForce - this->terrain.getGravity()) * elapsedTime.asSeconds() * this->problemSpeed;
 
 	// Moving the rocket
-	this->rocket_x += this->rocket_hSpeed * elapsedTime.asSeconds();
-	this->rocket_y += this->rocket_vSpeed * elapsedTime.asSeconds();
+	this->rocket_x += this->rocket_hSpeed * elapsedTime.asSeconds() * this->problemSpeed;
+	this->rocket_y += this->rocket_vSpeed * elapsedTime.asSeconds() * this->problemSpeed;
 
 	//cout << hSpeed << " / " << vSpeed << endl;
 
@@ -108,8 +108,18 @@ bool ProblemRocket::handleEvent(sf::RenderWindow * window, sf::Event event)
 			case::sf::Keyboard::F2:
 				this->initUserControl(false);
 				return true;
-			case::sf::Keyboard::R:
+			case::sf::Keyboard::A:
 				this->useRelativeChange = toggle(this->useRelativeChange);
+				return true;
+			case::sf::Keyboard::O:
+				++this->problemSpeed;
+				if (this->problemSpeed > 5)
+					this->problemSpeed = 5;
+				return true;
+			case::sf::Keyboard::I:
+				--this->problemSpeed;
+				if (this->problemSpeed < 1)
+					this->problemSpeed = 1;
 				return true;
 			}
 		}
@@ -204,7 +214,7 @@ void ProblemRocket::resetDesiredChanges()
 	this->desiredRotation = 0;
 }
 
-ProblemRocket::ProblemRocket(float waveAmplLossPerSec, bool useAttenuation) : Problem(waveAmplLossPerSec, useAttenuation), userControlled(false), rocket_rotationRate(-1), rocket_engineChangeRate(-1), useRelativeChange(false)
+ProblemRocket::ProblemRocket(float waveAmplLossPerSec, bool useAttenuation) : Problem(waveAmplLossPerSec, useAttenuation), userControlled(false), rocket_rotationRate(-1), rocket_engineChangeRate(-1), useRelativeChange(false), problemSpeed(1)
 {
 	// Setting base variables
 	this->rocket_x = 0;
@@ -332,21 +342,49 @@ void ProblemRocket::draw(sf::RenderWindow * window)
 
 	// Drawing HUD
 	string temp;
-	temp = std::to_string(this->rocket_angle - PROBLEMROCKET_GUI_ANGLE_OFFSET);
+
+	// pause
+	if (this->pause)
+	{
+		this->hud_text.setCharacterSize(20);
+		this->hud_text.setString("Pause");
+		this->hud_text.setColor(sf::Color::Red);
+		this->hud_text.setPosition(window->getSize().x / 2 - this->hud_text.getLocalBounds().width / 2 - 10, 35);
+		window->draw(this->hud_text);
+	}
+
+	//speed
+	this->hud_text.setColor(sf::Color::White);
+	this->hud_text.setCharacterSize(20);
+	temp = std::to_string(this->problemSpeed);
+	this->hud_text.setString("Speed x" + temp);
+	this->hud_text.setPosition(window->getSize().x - this->hud_text.getLocalBounds().width - 10, 5);
+	window->draw(this->hud_text);
+
+	//Rocket data
+	this->hud_text.setCharacterSize(20);
 	this->hud_text.setPosition(10, 5);
+	if (this->useRelativeChange)
+		this->hud_text.setString("Relative angles");
+	else
+		this->hud_text.setString("Fixed angles");
+	window->draw(this->hud_text);
+
+	temp = std::to_string(this->rocket_angle - PROBLEMROCKET_GUI_ANGLE_OFFSET);
+	this->hud_text.setPosition(10, 25);
 	this->hud_text.setString("Angle  : " + temp);
 	window->draw(this->hud_text);
 
 	temp = std::to_string(this->rocket_hSpeed);
-	this->hud_text.setPosition(10, 25);
+	this->hud_text.setPosition(10, 45);
 	this->hud_text.setString("hSpeed : " + temp);
 	window->draw(this->hud_text);
 
 	temp = std::to_string(this->rocket_vSpeed);
-	this->hud_text.setPosition(10, 45);
+	this->hud_text.setPosition(10, 65);
 	this->hud_text.setString("vSpeed : " + temp);
 	window->draw(this->hud_text);
-
+	
 	// Engine values must be drawned in other classes
 }
 

@@ -17,8 +17,17 @@ ProblemRocket :
 F1 : Activate manual controls
 F2 : deactivate manual controls
 Arrow keys : control rocket angle and engine power
+P : Play/Pause
+A : Toggle relative angles
+O/I : Increment/Decrement problem Speed
+S : Save current terrain
+L : Load current terrain
 
-ProblemRocket2 : 
+Rocket One engine :
+Up/Down : Control engine power
+Left/Right : Control rocket angle
+
+Rocket Two Engines : 
 A/Q : Control left engine power
 Z/S : Control left engine power
 Left/Right : Control rocket angle (easier to test with that

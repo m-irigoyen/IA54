@@ -62,6 +62,12 @@ float convertToRange(float value, float valueOffset, float valueRange, float tar
 	return translatedResult + targetOffset;
 }
 
+void convertCoordinates(float xIn, float yIn, float widthIn, float heightIn, float & xOut, float & yOut, float widthOut, float heightOut)
+{
+	xOut = convertToRange(xIn, 0, widthIn, 0, widthOut);
+	yOut = convertToRange(yIn, 0, heightIn, 0, heightOut);
+}
+
 // If value, returns false. Else, returns true
 bool toggle(bool value)
 {

@@ -10,6 +10,8 @@
 
 #include "pugixml/pugixml.hpp"
 
+#include "Utilities/MathHelper.h"
+
 using namespace std;
 
 class ProblemRocket_Terrain
@@ -57,6 +59,13 @@ public:
 	virtual void saveTerrain(std::string path);
 	virtual void generateRandomTerrain(int width = -1, int height = -1);	// Leave -1, -1 to keep the current size
 
+	// Edition functions
+	
+
+	// GUI Translation functions
+	//TODO : implement those
+	void getWorldCoordinates(float screenX, float screenY, sf::RenderWindow* window, float& worldX, float& worldY);
+	void getScreenCoordinates(float worldX, float worldY, float screenWidth, float screenHeight, float& screenX, float& screenY);
 	// Terrain interaction
 	bool isOnMap(float x, float y);
 	bool collides(float x, float y, float hitboxHalfSize);	// Checks if the given position is colliding with terrain

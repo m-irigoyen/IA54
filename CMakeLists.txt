@@ -86,7 +86,9 @@ FILE(GLOB_RECURSE SRCS_PROBLEMS_ROCKET
 	${IA54_SOURCE_DIR}/src/Problems/Rocket/ProblemRocket_Terrain.cpp 
 	${IA54_SOURCE_DIR}/src/Problems/Rocket/ProblemRocket_Terrain.h
 	${IA54_SOURCE_DIR}/src/Problems/Rocket/ProblemRocket.cpp 
-	${IA54_SOURCE_DIR}/src/Problems/Rocket/ProblemRocket.h)
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/ProblemRocket.h
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/RocketTerrainEditor.cpp 
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/RocketTerrainEditor.h)
 FILE(GLOB_RECURSE SRCS_PROBLEMS_ROCKET_ONE
 	${IA54_SOURCE_DIR}
 	${IA54_SOURCE_DIR}/src/Problems/Rocket/OneEngine/*.cpp 

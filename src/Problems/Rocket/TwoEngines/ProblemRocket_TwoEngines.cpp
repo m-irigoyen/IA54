@@ -152,14 +152,22 @@ void ProblemRocket_TwoEngines::draw(sf::RenderWindow * problemWindow)
 
 	// Drawing text
 	string temp;
+
+	// Title
+	this->hud_text.setCharacterSize(30);
+	this->hud_text.setString("Rocket : Two Engines");
+	this->hud_text.setPosition(problemWindow->getSize().x / 2 - this->hud_text.getLocalBounds().width / 2, 5);
+	problemWindow->draw(this->hud_text);
+
+	this->hud_text.setCharacterSize(20);
 	temp = std::to_string(this->rocket_enginesPower.at(0));
 	this->hud_text.setString("PowerLeft  : " + temp);
-	this->hud_text.setPosition(10, 65);
+	this->hud_text.setPosition(10, 85);
 	problemWindow->draw(this->hud_text);
 
 	temp = std::to_string(this->rocket_enginesPower.at(1));
 	this->hud_text.setString("PowerRight : " + temp);
-	this->hud_text.setPosition(10, 85);
+	this->hud_text.setPosition(10, 105);
 	problemWindow->draw(this->hud_text);
 }
 
