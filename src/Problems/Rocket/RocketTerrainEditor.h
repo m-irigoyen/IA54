@@ -6,6 +6,7 @@
 
 #include "Problems/Rocket/ProblemRocket.h"
 #include "Utilities/MathHelper.h"
+#include "Utilities/FilePaths.h"
 
 /*
 * The RocketTerrainEditor is a GUI way to load, edit, and save rocket terrains
@@ -19,9 +20,12 @@ protected:
 	// User interface
 	sf::Text hud_text;
 	std::string currentLevelName;
+	sf::CircleShape rocketCircle;
 
 	// Terrain
 	ProblemRocket_Terrain terrain;
+	deque<pair<int, int>>::iterator selectedPoint;
+	bool isPointSelected;
 
 
 	// PRIVATE FUNCTIONS
@@ -32,10 +36,12 @@ protected:
 	virtual void saveTerrain(string path);
 	virtual void generateTerrain(int width = -1, int height = -1);
 
+	void rename();
+
 public:
 	RocketTerrainEditor(float waveAmplLossPerSec = 0.0f);
 
-	//virtual void run(sf::Time elapsedTime);	// Updating the problem
+	virtual void run(sf::Time elapsedTime);	// Updating the problem
 	virtual void draw(sf::RenderWindow* problemWindow);
 	virtual void clean();
 	virtual void init();	// init 

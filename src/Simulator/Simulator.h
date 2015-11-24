@@ -25,6 +25,9 @@
 #include "Problems/Rocket/TwoEngines/AgentRocket_TwoEngines_Emitter.h"
 #include "Problems/Rocket/TwoEngines/AgentRocket_TwoEngines_Receptor.h"
 
+// Rocket Terrain editor
+#include "Problems/Rocket/RocketTerrainEditor.h"
+
 
 /*
 *   The Simulator is the main class of the project.

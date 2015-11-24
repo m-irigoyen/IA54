@@ -1,15 +1,16 @@
 	SIMULATOR WINDOW
-F1 : load problem rocket (one thruster)
-F2 : load problem rocket2 (two thrusters)
+F1 : load problem rocket terrain editor
+F2 : load problem rocket (one thruster)
+F3 : load problem rocket2 (two thrusters)
 
-Esc (or close window) : close program
+Esc (or close window) : exit program
 O : toggle wave optimised drawing
 W : toggle display waves
 E : toggle display emitters
 R : toggle display receptors
 S : toggle display simulator (equivalent to toggling the 3 above)
 
-Mouse : draw & drop bodies
+Mouse : drag & drop bodies
 
 
 	PROBLEM WINDOW
@@ -33,3 +34,10 @@ Z/S : Control left engine power
 Left/Right : Control rocket angle (easier to test with that
 Up/Down : Control engine power on both engines at the same time
 
+Rocket Terrain editor :
+S/L : save/load
+B : Load base terrain
+D : Load default terrain
+W : Set terrain wind
+R : Set rocket starting position
+V : set rocket starting velocity

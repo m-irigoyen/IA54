@@ -1,6 +1,6 @@
 #include "Problems/Rocket/ProblemRocket_Terrain.h"
 
-vector<pair<int, int>>::iterator ProblemRocket_Terrain::getPointBefore(float x)
+deque<pair<int, int>>::iterator ProblemRocket_Terrain::getPointBefore(float x)
 {
 	if (this->terrain.size() < 2)
 	{
@@ -9,7 +9,7 @@ vector<pair<int, int>>::iterator ProblemRocket_Terrain::getPointBefore(float x)
 	}
 
 	pair<int, int> p = *this->terrain.begin();
-	for (vector<pair<int, int>>::iterator it = this->terrain.begin() + 1; it != this->terrain.end(); ++it)
+	for (deque<pair<int, int>>::iterator it = this->terrain.begin() + 1; it != this->terrain.end(); ++it)
 	{
 		if (it->first > x)
 			return it - 1;
@@ -49,8 +49,8 @@ void ProblemRocket_Terrain::draw(sf::RenderWindow * window)
 	if (!this->terrain.empty())
 	{
 		// Iterate on the terrain container, drawin linges between each terrain point
-		vector<pair<int, int>>::iterator p = this->terrain.begin();
-		for (vector<pair<int, int>>::iterator it = this->terrain.begin() + 1; it != this->terrain.end(); ++it)
+		deque<pair<int, int>>::iterator p = this->terrain.begin();
+		for (deque<pair<int, int>>::iterator it = this->terrain.begin() + 1; it != this->terrain.end(); ++it)
 		{
 			// We resize the terrain in perspective, so that the terrain takes up all the width and height of the screen
 			sf::Vertex line[] =
@@ -68,7 +68,7 @@ void ProblemRocket_Terrain::draw(sf::RenderWindow * window)
 	}
 }
 
-void ProblemRocket_Terrain::loadTerrain(std::string path)
+void ProblemRocket_Terrain::loadTerrain(std::string name)
 {
 	this->terrain.clear();
 	this->terrainFlatZone1 = -1;
@@ -76,7 +76,7 @@ void ProblemRocket_Terrain::loadTerrain(std::string path)
 	this->mapWidth = -1;
 	this->mapHeight = -1;
 
-	if (path.compare("Default") == 0)
+	if (name.compare("Default") == 0)
 	{
 		cout << "ProblemRocket::loadTerrain : Loading default terrain" << endl;
 		// Loading default terrain
@@ -108,10 +108,34 @@ void ProblemRocket_Terrain::loadTerrain(std::string path)
 		this->rocketStartHSpeed = 0;
 		this->rocketStartVSpeed = 0;
 	}
+	else if (name.compare("Base") == 0)
+	{
+		cout << "ProblemRocket::loadTerrain : Loading default terrain" << endl;
+		// Loading default terrain
+		this->terrain.push_back(pair<int, int>(0, 100));
+		this->terrain.push_back(pair<int, int>(1000, 100));
+
+
+		// Terrain data
+		this->mapWidth = 1000;
+		this->mapHeight = 1000;
+		this->terrainFlatZone1 = 0;
+		this->terrainFlatZone2 = 1000;
+		this->windHorizontal = 0;
+		this->windVertical = 0;
+
+		// Rocket start
+		this->rocketStartX = 500;
+		this->rocketStartY = 500;
+		this->rocketStartHSpeed = 0;
+		this->rocketStartVSpeed = 0;
+	}
 	else
 	{
-		string filePath = "../Project/res/";
-		filePath += path;
+		string filePath = PATH_RES;
+		filePath += PATH_RES_TERRAINS;
+		filePath += name;
+		filePath += ".lvl";
 
 		// XML document creation
 		pugi::xml_document doc;
@@ -122,7 +146,7 @@ void ProblemRocket_Terrain::loadTerrain(std::string path)
 		{
 			// An error occured
 			std::cout << "ERROR : ProblemRocket::loadTerrain : unable to parse given file : " << filePath << std::endl;
-			std::cout << "Aborting terrain loading..." << std::endl;
+			this->loadTerrain("Default");
 			return;
 		}
 
@@ -155,16 +179,21 @@ void ProblemRocket_Terrain::loadTerrain(std::string path)
 	}
 }
 
-void ProblemRocket_Terrain::saveTerrain(std::string path)
+void ProblemRocket_Terrain::saveTerrain(std::string name)
 {
-	if (path.compare("Default") == 0)
+	if (name.compare("Default") == 0)
 	{
 		cout << "ProblemRocket::saveTerrain : ERROR save path can't be 'Default'. Aborting save" << endl;
 		return;
 	}
+	else if (name.compare("Base") == 0)
+	{
+		cout << "ProblemRocket::saveTerrain : ERROR save path can't be 'Base'. Aborting save" << endl;
+		return;
+	}
 	else
 	{
-		cout << "ProblemRocket::saveTerrain : saving current terrain..." << endl;
+		cout << "ProblemRocket::saveTerrain : saving terrain " << name << "..." << endl;
 
 		// Creating the xml doc
 		pugi::xml_document doc;
@@ -195,7 +224,7 @@ void ProblemRocket_Terrain::saveTerrain(std::string path)
 		terrainNode.append_attribute("rocketV").set_value(this->rocketStartVSpeed);
 
 		// terrain points
-		for (vector<pair<int, int>>::iterator it = this->terrain.begin(); it != this->terrain.end(); ++it)
+		for (deque<pair<int, int>>::iterator it = this->terrain.begin(); it != this->terrain.end(); ++it)
 		{
 			pugi::xml_node pointNode = terrainNode.append_child("point");
 
@@ -203,8 +232,11 @@ void ProblemRocket_Terrain::saveTerrain(std::string path)
 			pointNode.append_attribute("x").set_value(it->first);
 			pointNode.append_attribute("y").set_value(it->second);
 		}
-		string filePath = "../Project/res/";
-		filePath += path;
+
+		string filePath = PATH_RES;
+		filePath += PATH_RES_TERRAINS;
+		filePath += name;
+		filePath += ".lvl";
 		std::cout << "Save result : " << filePath.data() << " : " << doc.save_file(filePath.data()) << std::endl;
 	}
 }
@@ -215,9 +247,118 @@ void ProblemRocket_Terrain::generateRandomTerrain(int width, int height)
 	//TODO : generate random terrain, with one flat zone, and points between terrainMinHeight and terrainMaxHeight
 }
 
+deque<pair<int, int>>::iterator ProblemRocket_Terrain::getClosestPointFrom(float x, float y, bool& found, float threshold)
+{
+	for (deque<pair<int, int>>::iterator it = this->terrain.begin(); it != this->terrain.end(); ++it)
+	{
+		if (abs(it->first - x) <= threshold)
+		{
+			if (sqrt((x - it->first)*(x - it->first) +
+				(y - it->second)*(y - it->second)))
+			{
+				found = true;
+				return it;
+			}
+		}
+	}
+	found = false;
+	return this->terrain.end();
+}
+
+// Reorders the points so that the deque is sorted by the x components of points
+void ProblemRocket_Terrain::reorderPoints()
+{
+	bool success = false;
+	while (!success)
+	{
+		bool attempt = true;
+		for (deque<pair<int, int>>::iterator it = this->terrain.begin(); it != this->terrain.end(); ++it)
+		{
+			if ((it + 1) != this->terrain.end() && it->first > (it+1)->first)
+			{
+				// Invert the 2 members
+				float x, y;
+				x = it->first;
+				y = it->second;
+
+				it->first = (it + 1)->first;
+				it->second = (it + 1)->second;
+
+				(it + 1)->first = x;
+				(it + 1)->second = y;
+				attempt = false;
+			}
+		}
+
+		if (attempt)
+			success = true;
+	}
+}
+
+void ProblemRocket_Terrain::addPoint(float x, float y)
+{
+	if (x < 0 || x >= 1000 || y < 0 || y >= 1000)
+		return;
+
+	pair<int, int> p = pair<int, int>(static_cast<int>(round(x)), static_cast<int>(round(y)));
+	if (this->terrain.empty() || this->terrain.begin()->first > x)
+		this->terrain.push_front(p);
+	else if ((this->terrain.end()-1)->first < x)
+		this->terrain.push_back(p);
+	else
+	{
+		for (deque<pair<int, int>>::iterator it = this->terrain.begin(); it != this->terrain.end(); ++it)
+		{
+			if (it->first < x)
+			{
+				this->terrain.insert(it, p);
+				return;
+			}
+		}
+	}
+	return;
+}
+
+void ProblemRocket_Terrain::addFlat(float x)
+{
+	if (x < 0 || x >= 1000)
+		return;
+
+	pair<int, int> p = pair<int, int>(static_cast<int>(round(x)), 0);
+
+	if (this->terrain.empty() || this->terrain.front().first > x)
+	{
+		p.second = 100;
+		this->terrain.push_front(p);
+	}
+	else if ((this->terrain.end() - 1)->first < x)
+	{
+		p.second = (this->terrain.end() - 1)->second;
+		this->terrain.push_back(p);
+	}
+	else
+	{
+		for (deque<pair<int, int>>::iterator it = this->terrain.begin(); it != this->terrain.end(); ++it)
+		{
+			if (it->first > x)
+			{
+				p.second = (it-1)->second;
+				this->terrain.insert(it-1, p);
+				return;
+			}
+		}
+	}
+	return;
+}
+
+void ProblemRocket_Terrain::removePoint(deque<pair<int, int>>::iterator it)
+{
+	this->terrain.erase(it);
+}
+
 void ProblemRocket_Terrain::getWorldCoordinates(float screenX, float screenY, sf::RenderWindow * window, float & worldX, float & worldY)
 {
-	convertCoordinates(screenX, screenY, window->getSize().x, window->getSize().y, worldX, worldY, this->mapWidth, this->mapHeight);
+	convertCoordinates(screenX, window->getSize().y - screenY, window->getSize().x, window->getSize().y, worldX, worldY, this->mapWidth, this->mapHeight);
 }
 
 void ProblemRocket_Terrain::getScreenCoordinates(float worldX, float worldY, float screenWidth, float screenHeight, float & screenX, float & screenY)
@@ -243,7 +384,7 @@ bool ProblemRocket_Terrain::collides(float x, float y, float hitboxHalfSize)
 		
 
 	// Getting the terrain's y at coordinate x
-	vector<pair<int, int>>::iterator p;
+	deque<pair<int, int>>::iterator p;
 	p = this->getPointBefore(x);
 	float terrainY = this->getTerrainPoint(x, *p, *(p + 1));
 
@@ -256,7 +397,7 @@ bool ProblemRocket_Terrain::collides(float x, float y, float hitboxHalfSize)
 
 float ProblemRocket_Terrain::getTerrainPoint(float x)
 {
-	vector<pair<int, int>>::iterator p;
+	deque<pair<int, int>>::iterator p;
 	p = this->getPointBefore(x);
 
 	if (p != this->terrain.end())
@@ -268,6 +409,24 @@ float ProblemRocket_Terrain::getTerrainPoint(float x)
 float ProblemRocket_Terrain::getGravity()
 {
 	return this->gravity;
+}
+
+void ProblemRocket_Terrain::setRocketStart(float rocketX, float rocketY)
+{
+	this->rocketStartX = rocketX;
+	this->rocketStartY = rocketY;
+}
+
+void ProblemRocket_Terrain::setRocketStartSpeed(float hSpeed, float vSpeed)
+{
+	this->rocketStartHSpeed = hSpeed;
+	this->rocketStartVSpeed = vSpeed;
+}
+
+void ProblemRocket_Terrain::setWind(float hWind, float vWind)
+{
+	this->windHorizontal = hWind;
+	this->windVertical = vWind;
 }
 
 void ProblemRocket_Terrain::getLandingZone(float & landing1, float & landing2)
@@ -292,4 +451,10 @@ void ProblemRocket_Terrain::getRocketStart(float & rocketX, float & rocketY, flo
 	rocketY = this->rocketStartY;
 	rocketHorizontalSpeed = this->rocketStartHSpeed;
 	rocketVerticalSpeed = this->rocketStartVSpeed;
+}
+
+void ProblemRocket_Terrain::getWind(float & windHorizontal, float & windVertical)
+{
+	windHorizontal = this->windHorizontal;
+	windVertical = this->windVertical;
 }

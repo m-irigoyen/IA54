@@ -8,12 +8,13 @@
 
 #ifdef DEF_DEBUG
 	const std::string PATH_RES = "../Project/res/";
-	const std::string PATH_RES_FONTS = "../Project/res/fonts/";
 #endif
 
 #ifdef DEF_RELEASE
 	const std::string PATH_RES = "res/";
-	const std::string PATH_RES_FONTS = "res/fonts/";
 #endif
+
+	const std::string PATH_RES_FONTS = "Fonts/";
+	const std::string PATH_RES_TERRAINS = "Terrains/";
 
 #endif 

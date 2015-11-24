@@ -178,6 +178,10 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 			addEmitter(200, 400);
 			addReceptorFullComposition(600, 400);*/
 		}
+		else if (this->problemType == PROBLEM_TYPE::ROCKET_TERRAINEDITOR)
+		{
+			this->problem = new RocketTerrainEditor();
+		}
 
 		this->problem->init();
 
@@ -427,13 +431,17 @@ void Simulator::checkEvents()
                 case sf::Event::KeyPressed :
 					switch (event.key.code)
 					{
-					// Switch problem to Rocket2
 					case sf::Keyboard::F1:
-						this->initProblem(PROBLEM_TYPE::ROCKET_ONE);
+						this->initProblem(PROBLEM_TYPE::ROCKET_TERRAINEDITOR);
 						break;
 
 					// Switch problem to Rocket2
 					case sf::Keyboard::F2:
+						this->initProblem(PROBLEM_TYPE::ROCKET_ONE);
+						break;
+
+					// Switch problem to Rocket2
+					case sf::Keyboard::F3:
 						this->initProblem(PROBLEM_TYPE::ROCKET_TWO);
 						break;
 
