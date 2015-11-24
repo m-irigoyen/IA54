@@ -150,6 +150,8 @@ void ProblemRocket_Terrain::loadTerrain(std::string name)
 			return;
 		}
 
+		cout << "Loading terrain " << filePath << endl;
+
 		// Loading terrain data
 		pugi::xml_node terrainNode = doc.child("terrain");
 		this->mapWidth = terrainNode.attribute("width").as_int();
@@ -166,15 +168,17 @@ void ProblemRocket_Terrain::loadTerrain(std::string name)
 		this->rocketStartVSpeed = terrainNode.attribute("rocketV").as_float();
 
 		// Loading terrain points
-		pugi::xml_node pointsNode = terrainNode.child("points");
+		pugi::xml_node point = terrainNode.first_child();
 		// iterate over genome nodes in the genomes node
-		for (pugi::xml_node point : pointsNode.children())
+		while (point != NULL)
 		{
 			pair<int, int> p;
 			p.first = point.attribute("x").as_int();
 			p.second = point.attribute("y").as_int();
 
 			this->terrain.push_back(p);
+
+			point = point.next_sibling();
 		}
 	}
 }
