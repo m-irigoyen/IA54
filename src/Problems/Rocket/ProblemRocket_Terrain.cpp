@@ -107,6 +107,7 @@ void ProblemRocket_Terrain::loadTerrain(std::string name)
 		this->rocketStartY = 800;
 		this->rocketStartHSpeed = 0;
 		this->rocketStartVSpeed = 0;
+		this->rocketAngle = 90;
 	}
 	else if (name.compare("Base") == 0)
 	{
@@ -129,6 +130,7 @@ void ProblemRocket_Terrain::loadTerrain(std::string name)
 		this->rocketStartY = 500;
 		this->rocketStartHSpeed = 0;
 		this->rocketStartVSpeed = 0;
+		this->rocketAngle = 90;
 	}
 	else
 	{
@@ -166,6 +168,7 @@ void ProblemRocket_Terrain::loadTerrain(std::string name)
 		this->rocketStartY = terrainNode.attribute("rocketY").as_float();
 		this->rocketStartHSpeed = terrainNode.attribute("rocketH").as_float();
 		this->rocketStartVSpeed = terrainNode.attribute("rocketV").as_float();
+		this->rocketAngle = terrainNode.attribute("rocketA").as_float();
 
 		// Loading terrain points
 		pugi::xml_node point = terrainNode.first_child();
@@ -226,6 +229,7 @@ void ProblemRocket_Terrain::saveTerrain(std::string name)
 		terrainNode.append_attribute("rocketY").set_value(this->rocketStartY);
 		terrainNode.append_attribute("rocketH").set_value(this->rocketStartHSpeed);
 		terrainNode.append_attribute("rocketV").set_value(this->rocketStartVSpeed);
+		terrainNode.append_attribute("rocketA").set_value(this->rocketAngle);
 
 		// terrain points
 		for (deque<pair<int, int>>::iterator it = this->terrain.begin(); it != this->terrain.end(); ++it)
@@ -449,12 +453,13 @@ int ProblemRocket_Terrain::getHeight()
 	return this->mapHeight;
 }
 
-void ProblemRocket_Terrain::getRocketStart(float & rocketX, float & rocketY, float & rocketHorizontalSpeed, float & rocketVerticalSpeed)
+void ProblemRocket_Terrain::getRocketStart(float & rocketX, float & rocketY, float & rocketHorizontalSpeed, float & rocketVerticalSpeed, float& rocketAngle)
 {
 	rocketX = this->rocketStartX;
 	rocketY = this->rocketStartY;
 	rocketHorizontalSpeed = this->rocketStartHSpeed;
 	rocketVerticalSpeed = this->rocketStartVSpeed;
+	rocketAngle = this->rocketAngle;
 }
 
 void ProblemRocket_Terrain::getWind(float & windHorizontal, float & windVertical)

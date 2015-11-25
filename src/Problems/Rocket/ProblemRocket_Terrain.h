@@ -38,6 +38,7 @@ protected:
 	float rocketStartY;
 	float rocketStartHSpeed;
 	float rocketStartVSpeed;
+	float rocketAngle;
 
 	// Terrain points
 	deque<pair<int, int>> terrain;	// The terrain. Just specify points, the collision and drawing is automatic
@@ -82,7 +83,7 @@ public:
 	void getTerrainDimensions(float& terrainWidth, float& terrainHeight);
 	int getWidth();
 	int getHeight();
-	void getRocketStart(float& rocketX, float& rocketY, float& rocketHorizontalSpeed, float& rocketVerticalSpeed);
+	void getRocketStart(float& rocketX, float& rocketY, float& rocketHorizontalSpeed, float& rocketVerticalSpeed, float& rocketAngle);
 	void getWind(float& windHorizontal, float& windVertical);
 	float getGravity();
 

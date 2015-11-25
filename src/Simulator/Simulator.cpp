@@ -172,11 +172,25 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 		{
 			this->problem = new ProblemRocket_TwoEngines();
 
-			//TODO: redo that
-			// Adding initial agents
-			/*addEmitter(200, 200);
-			addEmitter(200, 400);
-			addReceptorFullComposition(600, 400);*/
+			// Stabilizer
+			AgentRocket_TwoEngines_Emitter* newAgent;
+			newAgent = static_cast<AgentRocket_TwoEngines_Emitter*>(addAgent(250, 250, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
+			if (newAgent != NULL)
+				newAgent->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER);
+			else
+				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
+
+			newAgent = static_cast<AgentRocket_TwoEngines_Emitter*>(addAgent(250, 250, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
+			if (newAgent != NULL)
+				newAgent->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_DIRECTION);
+			else
+				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
+
+			// Adding
+			addAgent(250, 200, AGENT_TYPE::AGENT_RECEPTOR, BODY_TYPE::BODY_RECEPTOR_MEDIUM);
+
+			((ProblemRocket*)this->problem)->setNumberOfEmitters(1);
+			((ProblemRocket*)this->problem)->setNumberOfReceptors(1);
 		}
 		else if (this->problemType == PROBLEM_TYPE::ROCKET_TERRAINEDITOR)
 		{

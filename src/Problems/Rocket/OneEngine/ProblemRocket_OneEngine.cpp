@@ -59,9 +59,14 @@ bool ProblemRocket_OneEngine::handleEvent(sf::RenderWindow * window, sf::Event e
 void ProblemRocket_OneEngine::initUserControl(bool userControl)
 {
 	if (userControl)
+	{
 		this->userControlled = true;
+		this->useRelativeChange = true;
+	}
 	else
+	{
 		this->userControlled = false;
+	}
 }
 
 void ProblemRocket_OneEngine::resolveRocketPowerChange()
@@ -144,7 +149,7 @@ void ProblemRocket_OneEngine::init()
 
 	// Control mode
 	this->userControlled = false;
-	this->useRelativeChange = true;
+	this->useRelativeChange = false;
 
 	this->loadTerrain("Default");
 }

@@ -20,6 +20,13 @@
 #define THRUSTER_STRENGTH 10.0f	// Strength of each thruster in meters/seconds
 #define ANGLE_OFFSET 90.0f	// Offset to have 0° be up
 #define PROBLEMROCKET_TWO_MAXENGINEROTATION 1.0f
+#define PROBLEMROCKET_TWO_ROTATIONCHANGEFACTOR 1
+
+// Problem values
+#define PROBLEMROCKET_TWO_PROBLEM_MAXANGLE 45.0f	// The maximum angle the agents will deviate from 0
+
+#define PROBLEMROCKET_TWO_PROBLEM_MAXHSPEED 20.0f
+#define PROBLEMROCKET_TWO_PROBLEM_MAXVSPEED 40.0f
 
 /*
 * The Problem class creates and run the problem to be solved. (pendulum, drone, etc)
@@ -27,9 +34,9 @@
 
 enum AGENTTYPE_ROCKET_TWO
 {
-	ROCKET_TWO_DEFAULT,
+	ROCKET_TWO_REGULATOR,
 	ROCKET_TWO_DIRECTION,
-	ROCKET_TWO_POWER
+	ROCKET_TWO_STABILIZER
 };
 
 using namespace std;

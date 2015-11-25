@@ -21,16 +21,16 @@ Arrow keys : control rocket angle and engine power
 P : Play/Pause
 A : Toggle relative angles
 O/I : Increment/Decrement problem Speed
-S : Save current terrain
 L : Load current terrain
+R : 
 
 Rocket One engine :
 Up/Down : Control engine power
 Left/Right : Control rocket angle
 
 Rocket Two Engines : 
-A/Q : Control left engine power
 Z/S : Control left engine power
+E/D : Control left engine power
 Left/Right : Control rocket angle (easier to test with that
 Up/Down : Control engine power on both engines at the same time
 

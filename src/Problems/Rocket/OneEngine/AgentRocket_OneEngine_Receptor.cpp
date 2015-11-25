@@ -11,8 +11,6 @@ void AgentRocket_OneEngine_Receptor::live()
 
 	// Getting perception from body
 	WAVE perception = this->castedBody->getPerception();
-	/*perception.amplitude = perception.amplitude / this->castedProblem->getNumberOfEmitters();
-	perception.frequency = perception.frequency / this->castedProblem->getNumberOfEmitters();*/
 
 	// Checking error in parameters
 	if (perception.amplitude < this->castedProblem->getWaveAmplitudeOffset())

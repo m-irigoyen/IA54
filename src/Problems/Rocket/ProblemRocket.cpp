@@ -32,12 +32,16 @@ bool ProblemRocket::correctLanding(float hSpeed, float vSpeed, float angle)
 // Given the hSpeed and vSpeed values, move the Rocket
 void ProblemRocket::moveRocket(sf::Time elapsedTime, float hEnginesForce, float vEnginesForce)
 {
-	this->rocket_hSpeed += hEnginesForce * elapsedTime.asSeconds() * this->problemSpeed;
-	this->rocket_vSpeed += (vEnginesForce - this->terrain.getGravity()) * elapsedTime.asSeconds() * this->problemSpeed;
+	float hWind, vWind;
+	this->terrain.getWind(hWind, vWind);
+
+	this->rocket_hSpeed += (hEnginesForce + hWind) * elapsedTime.asSeconds() * this->problemSpeed;
+	this->rocket_vSpeed += (vEnginesForce + vWind - this->terrain.getGravity()) * elapsedTime.asSeconds() * this->problemSpeed;
+	
 
 	// Moving the rocket
-	this->rocket_x += this->rocket_hSpeed * elapsedTime.asSeconds() * this->problemSpeed;
-	this->rocket_y += this->rocket_vSpeed * elapsedTime.asSeconds() * this->problemSpeed;
+	this->rocket_x += (this->rocket_hSpeed) * elapsedTime.asSeconds() * this->problemSpeed;
+	this->rocket_y += (this->rocket_vSpeed) * elapsedTime.asSeconds() * this->problemSpeed;
 
 	//cout << hSpeed << " / " << vSpeed << endl;
 
@@ -97,29 +101,39 @@ bool ProblemRocket::handleEvent(sf::RenderWindow * window, sf::Event event)
 		return true;
 	else
 	{
+		string temp;
 		switch (event.type)
 		{
 		case sf::Event::KeyPressed:
 			switch (event.key.code)
 			{
-			case::sf::Keyboard::F1:
+			case sf::Keyboard::F1:
 				this->initUserControl(true);
 				return true;
-			case::sf::Keyboard::F2:
+			case sf::Keyboard::F2:
 				this->initUserControl(false);
 				return true;
-			case::sf::Keyboard::A:
+			case sf::Keyboard::A:
 				this->useRelativeChange = toggle(this->useRelativeChange);
 				return true;
-			case::sf::Keyboard::O:
+			case sf::Keyboard::O:
 				++this->problemSpeed;
 				if (this->problemSpeed > 5)
 					this->problemSpeed = 5;
 				return true;
-			case::sf::Keyboard::I:
+			case sf::Keyboard::I:
 				--this->problemSpeed;
 				if (this->problemSpeed < 1)
 					this->problemSpeed = 1;
+				return true;
+			case sf::Keyboard::R :
+				this->resetRocket();
+				return true;
+			case sf::Keyboard::L:
+				cout << "Enter terrain to load : ";
+				cin >> temp;
+				this->terrain.loadTerrain(temp);
+				this->resetRocket();
 				return true;
 			}
 		}
@@ -270,7 +284,18 @@ void ProblemRocket::clean()
 // Resets rocket to start position
 void ProblemRocket::resetRocket()
 {
-	this->terrain.getRocketStart(this->rocket_x, this->rocket_y, this->rocket_hSpeed, this->rocket_vSpeed);
+	this->terrain.getRocketStart(this->rocket_x, this->rocket_y, this->rocket_hSpeed, this->rocket_vSpeed, this->rocket_angle);
+
+	this->pause = true;
+	this->problemLive = true;
+	this->hasCrashed = false;
+	this->hasGoneMissing = false;
+	this->hasLanded = false;
+
+	for (vector<float>::iterator it = this->rocket_enginesPower.begin(); it != this->rocket_enginesPower.end(); ++it)
+	{
+		*it = 0.0f;
+	}
 }
 
 void ProblemRocket::init()
@@ -343,13 +368,21 @@ void ProblemRocket::draw(sf::RenderWindow * window)
 	// Drawing HUD
 	string temp;
 
-	// pause
+	// pause && user control
 	if (this->pause)
 	{
 		this->hud_text.setCharacterSize(20);
 		this->hud_text.setString("Pause");
 		this->hud_text.setColor(sf::Color::Red);
 		this->hud_text.setPosition(window->getSize().x / 2 - this->hud_text.getLocalBounds().width / 2 - 10, 35);
+		window->draw(this->hud_text);
+	}
+	if (this->userControlled)
+	{
+		this->hud_text.setCharacterSize(20);
+		this->hud_text.setString("User control : on");
+		this->hud_text.setColor(sf::Color::Red);
+		this->hud_text.setPosition(window->getSize().x / 2 - this->hud_text.getLocalBounds().width / 2 - 10, 50);
 		window->draw(this->hud_text);
 	}
 

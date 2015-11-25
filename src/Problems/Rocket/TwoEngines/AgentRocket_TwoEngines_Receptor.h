@@ -16,7 +16,7 @@ protected:
 	AGENTTYPE_ROCKET_TWO agentType;
 
 public:
-	AgentRocket_TwoEngines_Receptor(ProblemRocket_TwoEngines* problem, BodyReceptor_Composition* body = NULL, AGENTTYPE_ROCKET_TWO type = AGENTTYPE_ROCKET_TWO::ROCKET_TWO_DEFAULT);
+	AgentRocket_TwoEngines_Receptor(ProblemRocket_TwoEngines* problem, BodyReceptor_Composition* body = NULL, AGENTTYPE_ROCKET_TWO type = AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER);
 
 	virtual void live();
 	virtual bool isLinked();

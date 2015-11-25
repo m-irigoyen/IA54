@@ -17,8 +17,10 @@ protected:
 
 	AGENTTYPE_ROCKET_TWO agentType;
 
+	void tendToDesiredAngle(float desiredAngle, float currentAngle, float& lPowerChange, float& rPowerChange);
+
 public:
-	AgentRocket_TwoEngines_Emitter(ProblemRocket_TwoEngines* problem, BodyEmitter* body = NULL, AGENTTYPE_ROCKET_TWO type = AGENTTYPE_ROCKET_TWO::ROCKET_TWO_DEFAULT);
+	AgentRocket_TwoEngines_Emitter(ProblemRocket_TwoEngines* problem, BodyEmitter* body = NULL, AGENTTYPE_ROCKET_TWO type = AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER);
 
 	virtual void live();
 	virtual bool isLinked();	// Checks if agent is linked to a body

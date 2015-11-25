@@ -27,15 +27,7 @@ void ProblemRocket_TwoEngines::getThrustForce(float & hForce, float & vForce)
 		0,
 		PROBLEMROCKET_TWO_MAXENGINEROTATION);
 
-	this->rotationChange = angleRight - angleLeft;
-
-	//TODO: IF : calculer la rotation que donne la puissance des moteurs actuelles
-
-	// this->rocket_enginePower.at(0) : moteur gauche
-	// this->rocket_enginePower.at(1) : moteur droit
-	
-	// La variation de l'angle a calculer. Les angles sont en sens trigonométriques : donc un angle positif équivaut à une rotation anti horaire. Donc si le moteur droit est plus fort que le gauche, l'angle devrait être positif.
-	// this->rotationChange = ?
+	this->rotationChange = (angleRight - angleLeft) * PROBLEMROCKET_TWO_ROTATIONCHANGEFACTOR;
 }
 
 void ProblemRocket_TwoEngines::checkEvents(sf::RenderWindow * window)
@@ -54,14 +46,14 @@ void ProblemRocket_TwoEngines::checkEvents(sf::RenderWindow * window)
 	if (this->userControlled)
 	{
 		// Engine control
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
 			this->setDesiredPower(0, 1);
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 			this->setDesiredPower(0, -1);
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 			this->setDesiredPower(1, 1);
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 			this->setDesiredPower(1, -1);
 		
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
@@ -74,12 +66,6 @@ void ProblemRocket_TwoEngines::checkEvents(sf::RenderWindow * window)
 			this->setDesiredPower(0, 1);
 			this->setDesiredPower(1, 1);
 		}
-
-		// Angle control
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-			this->setDesiredAngle(-1);
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-			this->setDesiredAngle(+1);
 	}
 	
 }
@@ -95,9 +81,14 @@ bool ProblemRocket_TwoEngines::handleEvent(sf::RenderWindow * window, sf::Event 
 void ProblemRocket_TwoEngines::initUserControl(bool userControl)
 {
 	if (userControl)
+	{
 		this->userControlled = true;
+		this->useRelativeChange = true;
+	}
 	else
+	{
 		this->userControlled = false;
+	}
 }
 
 void ProblemRocket_TwoEngines::resolveRocketPowerChange()
@@ -110,7 +101,10 @@ void ProblemRocket_TwoEngines::resolveRocketPowerChange()
 
 void ProblemRocket_TwoEngines::resolveRocketAngleChange()
 {
-	this->rocket_angle = this->constrainAngleChange(this->rocket_angle, this->rotationChange);
+	if (this->useRelativeChange)
+		this->rocket_angle = this->constrainAngleChange(this->rocket_angle, this->rotationChange);
+	else
+		this->rocket_angle = this->constrainAngleChange(this->rocket_angle, this->rocket_angle + this->rotationChange);
 }
 
 void ProblemRocket_TwoEngines::resolveInfluences()
@@ -194,8 +188,8 @@ void ProblemRocket_TwoEngines::init()
 	this->rocket_rotationRate = 0.5;
 
 	// Control mode
-	this->userControlled = true;
-	this->useRelativeChange = true;
+	this->userControlled = false;
+	this->useRelativeChange = false;
 
 	this->loadTerrain("Default");
 }

@@ -197,8 +197,8 @@ void RocketTerrainEditor::draw(sf::RenderWindow * window)
 	window->draw(this->hud_text);
 
 	// Starting rocket values
-	float startH, startV, startX, startY, windH, windV;
-	this->terrain.getRocketStart(startX, startY, startH, startV);
+	float startH, startV, startX, startY, windH, windV, rocketAngle;
+	this->terrain.getRocketStart(startX, startY, startH, startV, rocketAngle);
 	this->terrain.getWind(windH, windV);
 
 	this->hud_text.setString("Starting x : " + std::to_string(startX));
@@ -223,6 +223,10 @@ void RocketTerrainEditor::draw(sf::RenderWindow * window)
 
 	this->hud_text.setString("Starting vWind : " + std::to_string(windV));
 	this->hud_text.setPosition(10, 125);
+	window->draw(this->hud_text);
+
+	this->hud_text.setString("Starting angle : " + std::to_string(rocketAngle));
+	this->hud_text.setPosition(10, 145);
 	window->draw(this->hud_text);
 }
 
