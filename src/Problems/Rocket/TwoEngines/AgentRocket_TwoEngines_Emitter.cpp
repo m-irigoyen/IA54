@@ -52,74 +52,128 @@ void AgentRocket_TwoEngines_Emitter::live()
 			0.0f,
 			this->castedProblem->getPowerMax() / 2);
 
+		float angleVar = convertToRange(abs(angle),
+			0.0f,
+			abs(45.0f/2),
+			0.0f,
+			1);
+
 		// Need to go right
 		if (distanceToCenterFlat < 0.0f)
 		{
-			desiredLPower -= dirVar;
-			desiredRPower += dirVar;
+			desiredLPower -= dirVar -angleVar * dirVar;
+			desiredRPower += dirVar - angleVar * dirVar;
 		}
 		else if (distanceToCenterFlat > 0.0f)
 		{
-			desiredLPower += dirVar;
-			desiredRPower -= dirVar;
+			desiredLPower += dirVar - angleVar * dirVar;
+			desiredRPower -= dirVar - angleVar * dirVar;
 		}
 
 	}
 	// The stabilizer wants to keep the rocket at angle 0
 	else if (this->agentType == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER)
 	{
-		desiredLPower = 49;
-		desiredRPower = 49;
+		if (abs(angle) > 45.0f || abs(distanceToCenterFlat) < lzSize / 2)
+		{
+			desiredLPower = 49;
+			desiredRPower = 49;
 
-		// VSpeed
-		float powerVariation = convertToRange(abs(vSpeed),
-			0.0f,
-			PROBLEMROCKET_TWO_PROBLEM_MAXVSPEED,
-			0.0f,
-			this->castedProblem->getPowerMax()/2);
+			// VSpeed
+			float powerVariation = convertToRange(abs(vSpeed),
+				0.0f,
+				PROBLEMROCKET_TWO_PROBLEM_MAXVSPEED,
+				0.0f,
+				this->castedProblem->getPowerMax() / 2);
 
-		if (vSpeed > 0)
-			powerVariation *= -1;
+			if (vSpeed > 0)
+				powerVariation *= -1;
 
-		desiredLPower += powerVariation;
-		desiredRPower += powerVariation;
+			desiredLPower += powerVariation;
+			desiredRPower += powerVariation;
 
-		// Rotation
-		float rotationVariation = convertToRange(abs(angle),
-			0.0f,
-			45.0f,
-			0.0f,
-			this->castedProblem->getPowerMax() / 2);
+			// Rotation
+			float rotationVariation = convertToRange(abs(angle),
+				0.0f,
+				45.0f,
+				0.0f,
+				this->castedProblem->getPowerMax() / 2);
+
+			if (angle < 0)
+			{
+				desiredLPower -= rotationVariation;
+				desiredRPower += rotationVariation;
+			}
+			else if (angle > 0)
+			{
+				desiredLPower += rotationVariation;
+				desiredRPower -= rotationVariation;
+			}
+
+			// HSpeed
+			// Rotation
+			float angleVar = convertToRange(abs(hSpeed),
+				0.0f,
+				45.0f,
+				0.0f,
+				this->castedProblem->getPowerMax() / 2);
+
+			if (hSpeed < 0)
+			{
+				desiredLPower += rotationVariation;
+				desiredRPower -= rotationVariation;
+			}
+			else if (hSpeed > 0)
+			{
+				desiredLPower += rotationVariation;
+				desiredRPower -= rotationVariation;
+			}
+		}
+		else
+			ceaseTransmission = true;
 		
-		if (angle < 0)
+	}
+	else if (this->agentType == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_REGULATOR)
+	{
+		if (abs(vSpeed) > PROBLEMROCKET_TWO_PROBLEM_MAXVSPEED || abs(hSpeed) > PROBLEMROCKET_TWO_PROBLEM_MAXHSPEED)
 		{
-			desiredLPower -= rotationVariation;
-			desiredRPower += rotationVariation;
-		}
-		else if (angle > 0)
-		{
-			desiredLPower += rotationVariation;
-			desiredRPower -= rotationVariation;
-		}
+			if (vSpeed > 0)
+			{
+				desiredLPower = 0;
+				desiredRPower = 0;
+			}
+			else
+			{
+				desiredLPower = 75;
+				desiredRPower = 75;
 
-		// HSpeed
-		// Rotation
-		float angleVar = convertToRange(abs(hSpeed),
-			0.0f,
-			45.0f,
-			0.0f,
-			this->castedProblem->getPowerMax() / 2);
+				float var = convertToRange(abs(hSpeed),
+					0,
+					PROBLEMROCKET_TWO_PROBLEM_MAXHSPEED,
+					0,
+					this->castedProblem->getPowerMax() / 2);
 
-		if (hSpeed < 0)
-		{
-			desiredLPower += rotationVariation;
-			desiredRPower -= rotationVariation;
+				float angleVar = convertToRange(abs(angle),
+					0,
+					45.0f,
+					0,
+					1);
+
+				if (hSpeed > 0)
+				{
+					desiredLPower -= var - (1-angleVar)*var;
+					desiredRPower += var - (1 - angleVar)*var;
+				}
+				else
+				{
+					desiredLPower += var - (1 - angleVar)*var;
+					desiredRPower -= var - (1 - angleVar)*var;
+				}
+			}
 		}
-		else if (hSpeed > 0)
-		{
-			desiredLPower += rotationVariation;
-			desiredRPower -= rotationVariation;
-		}
+		else
+			ceaseTransmission = true;
+
 	}
 
 	if (ceaseTransmission)

@@ -531,6 +531,11 @@ float ProblemRocket::getPowerMax()
 	return 100.0;
 }
 
+void ProblemRocket::getHighestPointBeforeLanding(float & pointX, float & pointY)
+{
+	this->terrain.getHighestPointBeforeLandingZone(this->rocket_x, this->rocket_y, pointX, pointY);
+}
+
 // Sets the power influence
 void ProblemRocket::setDesiredPower(int engineNumber, float power)
 {

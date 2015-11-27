@@ -86,6 +86,7 @@ public:
 	void getRocketStart(float& rocketX, float& rocketY, float& rocketHorizontalSpeed, float& rocketVerticalSpeed, float& rocketAngle);
 	void getWind(float& windHorizontal, float& windVertical);
 	float getGravity();
+	void getHighestPointBeforeLandingZone(float x, float y, float& highestPointX, float& highestPointY);
 
 	//setters
 	void setRocketStart(float rocketX, float rocketY);

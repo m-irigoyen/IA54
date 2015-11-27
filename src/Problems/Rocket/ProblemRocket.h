@@ -125,6 +125,7 @@ public:
 	float getRocketDistanceToLandingZoneCenter();
 	float getLandingZoneSize();
 	float getPowerMax();
+	void getHighestPointBeforeLanding(float& pointX, float& pointY);
 
 	// Rocket control
 	void setPower(int engineNumber, float power);

@@ -1,5 +1,5 @@
-#ifndef ROCKETTERRAINEDITOR_H_
-#define ROCKETTERRAINEDITOR_H_
+#ifndef PROBLEMROCKET_TERRAINEDITOR_H_
+#define PROBLEMROCKET_TERRAINEDITOR_H_
 
 #include <iostream>
 #include <SFML/Graphics.hpp>
@@ -9,12 +9,12 @@
 #include "Utilities/FilePaths.h"
 
 /*
-* The RocketTerrainEditor is a GUI way to load, edit, and save rocket terrains
+* The ProblemRocket_TerrainEditor is a GUI way to load, edit, and save rocket terrains
 */
 
 using namespace std;
 
-class RocketTerrainEditor : public Problem
+class ProblemRocket_TerrainEditor : public Problem
 {
 protected:
 	// User interface
@@ -39,7 +39,7 @@ protected:
 	void rename();
 
 public:
-	RocketTerrainEditor(float waveAmplLossPerSec = 0.0f);
+	ProblemRocket_TerrainEditor(float waveAmplLossPerSec = 0.0f);
 
 	virtual void run(sf::Time elapsedTime);	// Updating the problem
 	virtual void draw(sf::RenderWindow* problemWindow);

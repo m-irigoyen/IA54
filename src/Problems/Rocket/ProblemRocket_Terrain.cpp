@@ -1,5 +1,6 @@
 #include "Problems/Rocket/ProblemRocket_Terrain.h"
 
+// Returns the terrain point before the given x. If none was found, return end
 deque<pair<int, int>>::iterator ProblemRocket_Terrain::getPointBefore(float x)
 {
 	if (this->terrain.size() < 2)
@@ -417,6 +418,51 @@ float ProblemRocket_Terrain::getTerrainPoint(float x)
 float ProblemRocket_Terrain::getGravity()
 {
 	return this->gravity;
+}
+
+void ProblemRocket_Terrain::getHighestPointBeforeLandingZone(float x, float y, float & highestPointX, float & highestPointY)
+{
+	highestPointX = -1.0f;
+	highestPointY = -1.0f;
+
+	// 3 possibilities : we're left of the lz, or we're right of the lz, or we're in the lz
+
+	// We're in the lz, return
+	if (x >= this->terrainFlatZone1 && x <= this->terrainFlatZone2)
+		return;
+	// We're left of the lz
+	else if (x < this->terrainFlatZone1)
+	{
+		float peak = 0.0f;
+		for (deque<pair<int, int>>::iterator p = this->getPointBefore(x); p != this->terrain.end(); ++p)
+		{
+			if (p->first > this->terrainFlatZone1)
+				return;
+			else if (highestPointY < p->second)
+			{
+				highestPointX = p->first;
+				highestPointY = p->second;
+			}
+		}
+	}
+	// We're right of the lz
+	else
+	{
+		float peak = 0.0f;
+		for (deque<pair<int, int>>::iterator p = this->getPointBefore(x)+1; p != this->terrain.begin(); --p)
+		{
+			if (p == this->terrain.end())
+				continue;
+
+			if (p->first < this->terrainFlatZone2)
+				return;
+			else if (highestPointY < p->second)
+			{
+				highestPointX = p->first;
+				highestPointY = p->second;
+			}
+		}
+	}
 }
 
 void ProblemRocket_Terrain::setRocketStart(float rocketX, float rocketY)

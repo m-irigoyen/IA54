@@ -1,11 +1,11 @@
-#include "Problems/Rocket/RocketTerrainEditor.h"
+#include "Problems/Rocket/ProblemRocket_TerrainEditor.h"
 
 
-RocketTerrainEditor::RocketTerrainEditor(float waveAmplLossPerSec) : Problem(waveAmplLossPerSec), currentLevelName("Default"), isPointSelected(false)
+ProblemRocket_TerrainEditor::ProblemRocket_TerrainEditor(float waveAmplLossPerSec) : Problem(waveAmplLossPerSec), currentLevelName("Default"), isPointSelected(false)
 {
 }
 
-void RocketTerrainEditor::checkEvents(sf::RenderWindow * window)
+void ProblemRocket_TerrainEditor::checkEvents(sf::RenderWindow * window)
 {
 	sf::Event event;
 	while (window->pollEvent(event))
@@ -14,7 +14,7 @@ void RocketTerrainEditor::checkEvents(sf::RenderWindow * window)
 	}
 }
 
-bool RocketTerrainEditor::handleEvent(sf::RenderWindow * window, sf::Event event)
+bool ProblemRocket_TerrainEditor::handleEvent(sf::RenderWindow * window, sf::Event event)
 {
 	if (Problem::handleEvent(window, event))
 		return true;
@@ -149,33 +149,33 @@ bool RocketTerrainEditor::handleEvent(sf::RenderWindow * window, sf::Event event
 	return false;
 }
 
-void RocketTerrainEditor::loadTerrain(string path)
+void ProblemRocket_TerrainEditor::loadTerrain(string path)
 {
 	this->terrain.loadTerrain(path);
 }
 
-void RocketTerrainEditor::saveTerrain(string path)
+void ProblemRocket_TerrainEditor::saveTerrain(string path)
 {
 	this->terrain.saveTerrain(path);
 }
 
-void RocketTerrainEditor::generateTerrain(int width, int height)
+void ProblemRocket_TerrainEditor::generateTerrain(int width, int height)
 {
 	this->terrain.generateRandomTerrain(width, height);
 }
 
-void RocketTerrainEditor::rename()
+void ProblemRocket_TerrainEditor::rename()
 {
 	if (this->currentLevelName.compare("Default") == 0 || this->currentLevelName.compare("Base") == 0)
 		this->currentLevelName = "Untitled";
 }
 
-void RocketTerrainEditor::run(sf::Time elapsedTime)
+void ProblemRocket_TerrainEditor::run(sf::Time elapsedTime)
 {
 }
 
 // Draw the problem
-void RocketTerrainEditor::draw(sf::RenderWindow * window)
+void ProblemRocket_TerrainEditor::draw(sf::RenderWindow * window)
 {
 	this->checkEvents(window);
 
@@ -230,16 +230,16 @@ void RocketTerrainEditor::draw(sf::RenderWindow * window)
 	window->draw(this->hud_text);
 }
 
-void RocketTerrainEditor::clean()
+void ProblemRocket_TerrainEditor::clean()
 {
 }
 
-void RocketTerrainEditor::init()
+void ProblemRocket_TerrainEditor::init()
 {
 	this->loadTerrain("Default");
 }
 
-void RocketTerrainEditor::initGraphics(std::vector<sf::Font>* fonts)
+void ProblemRocket_TerrainEditor::initGraphics(std::vector<sf::Font>* fonts)
 {
 	// Text
 	this->hud_text.setFont(fonts->at(0));
