@@ -35,7 +35,41 @@ void Simulator::userAddAgent(int x, int y, int agentType)
 		
 		break;
 	case PROBLEM_TYPE::ROCKET_TWO:
-		//TODO: implement that
+		switch (agentType)
+		{
+		case 0:
+			this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_RECEPTOR, BODY_TYPE::BODY_RECEPTOR_MEDIUM);
+			break;
+		case 1:
+			newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
+			((AgentRocket_TwoEngines_Emitter*)newAgent)->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_DIRECTION);
+			cout << "Placing direction agent" << endl;
+			break;
+		case 2:
+			newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
+			((AgentRocket_TwoEngines_Emitter*)newAgent)->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_DESCENT);
+			cout << "Placing descent agent" << endl;
+			break;
+		case 3:
+			newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
+			((AgentRocket_TwoEngines_Emitter*)newAgent)->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER_ANGLE);
+			cout << "Placing stabilizer angle" << endl;
+			break;
+		case 4:
+			newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
+			((AgentRocket_TwoEngines_Emitter*)newAgent)->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER_HSPEED);
+			cout << "Placing stabilizer hSpeed" << endl;
+			break;
+		case 5:
+			newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
+			((AgentRocket_TwoEngines_Emitter*)newAgent)->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER_VSPEED);
+			cout << "Placing stabilizer vSpeed" << endl;
+			break;
+		default:
+			cout << "ERROR : Simulator::userAddAgent : unexpected agent type" << endl;
+			break;
+		}
+
 		break;
 	default: 
 		cout << "ERROR : cannot place agents in that mode" << endl;
@@ -90,6 +124,29 @@ void Simulator::updateGUIAgentPlacingText()
 			break;
 		default:
 			this->SFMLView.setCurrentlyPlacingAgent("Emitter stabilizer");
+			break;
+		}
+		break;
+	case PROBLEM_TYPE::ROCKET_TWO:
+		switch (this->currentAgentType)
+		{
+		case 0:
+			this->SFMLView.setCurrentlyPlacingAgent("Receptor");
+			break;
+		case 1:
+			this->SFMLView.setCurrentlyPlacingAgent("Emitter direction");
+			break;
+		case 2:
+			this->SFMLView.setCurrentlyPlacingAgent("Emitter descent");
+			break;
+		case 3 : 
+			this->SFMLView.setCurrentlyPlacingAgent("Emitter stabilizer_angle");
+			break;
+		case 4:
+			this->SFMLView.setCurrentlyPlacingAgent("Emitter stabilizer_hSpeed");
+			break;
+		case 5:
+			this->SFMLView.setCurrentlyPlacingAgent("Emitter stabilizer_vSpeed");
 			break;
 		}
 		break;
@@ -172,29 +229,15 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 		{
 			this->problem = new ProblemRocket_TwoEngines();
 
-			// Stabilizer
-			AgentRocket_TwoEngines_Emitter* newAgent;
-			newAgent = static_cast<AgentRocket_TwoEngines_Emitter*>(addAgent(250, 250, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
-			if (newAgent != NULL)
-				newAgent->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER);
-			else
-				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
-
-			newAgent = static_cast<AgentRocket_TwoEngines_Emitter*>(addAgent(250, 250, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
-			if (newAgent != NULL)
-				newAgent->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_DIRECTION);
-			else
-				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
-
 			// Adding
-			addAgent(250, 200, AGENT_TYPE::AGENT_RECEPTOR, BODY_TYPE::BODY_RECEPTOR_MEDIUM);
+			addAgent(200, 200, AGENT_TYPE::AGENT_RECEPTOR, BODY_TYPE::BODY_RECEPTOR_MEDIUM);
 
 			((ProblemRocket*)this->problem)->setNumberOfEmitters(1);
 			((ProblemRocket*)this->problem)->setNumberOfReceptors(1);
 		}
 		else if (this->problemType == PROBLEM_TYPE::ROCKET_TERRAINEDITOR)
 		{
-			this->problem = new RocketTerrainEditor();
+			this->problem = new ProblemRocket_TerrainEditor();
 		}
 
 		this->problem->init();

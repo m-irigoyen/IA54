@@ -21,18 +21,20 @@ void AgentRocket_TwoEngines_Emitter::live()
 	// Getting problem data
 	float x, y, lPower, rPower, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat, lzSize;
 
-	this->castedProblem->getRocketPosition(x, y);
-	lPower = this->castedProblem->getRocketEnginesPower()->at(0);
-	rPower = this->castedProblem->getRocketEnginesPower()->at(1);
-	angle = this->castedProblem->getRocketAngle();
+	this->castedProblem->getRocketPosition(x, y);		// Rocket position
+	lPower = this->castedProblem->getRocketEnginesPower()->at(0);	// Rocket current left power
+	rPower = this->castedProblem->getRocketEnginesPower()->at(1);	// Rocket current right power
+	angle = this->castedProblem->getRocketAngle();					// rocket current angle
 	angle -= PROBLEMROCKET_GUI_ANGLE_OFFSET;	// Dont forget that
-	this->castedProblem->getRocketSpeed(hSpeed, vSpeed);
-	distanceToGround = this->castedProblem->getRocketDistanceToGround();
-	distanceToCenterFlat = this->castedProblem->getRocketDistanceToLandingZoneCenter();
-	lzSize = this->castedProblem->getLandingZoneSize();
+	this->castedProblem->getRocketSpeed(hSpeed, vSpeed);		// Rocket current speed
+	distanceToGround = this->castedProblem->getRocketDistanceToGround();	// Rocket distance to ground
+	distanceToCenterFlat = this->castedProblem->getRocketDistanceToLandingZoneCenter();	// Rocket distance to center of the landing zone
+	lzSize = this->castedProblem->getLandingZoneSize();	// Landing zone size (width)
+	float landingMaxHSPeed, landingMaxVSpeed, landingMaxAngle; // Correct landing specs
+	this->castedProblem->getSafeLandingSpecs(landingMaxHSPeed, landingMaxVSpeed, landingMaxAngle);
+	
 
 	// Variables
-	float desiredAngle = 0;
 	float desiredLPower = 0;
 	float desiredRPower = 0;
 	float temp = 0;
@@ -46,134 +48,121 @@ void AgentRocket_TwoEngines_Emitter::live()
 		desiredLPower = 49;
 		desiredRPower = 49;
 
-		float dirVar = convertToRange(abs(distanceToCenterFlat),
-			0.0f,
-			abs(abs(distanceToCenterFlat) - lzSize/2),
-			0.0f,
-			this->castedProblem->getPowerMax() / 2);
+		if (abs(distanceToCenterFlat < lzSize / 2))
+		{
+			ceaseTransmission = true;
+		}
+		else
+		{
+			float dirVar = convertToRange(abs(distanceToCenterFlat),
+				0.0f,
+				abs(abs(distanceToCenterFlat) - lzSize / 2),
+				0.0f,
+				this->castedProblem->getPowerMax() / 2);
+
+			float angleVar = convertToRange(abs(angle),
+				0.0f,
+				abs(PROBLEMROCKET_TWO_PROBLEM_MAXANGLE / 2),
+				0.0f,
+				1);
+
+			// Need to go right
+			if (distanceToCenterFlat < 0.0f)
+			{
+				desiredLPower -= dirVar - angleVar * dirVar;
+				desiredRPower += dirVar - angleVar * dirVar;
+			}
+			else if (distanceToCenterFlat > 0.0f)
+			{
+				desiredLPower += dirVar - angleVar * dirVar;
+				desiredRPower -= dirVar - angleVar * dirVar;
+			}
+		}
+	}
+	// The stabilizer wants to keep the rocket at angle 0
+	else if (this->agentType == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_DESCENT)
+	{
+		// Are we in the landing zone?
+		if (abs(distanceToCenterFlat) < lzSize / 2)
+		{
+			// If we are : descend
+			float speedVar = convertToRange(abs(vSpeed),
+				0.0f,
+				landingMaxAngle,
+				0.0f,
+				this->castedProblem->getPowerMax() / 2);
+
+			desiredLPower = speedVar;
+			desiredRPower = speedVar;
+		}
+		else
+			ceaseTransmission = true;
+	}
+	else if (this->agentType == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER_ANGLE)
+	{
+		desiredLPower = 50.0f;
+		desiredRPower = 50.0f;
 
 		float angleVar = convertToRange(abs(angle),
 			0.0f,
-			abs(45.0f/2),
+			PROBLEMROCKET_TWO_PROBLEM_MAXANGLE,
 			0.0f,
-			1);
+			this->castedProblem->getPowerMax() / 2);
 
-		// Need to go right
-		if (distanceToCenterFlat < 0.0f)
+		if (angle < 0.0f)
 		{
-			desiredLPower -= dirVar -angleVar * dirVar;
-			desiredRPower += dirVar - angleVar * dirVar;
-		}
-		else if (distanceToCenterFlat > 0.0f)
-		{
-			desiredLPower += dirVar - angleVar * dirVar;
-			desiredRPower -= dirVar - angleVar * dirVar;
-		}
-
-	}
-	// The stabilizer wants to keep the rocket at angle 0
-	else if (this->agentType == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER)
-	{
-		if (abs(angle) > 45.0f || abs(distanceToCenterFlat) < lzSize / 2)
-		{
-			desiredLPower = 49;
-			desiredRPower = 49;
-
-			// VSpeed
-			float powerVariation = convertToRange(abs(vSpeed),
-				0.0f,
-				PROBLEMROCKET_TWO_PROBLEM_MAXVSPEED,
-				0.0f,
-				this->castedProblem->getPowerMax() / 2);
-
-			if (vSpeed > 0)
-				powerVariation *= -1;
-
-			desiredLPower += powerVariation;
-			desiredRPower += powerVariation;
-
-			// Rotation
-			float rotationVariation = convertToRange(abs(angle),
-				0.0f,
-				45.0f,
-				0.0f,
-				this->castedProblem->getPowerMax() / 2);
-
-			if (angle < 0)
-			{
-				desiredLPower -= rotationVariation;
-				desiredRPower += rotationVariation;
-			}
-			else if (angle > 0)
-			{
-				desiredLPower += rotationVariation;
-				desiredRPower -= rotationVariation;
-			}
-
-			// HSpeed
-			// Rotation
-			float angleVar = convertToRange(abs(hSpeed),
-				0.0f,
-				45.0f,
-				0.0f,
-				this->castedProblem->getPowerMax() / 2);
-
-			if (hSpeed < 0)
-			{
-				desiredLPower += rotationVariation;
-				desiredRPower -= rotationVariation;
-			}
-			else if (hSpeed > 0)
-			{
-				desiredLPower += rotationVariation;
-				desiredRPower -= rotationVariation;
-			}
+			desiredLPower -= angleVar;
+			desiredRPower += angleVar;
 		}
 		else
-			ceaseTransmission = true;
-		
-	}
-	else if (this->agentType == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_REGULATOR)
-	{
-		if (abs(vSpeed) > PROBLEMROCKET_TWO_PROBLEM_MAXVSPEED || abs(hSpeed) > PROBLEMROCKET_TWO_PROBLEM_MAXHSPEED)
 		{
-			if (vSpeed > 0)
-			{
-				desiredLPower = 0;
-				desiredRPower = 0;
-			}
-			else
-			{
-				desiredLPower = 75;
-				desiredRPower = 75;
+			desiredLPower += angleVar;
+			desiredRPower -= angleVar;
+		}
+	}
+	else if (this->agentType == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER_HSPEED)
+	{
+		desiredLPower = 50.0f;
+		desiredRPower = 50.0f;
 
-				float var = convertToRange(abs(hSpeed),
-					0,
-					PROBLEMROCKET_TWO_PROBLEM_MAXHSPEED,
-					0,
-					this->castedProblem->getPowerMax() / 2);
+		float hSpeedVar = convertToRange(abs(hSpeed),
+			0.0f,
+			PROBLEMROCKET_TWO_PROBLEM_MAXHSPEED,
+			0.0f,
+			this->castedProblem->getPowerMax() / 2);
 
-				float angleVar = convertToRange(abs(angle),
-					0,
-					45.0f,
-					0,
-					1);
-
-				if (hSpeed > 0)
-				{
-					desiredLPower -= var - (1-angleVar)*var;
-					desiredRPower += var - (1 - angleVar)*var;
-				}
-				else
-				{
-					desiredLPower += var - (1 - angleVar)*var;
-					desiredRPower -= var - (1 - angleVar)*var;
-				}
-			}
+		if (hSpeed < 0.0f)
+		{
+			desiredLPower += hSpeedVar;
+			desiredRPower -= hSpeedVar;
 		}
 		else
-			ceaseTransmission = true;
+		{
+			desiredLPower -= hSpeedVar;
+			desiredRPower += hSpeedVar;
+		}
+	}
+	else if (this->agentType == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER_VSPEED)
+	{
+		desiredLPower = 50.0f;
+		desiredRPower = 50.0f;
 
+		float vSpeedVar = convertToRange(abs(vSpeed),
+			0.0f,
+			PROBLEMROCKET_TWO_PROBLEM_MAXVSPEED,
+			0.0f,
+			this->castedProblem->getPowerMax() / 2);
+
+		if (vSpeed < 0.0f)
+		{
+			desiredLPower += vSpeedVar;
+			desiredRPower += vSpeedVar;
+		}
+		else
+		{
+			desiredLPower = 0.0f;
+			desiredRPower = 0.0f;
+		}
 	}
 
 	if (ceaseTransmission)

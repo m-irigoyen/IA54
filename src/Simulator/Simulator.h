@@ -26,7 +26,7 @@
 #include "Problems/Rocket/TwoEngines/AgentRocket_TwoEngines_Receptor.h"
 
 // Rocket Terrain editor
-#include "Problems/Rocket/RocketTerrainEditor.h"
+#include "Problems/Rocket/ProblemRocket_TerrainEditor.h"
 
 
 /*

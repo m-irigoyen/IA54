@@ -228,7 +228,7 @@ void ProblemRocket::resetDesiredChanges()
 	this->desiredRotation = 0;
 }
 
-ProblemRocket::ProblemRocket(float waveAmplLossPerSec, bool useAttenuation) : Problem(waveAmplLossPerSec, useAttenuation), userControlled(false), rocket_rotationRate(-1), rocket_engineChangeRate(-1), useRelativeChange(false), problemSpeed(1)
+ProblemRocket::ProblemRocket(float waveAmplLossPerSec, bool useAttenuation) : Problem(waveAmplLossPerSec, useAttenuation), userControlled(false), rocket_rotationRate(-1), rocket_engineChangeRate(-1), useRelativeChange(false), problemSpeed(3)
 {
 	// Setting base variables
 	this->rocket_x = 0;
@@ -534,6 +534,13 @@ float ProblemRocket::getPowerMax()
 void ProblemRocket::getHighestPointBeforeLanding(float & pointX, float & pointY)
 {
 	this->terrain.getHighestPointBeforeLandingZone(this->rocket_x, this->rocket_y, pointX, pointY);
+}
+
+void ProblemRocket::getSafeLandingSpecs(float & maxHSpeed, float & maxVSpeed, float & maxAngle)
+{
+	maxHSpeed = 20.0f;
+	maxVSpeed = 40.0f;
+	maxAngle = 10.0f;
 }
 
 // Sets the power influence
