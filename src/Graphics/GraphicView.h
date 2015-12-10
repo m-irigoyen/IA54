@@ -59,7 +59,7 @@ private:
 public:
 	GraphicView();
 
-	void Init(int width, int height, Problem* problem);		// Init the window
+	void Init(int width, int height, int problemWidth, int problemHeight, Problem* problem);		// Init the window
 	void Draw();							// Draw stuff
 	void clean();	// Cleans the graphics stuff
 

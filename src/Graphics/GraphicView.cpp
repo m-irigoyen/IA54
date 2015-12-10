@@ -13,7 +13,7 @@ GraphicView::GraphicView() : displayEmitters(true), displayReceptors(true), disp
 {
 }
 
-void GraphicView::Init(int width, int height, Problem* problem)
+void GraphicView::Init(int width, int height, int problemWidth, int problemHeight, Problem* problem)
 {
 	if (this->window != NULL)
 		this->window->close();
@@ -46,7 +46,7 @@ void GraphicView::Init(int width, int height, Problem* problem)
 	if (this->problemWindow != NULL)
 		this->problemWindow->close();
 
-	this->problemWindow = new sf::RenderWindow(sf::VideoMode(width, height), "IA54 - WaveAgents problem");
+	this->problemWindow = new sf::RenderWindow(sf::VideoMode(problemWidth, problemHeight), "IA54 - WaveAgents problem");
 	this->problemWindow->setVerticalSyncEnabled(false);
 	this->problemWindow->setPosition(sf::Vector2i(width, 0));
 
