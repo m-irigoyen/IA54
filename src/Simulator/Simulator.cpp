@@ -1,6 +1,5 @@
 #include "Simulator.h"
 
-
 void Simulator::userAddAgent(int x, int y, int agentType)
 {
 	Agent* newAgent;
