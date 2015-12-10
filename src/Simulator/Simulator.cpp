@@ -229,10 +229,47 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 		{
 			this->problem = new ProblemRocket_TwoEngines();
 
-			// Adding
+			//Emitters
+			// Direction
+			AgentRocket_TwoEngines_Emitter* newAgent;
+			newAgent = static_cast<AgentRocket_TwoEngines_Emitter*>(addAgent(170, 200, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
+			if (newAgent != NULL)
+				newAgent->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_DIRECTION);
+			else
+				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
+
+			// Descent
+			newAgent = static_cast<AgentRocket_TwoEngines_Emitter*>(addAgent(220, 220, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
+			if (newAgent != NULL)
+				newAgent->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_DESCENT);
+			else
+				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
+
+			// Stabilizer Angle
+			newAgent = static_cast<AgentRocket_TwoEngines_Emitter*>(addAgent(230, 200, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
+			if (newAgent != NULL)
+				newAgent->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER_ANGLE);
+			else
+				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
+
+			// Stabilizer hSpeed
+			newAgent = static_cast<AgentRocket_TwoEngines_Emitter*>(addAgent(200, 170, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
+			if (newAgent != NULL)
+				newAgent->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER_HSPEED);
+			else
+				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
+
+			// Stabilizer vSpeed
+			newAgent = static_cast<AgentRocket_TwoEngines_Emitter*>(addAgent(200, 230, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
+			if (newAgent != NULL)
+				newAgent->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER_VSPEED);
+			else
+				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
+
+			// Receptor
 			addAgent(200, 200, AGENT_TYPE::AGENT_RECEPTOR, BODY_TYPE::BODY_RECEPTOR_MEDIUM);
 
-			((ProblemRocket*)this->problem)->setNumberOfEmitters(1);
+			((ProblemRocket*)this->problem)->setNumberOfEmitters(5);
 			((ProblemRocket*)this->problem)->setNumberOfReceptors(1);
 		}
 		else if (this->problemType == PROBLEM_TYPE::ROCKET_TERRAINEDITOR)

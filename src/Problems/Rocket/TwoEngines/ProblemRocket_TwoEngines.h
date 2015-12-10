@@ -23,7 +23,7 @@
 #define PROBLEMROCKET_TWO_ROTATIONCHANGEFACTOR 1
 
 // Problem values
-#define PROBLEMROCKET_TWO_PROBLEM_MAXANGLE 25.0f	// The maximum angle the agents will deviate from 0
+#define PROBLEMROCKET_TWO_PROBLEM_MAXANGLE 45.0f	// The maximum angle the agents will deviate from 0
 
 #define PROBLEMROCKET_TWO_PROBLEM_MAXHSPEED 20.0f
 #define PROBLEMROCKET_TWO_PROBLEM_MAXVSPEED 40.0f
