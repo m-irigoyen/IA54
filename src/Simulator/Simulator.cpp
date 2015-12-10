@@ -279,7 +279,7 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 
 		this->problem->init();
 
-		this->SFMLView.Init(800, 600, this->problem);
+		this->SFMLView.Init(400, 400, 800, 600, this->problem);
 		this->SFMLView.setProblemType(this->problemType);
 		this->SFMLView.SetWorld(&this->world);
 		this->world.setWaveAmplitude(this->problem->getAmplitudeLoss());
