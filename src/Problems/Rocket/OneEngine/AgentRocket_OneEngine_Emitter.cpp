@@ -36,82 +36,79 @@ void AgentRocket_OneEngine_Emitter::live()
 	
 	if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DIRECTION)
 	{
-		/*if (abs(distanceToCenterFlat) <= lzSize / 2)
-			ceaseTransmission = true;*/
-		/*else
-		{*/
+		desiredPower = 50;
+
+		if (abs(distanceToCenterFlat) > (lzSize / 2))
+		{
 			// Direct the rocket towards the flatzone
-			desiredAngle = convertToRange(abs(distanceToCenterFlat),
-				0,
-				lzSize / 2,
-				0,
-				PROBLEMROCKET_ONE_PROBLEM_MAXANGLE / 2);
+			desiredAngle = PROBLEMROCKET_ONE_PROBLEM_MAXANGLE;
 
 			if (distanceToCenterFlat > 0)
 				desiredAngle *= -1;
-
-			desiredPower = 50;
-		//}
-	}
-	else if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_REGULATOR)
-	{
-		desiredAngle = 0;
-
-		// Don't go too far up
-		/*if (vSpeed > 0.0f)
-		{
-			desiredAngle = 0;
-			desiredPower = 0;
-		}*/
-		// If we're too fast : regain control
-		if (abs(hSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED || abs(vSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXVSPEED)
-		{
-			if (abs(hSpeed) > PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED)
-				desiredAngle = PROBLEMROCKET_ONE_PROBLEM_MAXANGLE;
-			else
-			{
-				desiredAngle = convertToRange(abs(hSpeed),
-					0,
-					PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED / 2,	// That 0.5 factor makes it brake faster
-					0,
-					PROBLEMROCKET_ONE_PROBLEM_MAXANGLE);
-			}
-
-			if (hSpeed < 0)
-				desiredAngle *= -1;
-
-			desiredPower = 75;
 		}
 		else
-			ceaseTransmission = true;
-	}
-	else if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER)
-	{
-		// The rocket is above the landing zone
-		if (abs(distanceToCenterFlat) <= lzSize / 2)
 		{
-			desiredAngle = convertToRange(abs(hSpeed),
-				0,
-				PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED,	// That 0.5 factor makes it brake faster
-				0,
-				PROBLEMROCKET_ONE_PROBLEM_MAXANGLE);
+			desiredAngle = convertToRange(abs(distanceToCenterFlat),
+				0.0f,
+				lzSize / 2,
+				0.0f,
+				desiredAngle = PROBLEMROCKET_ONE_PROBLEM_MAXANGLE);
+				
+				if (distanceToCenterFlat > 0)
+					desiredAngle *= -1;
+		}
+	}
+	else if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_ALTITUDE)
+	{
+		if (abs(distanceToCenterFlat) < lzSize /2)
+		{
+			desiredAngle = 0;
 
-			if (hSpeed < 0)
-				desiredAngle *= -1;
-			
-			if (vSpeed > 0)
-				desiredPower = 10;
+			desiredPower = convertToRange(abs(vSpeed),
+				0,
+				PROBLEMROCKET_ONE_PROBLEM_MAXVSPEED,
+				0,
+				this->castedProblem->getPowerMax()/2);
+		}
+		else
+		{
+			if (vSpeed > 0.0f)
+				desiredPower = 0.0f;
 			else
 			{
 				desiredPower = convertToRange(abs(vSpeed),
-					0,
+					0.0f,
 					PROBLEMROCKET_ONE_PROBLEM_MAXVSPEED,
-					0,
+					this->castedProblem->getPowerMax() / 2,
 					this->castedProblem->getPowerMax());
 			}
 		}
-		else
-			ceaseTransmission = true;
+	}
+	else if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_HSPEED)
+	{
+		desiredAngle = convertToRange(abs(hSpeed),
+			0,
+			PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED,	// That 0.5 factor makes it brake faster
+			0,
+			PROBLEMROCKET_ONE_PROBLEM_MAXANGLE);
+
+		if (hSpeed < 0)
+			desiredAngle *= -1;
+
+		desiredPower = 50.0f;
+	}
+	else if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_VSPEED)
+	{
+		desiredAngle = 0;
+		
+		desiredPower = convertToRange(abs(vSpeed),
+			0,
+			PROBLEMROCKET_ONE_PROBLEM_MAXVSPEED,
+			this->castedProblem->getPowerMax() / 2,
+			this->castedProblem->getPowerMax());
+
+		if (vSpeed > 0.0f)
+			desiredPower = 0.0f;
 	}
 
 	if (ceaseTransmission)

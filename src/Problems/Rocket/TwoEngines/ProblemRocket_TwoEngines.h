@@ -34,11 +34,12 @@
 
 enum AGENTTYPE_ROCKET_TWO
 {
-	ROCKET_TWO_DIRECTION,
-	ROCKET_TWO_DESCENT,
-	ROCKET_TWO_STABILIZER_ANGLE,
-	ROCKET_TWO_STABILIZER_HSPEED,
-	ROCKET_TWO_STABILIZER_VSPEED
+	ROCKET_TWO_RECEPTOR,
+	ROCKET_TWO_DIRECTION,		// Guides the rocket towards destination
+	ROCKET_TWO_ALTITUDE,			// Handles the rocket's altitude
+	ROCKET_TWO_STABILIZER_ANGLE,	// Stabilizes the rockt's angle
+	ROCKET_TWO_STABILIZER_HSPEED,	// Stabilizes the rocket's HSpeed
+	ROCKET_TWO_STABILIZER_VSPEED	// Stabilizes the rocket's VSPeed
 };
 
 using namespace std;

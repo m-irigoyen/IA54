@@ -20,13 +20,18 @@ void Simulator::userAddAgent(int x, int y, int agentType)
 			break;
 		case 2:
 			newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
-			((AgentRocket_OneEngine_Emitter*)newAgent)->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_REGULATOR);
-			cout << "Placing regulator agent" << endl;
+			((AgentRocket_OneEngine_Emitter*)newAgent)->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_ALTITUDE);
+			cout << "Placing altitude agent" << endl;
 			break;
-		case 3 : 
-		newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
-			((AgentRocket_OneEngine_Emitter*)newAgent)->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER);
-			cout << "Placing stabilizer agent" << endl;
+		case 3:
+			newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
+			((AgentRocket_OneEngine_Emitter*)newAgent)->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_HSPEED);
+			cout << "Placing stabilizer_hSpeed agent" << endl;
+			break;
+		case 4:
+			newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
+			((AgentRocket_OneEngine_Emitter*)newAgent)->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_VSPEED);
+			cout << "Placing stabilizer_vSpeed agent" << endl;
 			break;
 		default:
 			cout << "ERROR : Simulator::userAddAgent : unexpected agent type" << endl;
@@ -46,7 +51,7 @@ void Simulator::userAddAgent(int x, int y, int agentType)
 			break;
 		case 2:
 			newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
-			((AgentRocket_TwoEngines_Emitter*)newAgent)->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_DESCENT);
+			((AgentRocket_TwoEngines_Emitter*)newAgent)->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_ALTITUDE);
 			cout << "Placing descent agent" << endl;
 			break;
 		case 3:
@@ -119,10 +124,16 @@ void Simulator::updateGUIAgentPlacingText()
 			this->SFMLView.setCurrentlyPlacingAgent("Emitter direction");
 			break;
 		case 2:
-			this->SFMLView.setCurrentlyPlacingAgent("Emitter regulator");
+			this->SFMLView.setCurrentlyPlacingAgent("Emitter altitude");
 			break;
-		default:
-			this->SFMLView.setCurrentlyPlacingAgent("Emitter stabilizer");
+		case 3:
+			this->SFMLView.setCurrentlyPlacingAgent("Emitter stabilizer_hSpeed");
+			break;
+		case 4:
+			this->SFMLView.setCurrentlyPlacingAgent("Emitter stabilizer_vSpeed");
+			break;
+		default :
+			this->SFMLView.setCurrentlyPlacingAgent("");
 			break;
 		}
 		break;
@@ -146,6 +157,9 @@ void Simulator::updateGUIAgentPlacingText()
 			break;
 		case 5:
 			this->SFMLView.setCurrentlyPlacingAgent("Emitter stabilizer_vSpeed");
+			break;
+		default:
+			this->SFMLView.setCurrentlyPlacingAgent("");
 			break;
 		}
 		break;
@@ -195,22 +209,28 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 
 			// Adding emitters : direction
 			AgentRocket_OneEngine_Emitter* newAgent;
-			newAgent = static_cast<AgentRocket_OneEngine_Emitter*>(addAgent(200, 200, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
+			newAgent = static_cast<AgentRocket_OneEngine_Emitter*>(addAgent(180, 200, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
 			if (newAgent != NULL)
 				newAgent->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DIRECTION);
 			else
 				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
 
 			// Adding emitters : regulator
-			newAgent = static_cast<AgentRocket_OneEngine_Emitter*>(addAgent(300, 200, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
+			newAgent = static_cast<AgentRocket_OneEngine_Emitter*>(addAgent(220, 200, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
 			if (newAgent != NULL)
-				newAgent->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_REGULATOR);
+				newAgent->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_ALTITUDE);
 			else
 				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
 
-			newAgent = static_cast<AgentRocket_OneEngine_Emitter*>(addAgent(250, 250, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
+			newAgent = static_cast<AgentRocket_OneEngine_Emitter*>(addAgent(200, 180, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
 			if (newAgent != NULL)
-				newAgent->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER);
+				newAgent->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_HSPEED);
+			else
+				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
+			
+			newAgent = static_cast<AgentRocket_OneEngine_Emitter*>(addAgent(200, 220, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
+			if (newAgent != NULL)
+				newAgent->setAgentType(AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_VSPEED);
 			else
 				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
 
@@ -218,9 +238,9 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 			//TODO:
 
 			// Adding
-			addAgent(250, 200, AGENT_TYPE::AGENT_RECEPTOR, BODY_TYPE::BODY_RECEPTOR_MEDIUM);
+			addAgent(200, 200, AGENT_TYPE::AGENT_RECEPTOR, BODY_TYPE::BODY_RECEPTOR_MEDIUM);
 
-			((ProblemRocket_OneEngine*)this->problem)->setNumberOfEmitters(2);
+			((ProblemRocket_OneEngine*)this->problem)->setNumberOfEmitters(4);
 			((ProblemRocket_OneEngine*)this->problem)->setNumberOfReceptors(1);
 		}
 		// ROCKET2 PROBLEM
@@ -240,7 +260,7 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 			// Descent
 			newAgent = static_cast<AgentRocket_TwoEngines_Emitter*>(addAgent(220, 220, AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER));
 			if (newAgent != NULL)
-				newAgent->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_DESCENT);
+				newAgent->setAgentType(AGENTTYPE_ROCKET_TWO::ROCKET_TWO_ALTITUDE);
 			else
 				cout << "ERROR : Cast to AgentEmitterRocket* failed" << endl;
 

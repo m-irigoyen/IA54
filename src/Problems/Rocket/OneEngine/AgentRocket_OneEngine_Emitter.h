@@ -17,7 +17,7 @@ protected:
 	AGENTTYPE_ROCKET_ONE agentType;
 
 public:
-	AgentRocket_OneEngine_Emitter(ProblemRocket_OneEngine* problem, BodyEmitter* body = NULL, AGENTTYPE_ROCKET_ONE type = AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DEFAULT);
+	AgentRocket_OneEngine_Emitter(ProblemRocket_OneEngine* problem, BodyEmitter* body = NULL, AGENTTYPE_ROCKET_ONE type = AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DIRECTION);
 
 	virtual void live();
 	virtual bool isLinked();	// Checks if agent is linked to a body

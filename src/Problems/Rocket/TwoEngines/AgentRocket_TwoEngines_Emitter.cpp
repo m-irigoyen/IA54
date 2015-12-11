@@ -48,11 +48,7 @@ void AgentRocket_TwoEngines_Emitter::live()
 		desiredLPower = 49;
 		desiredRPower = 49;
 
-		if (abs(distanceToCenterFlat < lzSize / 2))
-		{
-			ceaseTransmission = true;
-		}
-		else
+		if (abs(distanceToCenterFlat) > lzSize / 2)
 		{
 			float dirVar = convertToRange(abs(distanceToCenterFlat),
 				0.0f,
@@ -62,7 +58,7 @@ void AgentRocket_TwoEngines_Emitter::live()
 
 			float angleVar = convertToRange(abs(angle),
 				0.0f,
-				abs(PROBLEMROCKET_TWO_PROBLEM_MAXANGLE / 2),
+				abs(PROBLEMROCKET_TWO_PROBLEM_MAXANGLE),
 				0.0f,
 				1);
 
@@ -78,9 +74,12 @@ void AgentRocket_TwoEngines_Emitter::live()
 				desiredRPower -= dirVar - angleVar * dirVar;
 			}
 		}
+		else
+			ceaseTransmission = true;
+		
 	}
 	// The stabilizer wants to keep the rocket at angle 0
-	else if (this->agentType == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_DESCENT)
+	else if (this->agentType == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_ALTITUDE)
 	{
 		// Are we in the landing zone?
 		if (abs(distanceToCenterFlat) < lzSize / 2)

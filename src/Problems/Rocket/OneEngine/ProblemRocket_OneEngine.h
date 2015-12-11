@@ -22,11 +22,13 @@
 
 enum AGENTTYPE_ROCKET_ONE
 {
-	ROCKET_ONE_DEFAULT,		// Default agents do nothing.
+	ROCKET_ONE_RECEPTOR,
 	ROCKET_ONE_DIRECTION,	// Direction agents guide the rocket towards the landing zone
-	ROCKET_ONE_REGULATOR,	// Regulator agents make sure the rocket stays within the wanted speed bounds
-	ROCKET_ONE_STABILIZER,	// Stabilizer agents stabilize the rocket, and take care of the landing
-	ROCKET_ONE_AVOIDER		// Avoider agents avoid the terrain
+	ROCKET_ONE_ALTITUDE,	// These agents handle the rocket's altitude
+							
+							// Stabilizer agents stabilize the rocket
+	ROCKET_ONE_STABILIZER_HSPEED,	// Regulates the rocket's horizontal speed
+	ROCKET_ONE_STABILIZER_VSPEED,	// Regulates the rocket's vertical speed
 };
 
 using namespace std;

@@ -17,7 +17,7 @@ protected:
 
 public:
 
-	AgentRocket_OneEngine_Receptor(ProblemRocket_OneEngine* problem, BodyReceptor_CompositionFull* body = NULL, AGENTTYPE_ROCKET_ONE type = AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DEFAULT);
+	AgentRocket_OneEngine_Receptor(ProblemRocket_OneEngine* problem, BodyReceptor_CompositionFull* body = NULL, AGENTTYPE_ROCKET_ONE type = AGENTTYPE_ROCKET_ONE::ROCKET_ONE_RECEPTOR);
 
 	virtual void live();
 	virtual bool isLinked();
