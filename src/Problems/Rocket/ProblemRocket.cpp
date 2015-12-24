@@ -53,7 +53,7 @@ void ProblemRocket::moveRocket(sf::Time elapsedTime, float hEnginesForce, float 
 	}
 	else
 	{
-		//TODO: replace that 16 by the hitbox size
+		//TODO: replace that 22 by the hitbox size
 		if (this->terrain.collides(this->rocket_x, this->rocket_y, 22))
 		{
 			// If is on flat zone
@@ -352,8 +352,12 @@ void ProblemRocket::draw(sf::RenderWindow * window)
 	this->trajectories.drawAll(window, this->terrain.getWidth(), this->terrain.getHeight());
 
 	// Drawing rocket
-	this->hud_rocketSprite.setPosition(this->rocket_x * window->getSize().x / this->terrain.getWidth(),
-		window->getSize().y - (this->rocket_y * window->getSize().y / this->terrain.getHeight()));
+	float convX, convY;
+	convertCoordinates(this->rocket_x, this->rocket_y, this->terrain.getWidth(), this->terrain.getHeight(), convX, convY, window->getSize().x, window->getSize().y);
+	
+	this->hud_rocketSprite.setPosition(convX, window->getSize().y - convY);
+	/*this->hud_rocketSprite.setPosition(this->rocket_x * window->getSize().x / this->terrain.getWidth(),
+		window->getSize().y - (this->rocket_y * window->getSize().y / this->terrain.getHeight()));*/
 	this->hud_rocketSprite.setRotation(-this->rocket_angle);
 
 	window->draw(this->hud_rocketSprite);
@@ -397,20 +401,33 @@ void ProblemRocket::draw(sf::RenderWindow * window)
 	window->draw(this->hud_text);
 
 	temp = std::to_string(this->rocket_angle - PROBLEMROCKET_GUI_ANGLE_OFFSET);
+	if (abs(this->rocket_angle - PROBLEMROCKET_GUI_ANGLE_OFFSET) > 10.0f)
+		this->hud_text.setColor(sf::Color::Red);
+	else
+		this->hud_text.setColor(sf::Color::Green);
 	this->hud_text.setPosition(10, 25);
 	this->hud_text.setString("Angle  : " + temp);
 	window->draw(this->hud_text);
 
 	temp = std::to_string(this->rocket_hSpeed);
+	if (abs(this->rocket_hSpeed) > 20.0f)
+		this->hud_text.setColor(sf::Color::Red);
+	else
+		this->hud_text.setColor(sf::Color::Green);
 	this->hud_text.setPosition(10, 45);
 	this->hud_text.setString("hSpeed : " + temp);
 	window->draw(this->hud_text);
 
 	temp = std::to_string(this->rocket_vSpeed);
+	if (abs(this->rocket_vSpeed) > 40.0f)
+		this->hud_text.setColor(sf::Color::Red);
+	else
+		this->hud_text.setColor(sf::Color::Green);
 	this->hud_text.setPosition(10, 65);
 	this->hud_text.setString("vSpeed : " + temp);
 	window->draw(this->hud_text);
 	
+	this->hud_text.setColor(sf::Color::White);
 	// Engine values must be drawned in other classes
 }
 

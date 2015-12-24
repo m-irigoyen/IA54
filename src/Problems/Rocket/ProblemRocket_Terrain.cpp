@@ -54,12 +54,14 @@ void ProblemRocket_Terrain::draw(sf::RenderWindow * window)
 		for (deque<pair<int, int>>::iterator it = this->terrain.begin() + 1; it != this->terrain.end(); ++it)
 		{
 			// We resize the terrain in perspective, so that the terrain takes up all the width and height of the screen
+			float x1, x2, y1, y2;
+			convertCoordinates(p->first, p->second, this->getWidth(), this->getHeight(), x1, y1, window->getSize().x, window->getSize().y);
+			convertCoordinates(it->first, it->second, this->getWidth(), this->getHeight(), x2, y2, window->getSize().x, window->getSize().y);
+			
 			sf::Vertex line[] =
 			{
-				sf::Vertex(sf::Vector2f(p->first*window->getSize().x / mapWidth,
-				(mapHeight - p->second)*window->getSize().y / mapHeight)),
-				sf::Vertex(sf::Vector2f(it->first*window->getSize().x / mapWidth,
-					(mapHeight - it->second)*window->getSize().y / mapHeight))
+				sf::Vertex(sf::Vector2f(x1, window->getSize().y - y1)),
+				sf::Vertex(sf::Vector2f(x2, window->getSize().y - y2))
 			};
 
 			window->draw(line, 2, sf::Lines);

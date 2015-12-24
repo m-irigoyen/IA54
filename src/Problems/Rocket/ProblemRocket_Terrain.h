@@ -92,7 +92,6 @@ public:
 	void setRocketStart(float rocketX, float rocketY);
 	void setRocketStartSpeed(float hSpeed, float vSpeed);
 	void setWind(float hWind, float vWind);
-
 };
 
 #endif
