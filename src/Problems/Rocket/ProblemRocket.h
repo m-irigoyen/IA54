@@ -5,6 +5,7 @@
 
 #include "Problems/Problem.h"
 #include "Problems/Rocket/ProblemRocket_Terrain.h"
+#include "Problems/Rocket/ProblemRocket_Trajectory.h"
 #include "Utilities/FilePaths.h"
 
 // Rocket specs
@@ -22,6 +23,7 @@ class ProblemRocket : public Problem
 protected:
 	// Terrain
 	ProblemRocket_Terrain terrain;
+	ProblemRocket_Trajectory trajectories;
 
 	// Problem status
 	float problemSpeed;

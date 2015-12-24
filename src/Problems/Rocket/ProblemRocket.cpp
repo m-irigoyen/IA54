@@ -271,6 +271,9 @@ void ProblemRocket::run(sf::Time elapsedTime)
 		this->resolveRocketAngleChange();
 
 		this->resetDesiredChanges();
+
+		// Trajectory
+		this->trajectories.inputTrajectory(this->rocket_x, this->rocket_y);
 	}
 	else
 		this->problemLive = false;
@@ -296,6 +299,8 @@ void ProblemRocket::resetRocket()
 	{
 		*it = 0.0f;
 	}
+
+	this->trajectories.prepareNewTrajectory();
 }
 
 void ProblemRocket::init()
@@ -341,22 +346,10 @@ void ProblemRocket::draw(sf::RenderWindow * window)
 	this->checkEvents(window);
 
 	// Drawing terrain
-	//TODO: draw the terrain
-	// Drawing terrain
 	this->terrain.draw(window);
 
-	// Engine fire must be drawn in child classes
-	//TODO: transfer that in child classes
-	/*if (this->enginePower > 0)
-	{
-		this->hud_engineFire.setSize(sf::Vector2f(this->enginePower*HUD_SIZE_THRUSTER, 6));
-		this->hud_engineFire.setOrigin(this->enginePower*HUD_SIZE_THRUSTER + this->hud_rocketSprite.getLocalBounds().width / 2, 3);
-		this->hud_engineFire.setRotation(-this->rocketAngle);
-		this->hud_engineFire.setPosition(rocketX*problemWindow->getSize().x / worldWidth,
-			problemWindow->getSize().y - (rocketY*problemWindow->getSize().y / worldHeight));
-
-		problemWindow->draw(this->hud_engineFire);
-	}*/
+	// Drawing trajectories 
+	this->trajectories.drawAll(window, this->terrain.getWidth(), this->terrain.getHeight());
 
 	// Drawing rocket
 	this->hud_rocketSprite.setPosition(this->rocket_x * window->getSize().x / this->terrain.getWidth(),

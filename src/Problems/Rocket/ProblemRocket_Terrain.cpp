@@ -489,6 +489,12 @@ void ProblemRocket_Terrain::getLandingZone(float & landing1, float & landing2)
 	landing2 = this->terrainFlatZone2;
 }
 
+void ProblemRocket_Terrain::getTerrainDimensions(float & terrainWidth, float & terrainHeight)
+{
+	terrainWidth = this->getWidth();
+	terrainHeight = this->getHeight();
+}
+
 int ProblemRocket_Terrain::getWidth()
 {
 	return this->mapWidth;

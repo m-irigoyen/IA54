@@ -13,7 +13,20 @@ void ProblemRocket_Trajectory::prepareNewTrajectory()
 
 void ProblemRocket_Trajectory::inputTrajectory(float x, float y)
 {
-	this->trajectories.back().push_back(pair<float, float>(x, y));
+	// Checking if 
+	if (!this->trajectories.empty() && !this->trajectories.back().empty() && this->trajectories.back().back().first == x && this->trajectories.back().back().first == y)
+	{
+		// Don't remember the same position twice
+		return;
+	}
+	else
+	{
+		// If trajectories aren't ready, prepare it
+		if (this->trajectories.empty())
+			this->prepareNewTrajectory();
+
+		this->trajectories.back().push_back(pair<float, float>(x, y));
+	}
 }
 
 void ProblemRocket_Trajectory::clearLast()
@@ -36,7 +49,6 @@ void ProblemRocket_Trajectory::drawAll(sf::RenderWindow * window, int terrainWid
 		else
 			this->drawTrajectory(i, window, terrainWidth, terrainHeight, sf::Color::Blue);
 	}
-	
 }
 
 void ProblemRocket_Trajectory::drawPrevious(sf::RenderWindow * window, int terrainWidth, int terrainHeight)
@@ -53,8 +65,24 @@ void ProblemRocket_Trajectory::drawTrajectory(int id, sf::RenderWindow * window,
 	if (id == -1)
 		id = this->trajectories.size() - 1;
 
-	for (vector<pair<float, float>>::iterator it = (this->trajectories.end() - 1)->begin(); it != (this->trajectories.end() - 1)->end(); ++it)
+	// don't draw unless there are 2 points
+	if (this->trajectories.at(id).size() < 2)
+		return;
+
+	vector<pair<float, float>>::iterator p = (this->trajectories.at(id)).begin() + 1;
+	for (vector<pair<float, float>>::iterator it = (this->trajectories.at(id)).begin(); it != (this->trajectories.at(id)).end(); ++it)
 	{
-		//TODO : draw the point
+		// We resize the terrain in perspective, so that the terrain takes up all the width and height of the screen
+		sf::Vertex line[] =
+		{
+			sf::Vertex(sf::Vector2f(p->first*window->getSize().x / terrainWidth,
+			(terrainHeight - p->second)*window->getSize().y / terrainHeight), color),
+			sf::Vertex(sf::Vector2f(it->first*window->getSize().x / terrainWidth,
+				(terrainHeight - it->second)*window->getSize().y / terrainHeight), color)
+		};
+
+		window->draw(line, 2, sf::Lines);
+
+		p = it;
 	}
 }
