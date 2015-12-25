@@ -15,6 +15,7 @@ public:
 
 	void prepareNewTrajectory();
 	void inputTrajectory(float x, float y);
+	void sucessfulTrajectory();			// Signals current trajectory was successful
 	void clearLast();
 	void clear();
 
@@ -22,9 +23,9 @@ public:
 	void drawPrevious(sf::RenderWindow* window, int terrainWidth, int terrainHeight);
 
 private:
-	vector<vector<pair<float, float>>> trajectories;	// all the trajectories
+	vector<pair<vector<pair<float, float>>,bool>> trajectories;	// all the trajectories
 
-	void drawTrajectory(int id, sf::RenderWindow* window, int terrainWidth, int terrainHeight, sf::Color color);
+	void drawTrajectory(int id, sf::RenderWindow* window, int terrainWidth, int terrainHeight, sf::Color color = sf::Color::Blue);
 };
 
 

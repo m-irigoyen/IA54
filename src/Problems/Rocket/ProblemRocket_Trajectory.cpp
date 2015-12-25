@@ -7,14 +7,17 @@ ProblemRocket_Trajectory::ProblemRocket_Trajectory()
 
 void ProblemRocket_Trajectory::prepareNewTrajectory()
 {
-	if (this->trajectories.size() == 0 || this->trajectories.back().size() != 0)
-		this->trajectories.push_back(vector<pair<float, float>>());
+	if (this->trajectories.size() == 0 || this->trajectories.back().first.size() != 0)
+	{
+		this->trajectories.push_back(pair<vector<pair<float, float>>, bool>());
+		this->trajectories.back().second = false;
+	}
 }
 
 void ProblemRocket_Trajectory::inputTrajectory(float x, float y)
 {
 	// Checking if 
-	if (!this->trajectories.empty() && !this->trajectories.back().empty() && this->trajectories.back().back().first == x && this->trajectories.back().back().first == y)
+	if (!this->trajectories.empty() && !this->trajectories.back().first.empty() && this->trajectories.back().first.back().first == x && this->trajectories.back().first.back().first == y)
 	{
 		// Don't remember the same position twice
 		return;
@@ -25,8 +28,16 @@ void ProblemRocket_Trajectory::inputTrajectory(float x, float y)
 		if (this->trajectories.empty())
 			this->prepareNewTrajectory();
 
-		this->trajectories.back().push_back(pair<float, float>(x, y));
+		this->trajectories.back().first.push_back(pair<float, float>(x, y));
 	}
+}
+
+void ProblemRocket_Trajectory::sucessfulTrajectory()
+{
+	if (this->trajectories.empty() || this->trajectories.back().first.empty())
+		return;
+	else
+		this->trajectories.back().second = true;
 }
 
 void ProblemRocket_Trajectory::clearLast()
@@ -66,11 +77,15 @@ void ProblemRocket_Trajectory::drawTrajectory(int id, sf::RenderWindow * window,
 		id = this->trajectories.size() - 1;
 
 	// don't draw unless there are 2 points
-	if (this->trajectories.at(id).size() < 2)
+	if (this->trajectories.at(id).first.size() < 2)
 		return;
 
-	vector<pair<float, float>>::iterator p = (this->trajectories.at(id)).begin() + 1;
-	for (vector<pair<float, float>>::iterator it = (this->trajectories.at(id)).begin(); it != (this->trajectories.at(id)).end(); ++it)
+	// Checking if it's a succesful trajectory
+	if (color == sf::Color::Blue && !this->trajectories.at(id).second)
+		color = sf::Color::Red;
+
+	vector<pair<float, float>>::iterator p = (this->trajectories.at(id).first).begin() + 1;
+	for (vector<pair<float, float>>::iterator it = (this->trajectories.at(id).first).begin(); it != (this->trajectories.at(id).first).end(); ++it)
 	{
 		// We resize the terrain in perspective, so that the terrain takes up all the width and height of the screen
 		sf::Vertex line[] =

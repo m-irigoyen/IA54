@@ -64,6 +64,7 @@ void ProblemRocket::moveRocket(sf::Time elapsedTime, float hEnginesForce, float 
 				if (this->correctLanding(this->rocket_hSpeed, this->rocket_vSpeed, this->rocket_angle))
 				{
 					this->hasLanded = true;
+					this->trajectories.sucessfulTrajectory();
 					cout << "Rocket has landed safely!" << endl;
 				}
 				else
