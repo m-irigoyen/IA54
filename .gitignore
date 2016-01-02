@@ -1,2 +1,6 @@
 /src/Problems/Rocket/RocketTerrainEditor.cpp
 /src/Problems/Rocket/RocketTerrainEditor.h
+/src/World/Force.cpp
+/src/World/Force.h
+/src/Agents/AgentBrain.cpp
+/src/Agents/AgentBrain.h

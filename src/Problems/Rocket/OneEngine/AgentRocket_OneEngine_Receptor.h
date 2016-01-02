@@ -13,8 +13,6 @@ class AgentRocket_OneEngine_Receptor : public AgentReceptor
 protected:
 	ProblemRocket_OneEngine* castedProblem;
 
-	AGENTTYPE_ROCKET_ONE agentType;
-
 public:
 
 	AgentRocket_OneEngine_Receptor(ProblemRocket_OneEngine* problem, BodyReceptor_CompositionFull* body = NULL, AGENTTYPE_ROCKET_ONE type = AGENTTYPE_ROCKET_ONE::ROCKET_ONE_RECEPTOR);
@@ -23,9 +21,6 @@ public:
 	virtual bool isLinked();
 	virtual bool isProblemLinked();
 
-	void setAgentType(AGENTTYPE_ROCKET_ONE type);
-
-	~AgentRocket_OneEngine_Receptor(void);
 };
 
 #endif

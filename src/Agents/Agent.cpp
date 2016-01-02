@@ -2,9 +2,9 @@
 
 
 
-Agent::Agent(Problem* problem, Body* body) : problem(problem), body(body)
+Agent::Agent(Problem* problem, Body* body, int type) : problem(problem), body(body)
 {
-
+	this->setType(type);
 }
 
 Agent::~Agent(void)
@@ -13,7 +13,11 @@ Agent::~Agent(void)
 
 void Agent::connect(Body* body)
 {
-	this->body = body;
+	if (body != NULL)
+	{
+		this->body = body;
+		this->body->setBodyType(this->type);
+	}
 }
 
 Body * Agent::getBody()
@@ -50,4 +54,16 @@ void Agent::setProblem(Problem* problem)
 Problem* Agent::getProblem()
 {
 	return this->problem;
+}
+
+int Agent::getType()
+{
+	return this->type;
+}
+
+void Agent::setType(int type)
+{
+	this->type = type;
+	if (body != NULL)
+		this->body->setBodyType(type);
 }

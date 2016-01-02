@@ -5,6 +5,7 @@
 
 #include "World/PhysicalObject.h"
 #include "World/Perception.h"
+#include "World/Velocity.h"
 
 
 /*
@@ -15,12 +16,27 @@
 
 class Body:  public PhysicalObject
 {
-private:
+protected:
+	Perception perception;
+	Velocity velocity;
+
+	void move(float elapsedTime);
+
+	int bodyType;	// This type is strictly used for displaying different colors depending on agent types.
+	
 
 public:
 	Body(Semantic type, float x, float y);
 
 	virtual void update(sf::Time elapsedTime) = 0;
+	// constrains the body's position between 0 and the maximum given for each axis
+	void constrainPos(float maxX, float maxY);
+
+	Perception& getPerception();
+
+	void setBodyType(int type);
+	int getBodyType();
+
 
 	~Body(void);
 };

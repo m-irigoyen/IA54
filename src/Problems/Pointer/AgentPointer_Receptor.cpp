@@ -18,7 +18,7 @@ void AgentPointer_Receptor::live()
 		return;
 	}
 
-	WAVE perception = this->castedBody->getPerception();
+	PerceptionWave::WAVE perception = this->castedBody->getPerception();
 
 	float mouseX, mouseY;
 	int windowWidth, windowHeight;

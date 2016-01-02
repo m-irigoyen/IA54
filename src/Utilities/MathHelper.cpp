@@ -2,12 +2,12 @@
 
 float degToRad(float degrees)
 {
-	return (degrees * 2*PI ) / 360;
+	return (degrees * 2*M_PI ) / 360;
 }
 
 float radToDeg(float radians)
 {
-	return (radians * 360) / (2*PI);
+	return (radians * 360) / (2* M_PI);
 }
 
 float computeAngle(float x, float y)
@@ -35,11 +35,11 @@ float convertToRange(float value, float valueOffset, float valueRange, float tar
 		//cout << "ERROR : Agent::convertToRange : invalid parameters" << endl;
 		//cout << "    Parameters were : " << value << ", " << valueOffset << ", " << valueRange << ", " << targetOffset << ", " << targetRange << endl;
 
-		if (value < 0)
-		{
-			//std::cout << "WWOWOWO CEYLAMERDE : " << value << std::endl;
-				return -1.0f;
-		}
+		//if (value < 0)
+		//{
+		//	//std::cout << "WWOWOWO CEYLAMERDE : " << value << std::endl;
+		//		return -1.0f;
+		//}
 			
 		if (value > valueOffset + valueRange)
 			value = valueOffset + valueRange;
@@ -69,9 +69,22 @@ void convertCoordinates(float xIn, float yIn, float widthIn, float heightIn, flo
 }
 
 // If value, returns false. Else, returns true
-bool toggle(bool value)
+bool toggle(bool& value)
 {
 	if (value)
-		return false;
-	return true;
+		value = false;
+	else
+		value = true;
+		
+	return value;
+}
+
+float random(float min, float max)
+{
+	return min + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (max - min)));
+}
+
+float getScale(float a, float b)
+{
+	return b/a;
 }

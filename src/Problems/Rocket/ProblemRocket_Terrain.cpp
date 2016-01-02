@@ -3,6 +3,9 @@
 // Returns the terrain point before the given x. If none was found, return end
 deque<pair<int, int>>::iterator ProblemRocket_Terrain::getPointBefore(float x)
 {
+	if (x > this->getWidth())
+		return this->terrain.end();
+
 	if (this->terrain.size() < 2)
 	{
 		cout << "ProblemRocket_Terrain::getPointBefore : ERROR : Terrain is invalid as it contains less than 2 terrain points" << endl;
@@ -30,6 +33,49 @@ float ProblemRocket_Terrain::getTerrainPoint(float x, pair<int, int> p1, pair<in
 	return p1.second + (p2.second - p1.second)*distRatio;
 }
 
+void ProblemRocket_Terrain::computeLandingZone()
+{
+	this->terrainFlatZone1 = -1;
+	this->terrainFlatZone2 = -1;
+
+	if (this->terrain.size() <= 2)
+	{
+		this->terrainFlatZone1 = 0;
+		this->terrainFlatZone2 = this->getWidth();
+	}
+	else
+	{
+		int previousX = this->terrain.front().first;
+		int previousY = this->terrain.front().second;
+		for (deque<pair<int, int>>::iterator it = this->terrain.begin()+1; it != this->terrain.end(); ++it)
+		{
+			if (it->second == previousY)
+			{
+				this->terrainFlatZone1 = previousX;
+				this->terrainFlatZone2 = it->first;
+				return;
+			}
+			else
+			{
+				previousX = it->first;
+				previousY = it->second;
+			}
+		}
+	}
+}
+
+void ProblemRocket_Terrain::checkTerrainBounds()
+{
+	for (pair<int, int> p : this->terrain)
+	{
+		if (p.second > this->getHeight())
+			p.second = this->getHeight();
+	}
+
+	this->terrain.front().first = 0;
+	this->terrain.back().first = this->getWidth();
+}
+
 ProblemRocket_Terrain::ProblemRocket_Terrain(int width, int height, int maxTerrainHeight, int minTerrainHeight, float rocketStartX, float rocketStartY, float rocketStartHSpeed, float rocketStartVSpeed, float gravity) : mapWidth(width), mapHeight(height), terrainMaxHeight(maxTerrainHeight), terrainMinHeight(minTerrainHeight), rocketStartX(rocketStartX), rocketStartY(rocketStartY), rocketStartHSpeed(rocketStartHSpeed), rocketStartVSpeed(rocketStartVSpeed), gravity(gravity)
 {
 	this->generateRandomTerrain();
@@ -55,8 +101,8 @@ void ProblemRocket_Terrain::draw(sf::RenderWindow * window)
 		{
 			// We resize the terrain in perspective, so that the terrain takes up all the width and height of the screen
 			float x1, x2, y1, y2;
-			convertCoordinates(p->first, p->second, this->getWidth(), this->getHeight(), x1, y1, window->getSize().x, window->getSize().y);
-			convertCoordinates(it->first, it->second, this->getWidth(), this->getHeight(), x2, y2, window->getSize().x, window->getSize().y);
+			convertCoordinates((float)p->first, (float)p->second, (float)this->getWidth(), (float)this->getHeight(), x1, y1, (float)window->getSize().x, (float)window->getSize().y);
+			convertCoordinates((float)it->first, (float)it->second, (float)this->getWidth(), (float)this->getHeight(), x2, y2, (float)window->getSize().x, (float)window->getSize().y);
 			
 			sf::Vertex line[] =
 			{
@@ -86,8 +132,8 @@ void ProblemRocket_Terrain::loadTerrain(std::string name)
 		this->terrain.push_back(pair<int, int>(0, 600));
 		this->terrain.push_back(pair<int, int>(100, 500));
 		this->terrain.push_back(pair<int, int>(200, 200));
-		this->terrain.push_back(pair<int, int>(250, 275));
-		this->terrain.push_back(pair<int, int>(265, 275));
+		/*this->terrain.push_back(pair<int, int>(250, 275));
+		this->terrain.push_back(pair<int, int>(265, 275));*/
 		this->terrain.push_back(pair<int, int>(300, 100));
 		this->terrain.push_back(pair<int, int>(325, 110));
 		this->terrain.push_back(pair<int, int>(370, 420));
@@ -191,7 +237,14 @@ void ProblemRocket_Terrain::loadTerrain(std::string name)
 
 void ProblemRocket_Terrain::saveTerrain(std::string name)
 {
-	if (name.compare("Default") == 0)
+	this->computeLandingZone();
+
+	if (this->terrainFlatZone1 < 0)
+	{
+		cout << "ERROR : the terrain doesn't have a flatzone" << endl;
+		return;
+	}
+	else if (name.compare("Default") == 0)
 	{
 		cout << "ProblemRocket::saveTerrain : ERROR save path can't be 'Default'. Aborting save" << endl;
 		return;
@@ -289,14 +342,14 @@ void ProblemRocket_Terrain::reorderPoints()
 			{
 				// Invert the 2 members
 				float x, y;
-				x = it->first;
-				y = it->second;
+				x = (float)it->first;
+				y = (float)it->second;
 
 				it->first = (it + 1)->first;
 				it->second = (it + 1)->second;
 
-				(it + 1)->first = x;
-				(it + 1)->second = y;
+				(it + 1)->first = (int)x;
+				(it + 1)->second = (int)y;
 				attempt = false;
 			}
 		}
@@ -308,7 +361,7 @@ void ProblemRocket_Terrain::reorderPoints()
 
 void ProblemRocket_Terrain::addPoint(float x, float y)
 {
-	if (x < 0 || x >= 1000 || y < 0 || y >= 1000)
+	if (x < 0 || x >= this->getWidth() || y < 0 || y >= this->getHeight())
 		return;
 
 	pair<int, int> p = pair<int, int>(static_cast<int>(round(x)), static_cast<int>(round(y)));
@@ -332,7 +385,7 @@ void ProblemRocket_Terrain::addPoint(float x, float y)
 
 void ProblemRocket_Terrain::addFlat(float x)
 {
-	if (x < 0 || x >= 1000)
+	if (x < 0 || x >= this->getWidth())
 		return;
 
 	pair<int, int> p = pair<int, int>(static_cast<int>(round(x)), 0);
@@ -369,12 +422,12 @@ void ProblemRocket_Terrain::removePoint(deque<pair<int, int>>::iterator it)
 
 void ProblemRocket_Terrain::getWorldCoordinates(float screenX, float screenY, sf::RenderWindow * window, float & worldX, float & worldY)
 {
-	convertCoordinates(screenX, window->getSize().y - screenY, window->getSize().x, window->getSize().y, worldX, worldY, this->mapWidth, this->mapHeight);
+	convertCoordinates((float)screenX, (float)window->getSize().y - screenY, (float)window->getSize().x, (float)window->getSize().y, worldX, worldY, (float)this->mapWidth, (float)this->mapHeight);
 }
 
 void ProblemRocket_Terrain::getScreenCoordinates(float worldX, float worldY, float screenWidth, float screenHeight, float & screenX, float & screenY)
 {
-	convertCoordinates(worldX, worldY, this->mapWidth, this->mapHeight, screenX, screenY, screenWidth, screenHeight);
+	convertCoordinates(worldX, worldY, (float)this->mapWidth, (float)this->mapHeight, screenX, screenY, screenWidth, screenHeight);
 }
 
 // Checks if the given position is colliding with terrain
@@ -389,14 +442,14 @@ bool ProblemRocket_Terrain::isOnMap(float x, float y)
 bool ProblemRocket_Terrain::collides(float x, float y, float hitboxHalfSize)
 {
 	if (!this->isOnMap(x, y))
-	{
 		return false;
-	}
 		
 
 	// Getting the terrain's y at coordinate x
 	deque<pair<int, int>>::iterator p;
 	p = this->getPointBefore(x);
+	if (p == this->terrain.end())
+		return false;
 	float terrainY = this->getTerrainPoint(x, *p, *(p + 1));
 
 	// Checking collision
@@ -442,8 +495,8 @@ void ProblemRocket_Terrain::getHighestPointBeforeLandingZone(float x, float y, f
 				return;
 			else if (highestPointY < p->second)
 			{
-				highestPointX = p->first;
-				highestPointY = p->second;
+				highestPointX = (float)p->first;
+				highestPointY = (float)p->second;
 			}
 		}
 	}
@@ -460,8 +513,8 @@ void ProblemRocket_Terrain::getHighestPointBeforeLandingZone(float x, float y, f
 				return;
 			else if (highestPointY < p->second)
 			{
-				highestPointX = p->first;
-				highestPointY = p->second;
+				highestPointX = (float)p->first;
+				highestPointY = (float)p->second;
 			}
 		}
 	}
@@ -485,16 +538,45 @@ void ProblemRocket_Terrain::setWind(float hWind, float vWind)
 	this->windVertical = vWind;
 }
 
+void ProblemRocket_Terrain::setTerrainWidth(int width)
+{
+	if (width < 500)
+		width = 500;
+	else if (width > 10000)
+		width = 10000;
+
+	this->mapWidth = width;
+
+	this->checkTerrainBounds();
+}
+
+void ProblemRocket_Terrain::setTerrainHeigh(int height)
+{
+	if (height < 500)
+		height = 500;
+	else if (height > 10000)
+		height = 10000;
+
+	this->mapHeight = height;
+
+	this->checkTerrainBounds();
+}
+
+deque<pair<int, int>>* ProblemRocket_Terrain::getTerrain()
+{
+	return &this->terrain;
+}
+
 void ProblemRocket_Terrain::getLandingZone(float & landing1, float & landing2)
 {
-	landing1 = this->terrainFlatZone1;
-	landing2 = this->terrainFlatZone2;
+	landing1 = (float)this->terrainFlatZone1;
+	landing2 = (float)this->terrainFlatZone2;
 }
 
 void ProblemRocket_Terrain::getTerrainDimensions(float & terrainWidth, float & terrainHeight)
 {
-	terrainWidth = this->getWidth();
-	terrainHeight = this->getHeight();
+	terrainWidth = (float)this->getWidth();
+	terrainHeight = (float)this->getHeight();
 }
 
 int ProblemRocket_Terrain::getWidth()

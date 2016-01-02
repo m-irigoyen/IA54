@@ -43,6 +43,9 @@ protected:
 	float wave_frequency_offset;
 	float wave_frequency_range;
 
+	// Flag used to ask the simulator to reset the agents
+	bool resetAgents;
+
 
 public:
 	// Constructors
@@ -67,6 +70,8 @@ public:
 	virtual bool isUsingAttenuation();
 	virtual int getNumberOfEmitters();
 	virtual int getNumberOfReceptors();
+	virtual bool getResetAgent();
+
 	// Problem data
 	float getWaveAmplitudeOffset();
 	float getWaveAmplitudeRange();

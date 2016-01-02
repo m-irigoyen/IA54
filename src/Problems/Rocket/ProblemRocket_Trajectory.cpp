@@ -56,9 +56,9 @@ void ProblemRocket_Trajectory::drawAll(sf::RenderWindow * window, int terrainWid
 	for (int i = 0; i < this->trajectories.size(); ++i)
 	{
 		if (i == this->trajectories.size() - 1)
-			this->drawTrajectory(i, window, terrainWidth, terrainHeight, sf::Color::Green);
-		else
 			this->drawTrajectory(i, window, terrainWidth, terrainHeight, sf::Color::Blue);
+		else
+			this->drawTrajectory(i, window, terrainWidth, terrainHeight, sf::Color::Green);
 	}
 }
 
@@ -81,7 +81,7 @@ void ProblemRocket_Trajectory::drawTrajectory(int id, sf::RenderWindow * window,
 		return;
 
 	// Checking if it's a succesful trajectory
-	if (color == sf::Color::Blue && !this->trajectories.at(id).second)
+	if (color == sf::Color::Green && !this->trajectories.at(id).second)
 		color = sf::Color::Red;
 
 	vector<pair<float, float>>::iterator p = (this->trajectories.at(id).first).begin() + 1;

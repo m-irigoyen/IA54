@@ -1,11 +1,6 @@
 #include "Problems/Rocket/TwoEngines/AgentRocket_TwoEngines_Emitter.h"
 
-void AgentRocket_TwoEngines_Emitter::tendToDesiredAngle(float desiredAngle, float currentAngle, float & lPowerChange, float & rPowerChange)
-{
-	
-}
-
-AgentRocket_TwoEngines_Emitter::AgentRocket_TwoEngines_Emitter(ProblemRocket_TwoEngines * problem, BodyEmitter * body, AGENTTYPE_ROCKET_TWO type) : AgentEmitter(problem,body), castedProblem(problem), agentType(type)
+AgentRocket_TwoEngines_Emitter::AgentRocket_TwoEngines_Emitter(ProblemRocket_TwoEngines * problem, BodyEmitter * body, AGENTTYPE_ROCKET_TWO type) : AgentEmitter(problem,body, (int)type), castedProblem(problem)
 {
 }
 
@@ -19,8 +14,9 @@ void AgentRocket_TwoEngines_Emitter::live()
 	}
 
 	// Getting problem data
-	float x, y, lPower, rPower, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat, lzSize;
+	float x, y, lPower, rPower, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat, lzSize, worldWidth, worldHeight;
 
+	this->castedProblem->getTerrain()->getTerrainDimensions(worldWidth, worldHeight);
 	this->castedProblem->getRocketPosition(x, y);		// Rocket position
 	lPower = this->castedProblem->getRocketEnginesPower()->at(0);	// Rocket current left power
 	rPower = this->castedProblem->getRocketEnginesPower()->at(1);	// Rocket current right power
@@ -32,7 +28,6 @@ void AgentRocket_TwoEngines_Emitter::live()
 	lzSize = this->castedProblem->getLandingZoneSize();	// Landing zone size (width)
 	float landingMaxHSPeed, landingMaxVSpeed, landingMaxAngle; // Correct landing specs
 	this->castedProblem->getSafeLandingSpecs(landingMaxHSPeed, landingMaxVSpeed, landingMaxAngle);
-	
 
 	// Variables
 	float desiredLPower = 0;
@@ -43,68 +38,105 @@ void AgentRocket_TwoEngines_Emitter::live()
 	float frequency;
 	bool ceaseTransmission = false;
 
-	if (this->agentType == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_DIRECTION)
+	if ((AGENTTYPE_ROCKET_TWO)this->getType() == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_DIRECTION)
 	{
-		desiredLPower = 49;
-		desiredRPower = 49;
+		desiredLPower = PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset();
+		desiredRPower = PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset();
 
-		if (abs(distanceToCenterFlat) > lzSize / 2)
+		// Are we too close to the world's edge?
+		float dirVar, angleVar;
+		if (abs(distanceToCenterFlat) < lzSize / 2)
 		{
-			float dirVar = convertToRange(abs(distanceToCenterFlat),
-				0.0f,
-				abs(abs(distanceToCenterFlat) - lzSize / 2),
-				0.0f,
-				this->castedProblem->getPowerMax() / 2);
+			dirVar = convertToRange(abs(distanceToCenterFlat),
+				0,
+				lzSize / 2,
+				0,
+				PROBLEMROCKET_CRUISE_MAXANGLE * PROBLEMROCKET_DIRECTION_LZAPPROACH);
 
-			float angleVar = convertToRange(abs(angle),
+			angleVar = convertToRange(abs(angle),
 				0.0f,
-				abs(PROBLEMROCKET_TWO_PROBLEM_MAXANGLE),
+				PROBLEMROCKET_CRUISE_MAXANGLE * PROBLEMROCKET_DIRECTION_LZAPPROACH,
 				0.0f,
 				1);
-
-			// Need to go right
-			if (distanceToCenterFlat < 0.0f)
-			{
-				desiredLPower -= dirVar - angleVar * dirVar;
-				desiredRPower += dirVar - angleVar * dirVar;
-			}
-			else if (distanceToCenterFlat > 0.0f)
-			{
-				desiredLPower += dirVar - angleVar * dirVar;
-				desiredRPower -= dirVar - angleVar * dirVar;
-			}
 		}
 		else
-			ceaseTransmission = true;
+		{
+			dirVar = convertToRange(abs(distanceToCenterFlat),
+				lzSize/2,
+				worldWidth,
+				PROBLEMROCKET_CRUISE_MAXANGLE * PROBLEMROCKET_DIRECTION_LZAPPROACH,
+				PROBLEMROCKET_CRUISE_MAXANGLE);
+
+			angleVar = convertToRange(abs(angle),
+				0.0f,
+				PROBLEMROCKET_CRUISE_MAXANGLE * PROBLEMROCKET_DIRECTION_LZAPPROACH,
+				0.0f,
+				1);
+		}
 		
+		// Need to go right
+		if (distanceToCenterFlat < 0.0f)
+		{
+			desiredLPower -= dirVar - angleVar * dirVar;
+			desiredRPower += dirVar - angleVar * dirVar;
+		}
+		else if (distanceToCenterFlat > 0.0f)
+		{
+			desiredLPower += dirVar - angleVar * dirVar;
+			desiredRPower -= dirVar - angleVar * dirVar;
+		}
 	}
-	// The stabilizer wants to keep the rocket at angle 0
-	else if (this->agentType == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_ALTITUDE)
+	else if ((AGENTTYPE_ROCKET_TWO)this->getType() == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_ALTITUDE)
 	{
+		// The stabilizer wants to keep the rocket at angle 0
 		// Are we in the landing zone?
 		if (abs(distanceToCenterFlat) < lzSize / 2)
 		{
 			// If we are : descend
 			float speedVar = convertToRange(abs(vSpeed),
 				0.0f,
-				landingMaxAngle,
+				this->castedProblem->getMaxVSpeed(),
 				0.0f,
-				this->castedProblem->getPowerMax() / 2);
+				PROBLEMROCKET_ROCKET_POWER_BASE  + this->castedProblem->getPowerOffset());
 
 			desiredLPower = speedVar;
 			desiredRPower = speedVar;
 		}
+		else if (y < this->castedProblem->getDesiredAltitude())
+		{
+			// We're lower than the desired altitude : go up
+			desiredLPower = convertToRange(abs(y - this->castedProblem->getDesiredAltitude()),
+				0,
+				200,
+				this->castedProblem->getPowerMax() - PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset(),
+				this->castedProblem->getPowerMax());
+
+			desiredLPower += convertToRange(abs(angle),
+				0,
+				PROBLEMROCKET_ROCKET_ANGLE_TILT,
+				0,
+				this->castedProblem->getPowerMax() / 2);
+
+			if (vSpeed > 0.0f)
+				desiredLPower -= convertToRange(abs(vSpeed),
+					0,
+					this->castedProblem->getMaxVSpeed(),
+					0,
+					PROBLEMROCKET_ROCKET_POWER_BASE);
+
+			desiredRPower = desiredLPower;
+		}
 		else
 			ceaseTransmission = true;
 	}
-	else if (this->agentType == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER_ANGLE)
+	else if ((AGENTTYPE_ROCKET_TWO)this->getType() == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER_ANGLE)
 	{
-		desiredLPower = 50.0f;
-		desiredRPower = 50.0f;
+		desiredLPower = PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset();
+		desiredRPower = PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset();
 
 		float angleVar = convertToRange(abs(angle),
 			0.0f,
-			PROBLEMROCKET_TWO_PROBLEM_MAXANGLE,
+			PROBLEMROCKET_ROCKET_ANGLE_TILT,
 			0.0f,
 			this->castedProblem->getPowerMax() / 2);
 
@@ -118,49 +150,63 @@ void AgentRocket_TwoEngines_Emitter::live()
 			desiredLPower += angleVar;
 			desiredRPower -= angleVar;
 		}
+		desiredRPower += 1;
 	}
-	else if (this->agentType == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER_HSPEED)
+	else if ((AGENTTYPE_ROCKET_TWO)this->getType() == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER_HSPEED)
 	{
-		desiredLPower = 50.0f;
-		desiredRPower = 50.0f;
+		// On règle les réacteurs à la puissance de maintien d'altitude
+		desiredLPower = PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset();
+		desiredRPower = PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset();
 
+		// Calcul de la variation de vitesse : on convertit la vitesse 
+		// horizontale (comprise entre 0 et MaxHSpeed) en une variation
 		float hSpeedVar = convertToRange(abs(hSpeed),
 			0.0f,
-			PROBLEMROCKET_TWO_PROBLEM_MAXHSPEED,
+			this->castedProblem->getMaxHSpeed(),
 			0.0f,
-			this->castedProblem->getPowerMax() / 2);
+			PROBLEMROCKET_ROCKET_POWER_BASE);
 
+		// On applique cette variation
 		if (hSpeed < 0.0f)
 		{
+			//hSpeed < 0.0f : la fusée va vers la gauche
+			// on s'orienter donc vers la droite pour équilibrer
 			desiredLPower += hSpeedVar;
 			desiredRPower -= hSpeedVar;
 		}
 		else
 		{
+			// et inversement
 			desiredLPower -= hSpeedVar;
 			desiredRPower += hSpeedVar;
 		}
 	}
-	else if (this->agentType == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER_VSPEED)
+	else if ((AGENTTYPE_ROCKET_TWO)this->getType() == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER_VSPEED)
 	{
-		desiredLPower = 50.0f;
-		desiredRPower = 50.0f;
+		desiredLPower = PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset();
+		desiredRPower = PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset();
 
 		float vSpeedVar = convertToRange(abs(vSpeed),
 			0.0f,
-			PROBLEMROCKET_TWO_PROBLEM_MAXVSPEED,
+			this->castedProblem->getMaxVSpeed(),
 			0.0f,
 			this->castedProblem->getPowerMax() / 2);
 
-		if (vSpeed < 0.0f)
+		desiredLPower += vSpeedVar;
+		desiredRPower += vSpeedVar;
+
+		if (vSpeed > 0.0f)
 		{
-			desiredLPower += vSpeedVar;
-			desiredRPower += vSpeedVar;
-		}
-		else
-		{
-			desiredLPower = 0.0f;
-			desiredRPower = 0.0f;
+			if (y < this->castedProblem->getDesiredAltitude())
+			{
+				desiredLPower = this->castedProblem->getPowerMax() - desiredLPower - this->castedProblem->getPowerOffset();
+				desiredRPower = this->castedProblem->getPowerMax() - desiredRPower - this->castedProblem->getPowerOffset();
+			}
+			else
+			{
+				desiredLPower = 20.0f;
+				desiredRPower = 20.0f;
+			}
 		}
 	}
 
@@ -210,9 +256,4 @@ bool AgentRocket_TwoEngines_Emitter::isLinked()
 bool AgentRocket_TwoEngines_Emitter::isProblemLinked()
 {
 	return this->castedProblem != NULL;
-}
-
-void AgentRocket_TwoEngines_Emitter::setAgentType(AGENTTYPE_ROCKET_TWO type)
-{
-	this->agentType = type;
 }

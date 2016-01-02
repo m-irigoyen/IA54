@@ -14,7 +14,7 @@
 #define SIZE_DEFAULT_HEIGHT 100.0f
 
 // HUD stuff
-#define HUD_SIZE_THRUSTER 0.5f
+#define HUD_SIZE_THRUSTER 1.0f
 
 // Rocket values
 #define THRUSTER_STRENGTH 10.0f	// Strength of each thruster in meters/seconds
@@ -22,24 +22,18 @@
 #define PROBLEMROCKET_TWO_MAXENGINEROTATION 1.0f
 #define PROBLEMROCKET_TWO_ROTATIONCHANGEFACTOR 1
 
-// Problem values
-#define PROBLEMROCKET_TWO_PROBLEM_MAXANGLE 45.0f	// The maximum angle the agents will deviate from 0
-
-#define PROBLEMROCKET_TWO_PROBLEM_MAXHSPEED 20.0f
-#define PROBLEMROCKET_TWO_PROBLEM_MAXVSPEED 40.0f
-
 /*
 * The Problem class creates and run the problem to be solved. (pendulum, drone, etc)
 */
 
 enum AGENTTYPE_ROCKET_TWO
 {
-	ROCKET_TWO_RECEPTOR,
+	ROCKET_TWO_RECEPTOR = 0,
 	ROCKET_TWO_DIRECTION,		// Guides the rocket towards destination
 	ROCKET_TWO_ALTITUDE,			// Handles the rocket's altitude
-	ROCKET_TWO_STABILIZER_ANGLE,	// Stabilizes the rockt's angle
 	ROCKET_TWO_STABILIZER_HSPEED,	// Stabilizes the rocket's HSpeed
-	ROCKET_TWO_STABILIZER_VSPEED	// Stabilizes the rocket's VSPeed
+	ROCKET_TWO_STABILIZER_VSPEED,	// Stabilizes the rocket's VSPeed
+	ROCKET_TWO_STABILIZER_ANGLE	// Stabilizes the rockt's angle
 };
 
 using namespace std;

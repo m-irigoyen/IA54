@@ -1,6 +1,6 @@
 #include "Agents/AgentReceptor.h"
 
-AgentReceptor::AgentReceptor(Problem* problem, BodyReceptor* body) : Agent(problem, body)
+AgentReceptor::AgentReceptor(Problem* problem, BodyReceptor* body, int type) : Agent(problem, body, type)
 {
 	connectCasted(body);
 }

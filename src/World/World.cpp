@@ -1,7 +1,7 @@
 #include "World.h"
 
 // Constructor
-World::World(sf::Clock* clock, float worldLength, float worldHeight) : simulationClock(clock), maxWaveDistance(0.0f), optimiseWaveTravelDistance(true), waveAplitudeLoss(0.0f), useWaveAttenuation(true)
+World::World(sf::Clock* clock, float worldLength, float worldHeight) : simulationClock(clock), maxWaveDistance(0.0f), optimiseWaveTravelDistance(true), waveAplitudeLoss(0.0f), useWaveAttenuation(true), waveSpeed(5)
 {
     this->receptors.clear();
     this->maxWorldDistance = calculateDistance(0,0, worldLength, worldHeight);
@@ -79,10 +79,6 @@ Body* World::createBody(BODY_TYPE bodyType, float xPos, float yPos)
 	case BODY_TYPE::BODY_RECEPTOR_MEDIUM:
 		tempBodyReceptor = new BodyReceptor_Medium(Semantic(Tags::receptor), xPos, yPos);
 		break;
-	case BODY_TYPE::BODY_HYBRID:
-		/*tempBodyHybrid = new BodyHybrid(Semantic(Tags::hybrid), xPos, yPos);
-		body = tempBodyHybrid;*/
-		break;
     }
 
 
@@ -122,7 +118,7 @@ Wave* World::createWave(float x, float y, int emitterId, float speed, float ampl
 {
 	// If speed wasn't specified, set it
 	if (speed == -1.0f)
-		speed = DEFAULT_PROPAGATION_SPEED;
+		speed = DEFAULT_PROPAGATION_SPEED * this->getWaveSpeed();
 
 	
 	// Create a wave, add it to the list
@@ -172,7 +168,9 @@ void World::update(sf::Time elapsedTime, sf::Time currentFrameTime)
 		it != this->emitters.end();
 		++it)
 	{
+		this->setPerceptionBody(*it);
 		(*it)->update(elapsedTime);
+		(*it)->constrainPos(WORLD_WIDTH, WORLD_HEIGHT);
 		checkWaveCreation((*it));
 	}
 
@@ -210,13 +208,21 @@ void World::update(sf::Time elapsedTime, sf::Time currentFrameTime)
 		++it)
 	{
 		// Updating and setting its perceptions
+		this->setPerceptionBody(*it);
 		(*it)->update(elapsedTime);
-		setPerception((*it));
+		this->setPerceptionWave((*it));
 	}
 }
 
 void World::forceEndOfTransmission(BodyEmitter * body)
 {
+	if (body == NULL)
+		return;
+
+	body = static_cast<BodyEmitter*>(body);
+	if (body == NULL)
+		return;
+
 	// Create a new wave, and set its endOfTransmission flag
 	Wave* w = createWave(body->GetPosition(), body->getId(), body->getCurrentSpeed(), 1.0f);
 	w->setEndOfTransmission(true);
@@ -227,10 +233,40 @@ void World::forceEndOfTransmission(BodyEmitter * body)
 	body->acknowledgeEndOfTransmission();
 }
 
+void World::setPerceptionBody(Body * body)
+{
+	vector<Perception::BODY>& perception = body->getPerception().getPerceptions();
+	perception.clear();
+
+	Perception::BODY b;
+
+	for (BodyEmitter* e : this->emitters)
+	{
+		if (e != body)
+		{
+			b.type = e->GetSemantic()->getSemantic();
+			e->GetPosition(b.posX, b.posY);
+			perception.push_back(b);
+		}
+	}
+	
+	for (BodyReceptor* r : this->receptors)
+	{
+		if (r != body)
+		{
+			b.type = r->GetSemantic()->getSemantic();
+			r->GetPosition(b.posX, b.posY);
+			perception.push_back(b);
+		}
+	}
+
+	this->updateMaxWaveDistance();
+}
+
 /*
 For a specific receptor, look for each wave colliding with it, then set the receptor in consequences
 */
-void World::setPerception(BodyReceptor* receptor)
+void World::setPerceptionWave(BodyReceptor* receptor)
 {
 	receptor->updateComputedValues(this->currentFrameTime);
 }
@@ -256,6 +292,34 @@ std::vector<BodyReceptor*>* World::getReceptors()
 void World::setWaveAmplitude(float amplitudeLoss)
 {
 	this->waveAplitudeLoss = amplitudeLoss;
+}
+
+void World::clearWaves()
+{
+	this->waves.clear();
+	for (BodyEmitter* e : this->emitters)
+	{
+		e->stopSending();
+	}
+	for (BodyReceptor* r : this->receptors)
+	{
+		r->clearPerception();
+	}
+}
+
+int World::getWaveSpeed()
+{
+	return this->waveSpeed;
+}
+
+void World::setWaveSpeed(int waveSpeed)
+{
+	if (waveSpeed < 1)
+		waveSpeed = 1;
+	else if (waveSpeed > 10)
+		waveSpeed = 10;
+
+	this->waveSpeed = waveSpeed;
 }
 
 World::~World(void)

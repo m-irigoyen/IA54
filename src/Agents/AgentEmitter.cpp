@@ -1,7 +1,7 @@
 #include "Agents/AgentEmitter.h"
 #define FREQUENCY 2.0
 
-AgentEmitter::AgentEmitter(Problem* problem, BodyEmitter* body) : Agent(problem, body), castedBody(body)
+AgentEmitter::AgentEmitter(Problem* problem, BodyEmitter* body, int type) : Agent(problem, body, type), castedBody(body)
 {
     //this->state = state;
 	connectCasted(body);

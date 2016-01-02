@@ -83,6 +83,8 @@ FILE(GLOB_RECURSE SRCS_PROBLEMS_POINTER
 	${IA54_SOURCE_DIR}/src/Problems/Pointer/*.h)
 FILE(GLOB_RECURSE SRCS_PROBLEMS_ROCKET 
 	${IA54_SOURCE_DIR}
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/AgentRocket_Brain.cpp 
+	${IA54_SOURCE_DIR}/src/Problems/Rocket/AgentRocket_Brain.h 
 	${IA54_SOURCE_DIR}/src/Problems/Rocket/ProblemRocket_Terrain.cpp 
 	${IA54_SOURCE_DIR}/src/Problems/Rocket/ProblemRocket_Terrain.h
 	${IA54_SOURCE_DIR}/src/Problems/Rocket/ProblemRocket.cpp 

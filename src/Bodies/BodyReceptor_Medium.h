@@ -20,7 +20,7 @@ public:
 
 	//Receptor functions
 	virtual void initialise();	// Initialises the receptor
-	virtual WAVE getPerception();    // Returns what the receptor can make of all it has recieved. #PHYSICS STUFF
+	virtual PerceptionWave::WAVE getPerception();    // Returns what the receptor can make of all it has recieved. #PHYSICS STUFF
 	virtual float calculateValueAtT(sf::Time t);
 	virtual float calculateValueAtT(sf::Time t, sf::Time firstContact, float frequency, float amplitude);    // Calculates value for given wave at given time
 
@@ -32,7 +32,7 @@ public:
 
 protected:
 
-	WAVE currentPerception;
+	PerceptionWave::WAVE currentPerception;
 };
 
 #endif

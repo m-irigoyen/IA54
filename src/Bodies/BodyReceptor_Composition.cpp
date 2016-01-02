@@ -16,15 +16,15 @@ void BodyReceptor_Composition::initialise()
 }
 
 // Returns what the receptor can make of all it has recieved. This is the wave composition method
-WAVE BodyReceptor_Composition::getPerception()
+PerceptionWave::WAVE BodyReceptor_Composition::getPerception()
 {
 	// Resetting values
 	this->currentPerception.frequency = -1.0f;
 	this->currentPerception.amplitude = 0.0f;
 
 	// For each perceived wave
-	for (std::map<int, std::pair<sf::Time, std::pair<float, float>>>::iterator it = this->perception.getWaves()->begin();
-		it != this->perception.getWaves()->end();
+	for (std::map<int, std::pair<sf::Time, std::pair<float, float>>>::iterator it = this->perceptionWave.getWaves()->begin();
+		it != this->perceptionWave.getWaves()->end();
 		++it)
 	{
 		if (it->second.second.first > 0.0f)	// Frequency isn't null : we can update that wave
@@ -47,8 +47,8 @@ WAVE BodyReceptor_Composition::getPerception()
 float BodyReceptor_Composition::calculateValueAtT(sf::Time t)
 {
 	float result = 0.0f;
-	for (std::map<int, std::pair<sf::Time, std::pair<float, float>>>::iterator it = this->perception.getWaves()->begin();
-		it != this->perception.getWaves()->end();
+	for (std::map<int, std::pair<sf::Time, std::pair<float, float>>>::iterator it = this->perceptionWave.getWaves()->begin();
+		it != this->perceptionWave.getWaves()->end();
 		++it)
 	{
 		result += calculateValueAtT(t, it->second.first, it->second.second.first, it->second.second.second);
@@ -68,7 +68,7 @@ float BodyReceptor_Composition::calculateValueAtT(sf::Time t, sf::Time firstCont
 	}
 	else
 	{
-		float period = 2 * PI*frequency;
+		float period = 2 * (float)M_PI*frequency;
 		while (elapsedTime.asSeconds() > period)
 		{
 			elapsedTime = sf::seconds(elapsedTime.asSeconds() - static_cast<float>(period));

@@ -3,6 +3,8 @@
 
 // The terrain class represents the terrain where the rocket has to land
 
+#define PROBLEMROCKET_TERRAIN_DEFAULTSIZE 1000
+
 #include <deque>
 #include <iostream>
 #include <string>
@@ -47,6 +49,9 @@ protected:
 	deque<pair<int, int>>::iterator getPointBefore(float x);	// Returns the point contained in this->terrain with closest smallest x compared to given x parameter
 	float getTerrainPoint(float x, pair<int, int> p1, pair<int, int> p2);	// Gets the Y coordinate for the given X, with p1.x <=x and p2.x >= x
 
+	// Computes the coordinates of the landing zone. If several are found, only the leftmost one is remembered
+	void computeLandingZone();
+
 public:
 	// Constructors
 	ProblemRocket_Terrain(int width, int height, int maxTerrainHeight, int minTerrainHeight, float rocketStartX, float rocketStartY, float rocketStartHSPeed, float rocketStartVSpeed, float gravity = 4);
@@ -69,7 +74,6 @@ public:
 	void removePoint(deque<pair<int, int>>::iterator it);
 
 	// GUI Translation functions
-	//TODO : implement those
 	void getWorldCoordinates(float screenX, float screenY, sf::RenderWindow* window, float& worldX, float& worldY);
 	void getScreenCoordinates(float worldX, float worldY, float screenWidth, float screenHeight, float& screenX, float& screenY);
 	// Terrain interaction
@@ -92,6 +96,11 @@ public:
 	void setRocketStart(float rocketX, float rocketY);
 	void setRocketStartSpeed(float hSpeed, float vSpeed);
 	void setWind(float hWind, float vWind);
+	void setTerrainWidth(int width);
+	void setTerrainHeigh(int height);
+
+	void checkTerrainBounds();
+
 };
 
 #endif

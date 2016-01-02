@@ -15,7 +15,7 @@ protected:
 	BodyEmitter* castedBody;
 
 public:
-	AgentEmitter(Problem* problem, BodyEmitter* body = NULL);
+	AgentEmitter(Problem* problem, BodyEmitter* body = NULL, int type = -1);
 
 	virtual void live() = 0;
 

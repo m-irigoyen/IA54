@@ -8,14 +8,6 @@
 #include "Utilities/MathHelper.h"
 
 
-// Problem values
-//TODO: remove those.
-#define PROBLEMROCKET_ONE_PROBLEM_MAXANGLE 45.0f	// The maximum angle the agents will deviate from 0
-
-#define PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED 20.0f
-#define PROBLEMROCKET_ONE_PROBLEM_MAXVSPEED 40.0f
-
-
 /*
 * The Rocket problem represents a rocket with only one thruster. The rocket can be controlled by rotating it, and setting its engine power.
 */
@@ -25,8 +17,6 @@ enum AGENTTYPE_ROCKET_ONE
 	ROCKET_ONE_RECEPTOR,
 	ROCKET_ONE_DIRECTION,	// Direction agents guide the rocket towards the landing zone
 	ROCKET_ONE_ALTITUDE,	// These agents handle the rocket's altitude
-							
-							// Stabilizer agents stabilize the rocket
 	ROCKET_ONE_STABILIZER_HSPEED,	// Regulates the rocket's horizontal speed
 	ROCKET_ONE_STABILIZER_VSPEED,	// Regulates the rocket's vertical speed
 };
@@ -38,7 +28,6 @@ class ProblemRocket_OneEngine : public ProblemRocket
 protected:
 	// User interface
 	sf::RectangleShape hud_engineFire;
-
 
 	// PRIVATE FUNCTIONS
 	// Physics stuff

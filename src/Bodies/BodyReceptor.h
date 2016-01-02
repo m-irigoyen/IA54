@@ -4,6 +4,7 @@
 #include <deque>
 #include "Bodies/Body.h"
 #include "Bodies/Receptor.h"
+#include "World/PerceptionWave.h"
 
 #define DEFAULT_MEMORY 5.0f
 
@@ -22,7 +23,7 @@ public:
 
 	//Receptor functions
 	virtual void initialise() = 0;	// Initialises the receptor
-	virtual WAVE getPerception() = 0;    // Returns what the receptor can make of all it has recieved. #PHYSICS STUFF
+	virtual PerceptionWave::WAVE getPerception() = 0;    // Returns what the receptor can make of all it has recieved. #PHYSICS STUFF
 	virtual float calculateValueAtT(sf::Time t) = 0;
 	virtual float calculateValueAtT(sf::Time t, sf::Time firstContact, float frequency, float amplitude) = 0;    // Calculates value for given wave at given time
 

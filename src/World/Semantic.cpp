@@ -1,6 +1,5 @@
 #include "Semantic.h"
 
-
 Semantic::Semantic(std::string semantic) : semantic(semantic)
 {
 }

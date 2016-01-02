@@ -95,6 +95,16 @@ bool ProblemRocket_TerrainEditor::handleEvent(sf::RenderWindow * window, sf::Eve
 				this->saveTerrain(temp);
 				this->currentLevelName = temp;
 				return true;
+
+			case sf::Keyboard::Add :
+				this->terrain.setTerrainWidth(this->terrain.getWidth() + 10);
+				this->terrain.setTerrainHeigh(this->terrain.getHeight() + 10);
+				return true;
+
+			case sf::Keyboard::Subtract:
+				this->terrain.setTerrainWidth(this->terrain.getWidth() - 10);
+				this->terrain.setTerrainHeigh(this->terrain.getHeight() - 10);
+				return true;
 			}
 			break;
 		case sf::Event::MouseButtonPressed :
@@ -102,9 +112,20 @@ bool ProblemRocket_TerrainEditor::handleEvent(sf::RenderWindow * window, sf::Eve
 			{
 			// Left mouse button : select point
 			case sf::Mouse::Left:
-				this->terrain.getWorldCoordinates(event.mouseButton.x, event.mouseButton.y, window, xWorld, yWorld);
+				// If ctrl is pressed, set start position
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)
+					|| sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))
+				{
+					this->terrain.getWorldCoordinates(event.mouseButton.x, event.mouseButton.y, window, xWorld, yWorld);
+					this->terrain.setRocketStart(xWorld, yWorld);
+				}
+				else
+				{
+					// else
+					this->terrain.getWorldCoordinates(event.mouseButton.x, event.mouseButton.y, window, xWorld, yWorld);
 
-				this->selectedPoint = this->terrain.getClosestPointFrom(xWorld, yWorld, this->isPointSelected);
+					this->selectedPoint = this->terrain.getClosestPointFrom(xWorld, yWorld, this->isPointSelected);
+				}
 				return true;
 
 			// Right mouse button : insert a point
@@ -131,14 +152,18 @@ bool ProblemRocket_TerrainEditor::handleEvent(sf::RenderWindow * window, sf::Eve
 		case sf::Event::MouseMoved:
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->isPointSelected)
 			{
-				// Drag and drop the thing
-				this->terrain.getWorldCoordinates(event.mouseMove.x, event.mouseMove.y, window, xWorld, yWorld);
+				if (this->selectedPoint != this->terrain.getTerrain()->end())
+				{
+					// Drag and drop the thing
+					this->terrain.getWorldCoordinates(event.mouseMove.x, event.mouseMove.y, window, xWorld, yWorld);
 
-				this->selectedPoint->first = xWorld;
-				this->selectedPoint->second = yWorld;
+					this->selectedPoint->first = xWorld;
+					this->selectedPoint->second = yWorld;
 
-				this->terrain.reorderPoints();
-				this->rename();
+					this->terrain.reorderPoints();
+					this->rename();
+					this->terrain.checkTerrainBounds();
+				}
 
 				return true;
 			}
@@ -180,6 +205,19 @@ void ProblemRocket_TerrainEditor::draw(sf::RenderWindow * window)
 	this->checkEvents(window);
 
 	this->terrain.draw(window);
+
+	// Drawing start position
+	sf::CircleShape circle;
+	circle.setRadius(4);
+	circle.setFillColor(sf::Color::Green);
+	circle.setOrigin(4, 4);
+
+	float x, y, dontCare;
+	this->terrain.getRocketStart(x, y, dontCare, dontCare, dontCare);
+
+	convertCoordinates(x, y, this->terrain.getWidth(), this->terrain.getHeight(), x, y, window->getSize().x, window->getSize().y);
+	circle.setPosition(x, window->getSize().y - y);
+	window->draw(circle);
 
 	// Drawing text
 	string temp;

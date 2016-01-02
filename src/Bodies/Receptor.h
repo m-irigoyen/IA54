@@ -6,13 +6,13 @@
 */
 
 #include <deque>
-#include "World/Perception.h"
+#include "World/PerceptionWave.h"
 
 
 class Receptor
 {
 protected:
-	Perception perception;	// The perception of that object
+	PerceptionWave perceptionWave;	// The perception of that object
 	std::deque<std::pair<sf::Time, float>> computedValues;	// All the values that the receptor computed
 
     sf::Time memoryTime;	// The time for which the receptor should remember what it perceived
@@ -22,7 +22,7 @@ public:
 	Receptor();
 
 	virtual void initialise() = 0;	// Initialises the receptor
-	virtual WAVE getPerception() = 0;    // Returns what the receptor understands of all it has received.
+	virtual PerceptionWave::WAVE getPerception() = 0;    // Returns what the receptor understands of all it has received.
 	virtual void onWaveCollision(int emitterId, sf::Time contact, float amplitude);	// Called when the receptor is hit by a wave
 	virtual void onEndOfTransmission(int emitterId, sf::Time contact);	// When the emitter stops transmitting, this signals the receptor that it has lost the signal
 
@@ -33,6 +33,8 @@ public:
 	virtual void updateComputedValues(sf::Time currentTime) = 0;	// Update the perceived values
 
     virtual sf::Time getMemoryTime();	// getter
+
+	virtual void clearPerception();
 };
 
 #endif

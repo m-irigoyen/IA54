@@ -3,7 +3,10 @@
 
 ProblemRocket_OneEngine::ProblemRocket_OneEngine(float waveAmplLossPerSec) : ProblemRocket(waveAmplLossPerSec)
 {
-	
+	this->setMaxAngle(PROBLEMROCKET_LANDING_MAXANGLE);
+	this->setMaxHSpeed(PROBLEMROCKET_LANDING_MAXHSPEED);
+	this->setMaxVSpeed(PROBLEMROCKET_LANDING_MAXVSPEED);
+	this->problemPowerOffset = 2.0f;
 }
 
 void ProblemRocket_OneEngine::getThrustForce(float & hForce, float & vForce)
@@ -100,35 +103,46 @@ void ProblemRocket_OneEngine::draw(sf::RenderWindow * problemWindow)
 {
 	this->checkEvents(problemWindow);
 
-	ProblemRocket::draw(problemWindow);
-
-	// Drawing engine fire
-	if (this->rocket_enginesPower.at(0) > 0)
+	if (this->problemLive)
 	{
-		this->hud_engineFire.setSize(sf::Vector2f(this->rocket_enginesPower.at(0) * PROBLEMROCKET_GUI_SIZE_THRUSTER, 6));
-		this->hud_engineFire.setOrigin(this->rocket_enginesPower.at(0) * PROBLEMROCKET_GUI_SIZE_THRUSTER + this->hud_rocketSprite.getLocalBounds().width/2, 3);
-		this->hud_engineFire.setRotation(-this->rocket_angle);
-		this->hud_engineFire.setPosition(this->rocket_x*problemWindow->getSize().x / this->terrain.getWidth(),
-			problemWindow->getSize().y - (this->rocket_y * problemWindow->getSize().y / this->terrain.getHeight()));
+		// Drawing engine fire
+		if (this->rocket_enginesPower.at(0) > 0)
+		{
+			this->hud_engineFire.setSize(sf::Vector2f(this->rocket_enginesPower.at(0) * (PROBLEMROCKET_GUI_SIZE_THRUSTER), 6));
+			//this->hud_engineFire.setScale(this->hud_rocketSprite.getScale().x, this->hud_rocketSprite.getScale().y);
+			this->hud_engineFire.setScale(this->hud_rocketSprite.getScale().x, 1);
 
-		problemWindow->draw(this->hud_engineFire);
+			this->hud_engineFire.setOrigin(this->rocket_enginesPower.at(0) * PROBLEMROCKET_GUI_SIZE_THRUSTER + (this->hud_rocketSprite.getLocalBounds().width)*(this->hud_rocketSprite.getScale().x) / 2 +15,
+				3);
+			this->hud_engineFire.setRotation(-this->rocket_angle);
+			this->hud_engineFire.setPosition(this->rocket_x*problemWindow->getSize().x / this->terrain.getWidth(),
+				problemWindow->getSize().y - (this->rocket_y * problemWindow->getSize().y / this->terrain.getHeight()));
+
+			problemWindow->draw(this->hud_engineFire);
+		}
 	}
 
-	// Drawing text
-	string temp;
 
-	// Title
-	this->hud_text.setCharacterSize(30);
-	this->hud_text.setString("Rocket : One Engine");
-	this->hud_text.setPosition(problemWindow->getSize().x / 2 - this->hud_text.getLocalBounds().width / 2, 5);
-	problemWindow->draw(this->hud_text);
+	if (this->drawHUD)
+	{
+		// Drawing text
+		string temp;
 
-	// Engines
-	this->hud_text.setCharacterSize(20);
-	temp = std::to_string(this->rocket_enginesPower.at(0));
-	this->hud_text.setString("Power  : " + temp);
-	this->hud_text.setPosition(10, 85);
-	problemWindow->draw(this->hud_text);
+		// Title
+		this->hud_text.setCharacterSize(30);
+		this->hud_text.setString("Rocket : One Engine");
+		this->hud_text.setPosition(problemWindow->getSize().x / 2 - this->hud_text.getGlobalBounds().width / 2, 5);
+		problemWindow->draw(this->hud_text);
+
+		// Engines
+		this->hud_text.setCharacterSize(20);
+		temp = std::to_string(this->rocket_enginesPower.at(0));
+		this->hud_text.setString("Power  : " + temp);
+		this->hud_text.setPosition(10, 85);
+		problemWindow->draw(this->hud_text);
+	}
+	
+	ProblemRocket::draw(problemWindow);
 }
 
 void ProblemRocket_OneEngine::clean()
@@ -144,8 +158,8 @@ void ProblemRocket_OneEngine::init()
 	this->powerChange.push_back(0);
 
 	// Rocket specs
-	this->rocket_engineChangeRate = 1;
-	this->rocket_rotationRate = 0.5;
+	this->rocket_engineChangeRate = 0.1f;
+	this->rocket_rotationRate = 0.1f;
 
 	// Control mode
 	this->userControlled = false;

@@ -9,17 +9,43 @@ void GraphicView::toggle(bool & toToggle)
 		toToggle = true;
 }
 
-GraphicView::GraphicView() : displayEmitters(true), displayReceptors(true), displayWaves(true), maxAmplitude(100), displaySimulator(true), displayProblem(true), problem(NULL), displayWaveOpacity(true), problemWindow(NULL), window(NULL)
+sf::Color GraphicView::getColorCode(int emitterType)
+{
+	switch (emitterType)
+	{
+	case 1 :
+		return sf::Color::Green;
+	case 2:
+		return sf::Color::Blue;
+	case 3:
+		return sf::Color::Cyan;
+	case 4:
+		return sf::Color::Magenta;
+	case 5:
+		return sf::Color::Yellow;
+	default : 
+		return sf::Color::Red;
+	}
+}
+
+GraphicView::GraphicView() : displayEmitters(true), displayReceptors(true), displayWaves(true), maxAmplitude(100), displaySimulator(true), displayProblem(true), problem(NULL), displayWaveOpacity(true), problemWindow(NULL), window(NULL), brainActive(false)
 {
 }
 
 void GraphicView::Init(int width, int height, int problemWidth, int problemHeight, Problem* problem)
 {
 	if (this->window != NULL)
-		this->window->close();
-	this->window = new sf::RenderWindow(sf::VideoMode(width, height), "IA54 - WaveAgents simulator");
-	this->window->setVerticalSyncEnabled(false);
-	this->window->setPosition(sf::Vector2i(0, 0));
+	{
+		//this->window->close();
+		this->window->setSize(sf::Vector2u(width, height));
+		this->window->setVerticalSyncEnabled(false);
+	}
+	else
+	{
+		this->window = new sf::RenderWindow(sf::VideoMode(width, height), "IA54 - WaveAgents simulator");
+		this->window->setVerticalSyncEnabled(false);
+		this->window->setPosition(sf::Vector2i(0, 0));
+	}
 
 	if (!this->fonts.empty())
 		this->fonts.clear();
@@ -44,11 +70,17 @@ void GraphicView::Init(int width, int height, int problemWidth, int problemHeigh
 
 	// Init problem
 	if (this->problemWindow != NULL)
-		this->problemWindow->close();
-
-	this->problemWindow = new sf::RenderWindow(sf::VideoMode(problemWidth, problemHeight), "IA54 - WaveAgents problem");
-	this->problemWindow->setVerticalSyncEnabled(false);
-	this->problemWindow->setPosition(sf::Vector2i(width, 0));
+	{
+		//this->window->close();
+		this->problemWindow->setSize(sf::Vector2u(problemWidth, problemHeight));
+		this->problemWindow->setVerticalSyncEnabled(false);
+	}
+	else
+	{
+		this->problemWindow = new sf::RenderWindow(sf::VideoMode(problemWidth, problemHeight), "IA54 - WaveAgents problem");
+		this->problemWindow->setVerticalSyncEnabled(false);
+		this->problemWindow->setPosition(sf::Vector2i(width, 0));
+	}
 
 	this->setProblem(problem);
 
@@ -70,7 +102,6 @@ void GraphicView::Draw()
 			{
 				// Updating color and radius
 				circle.setRadius(RECEPTOR_RADIUSSIZE);
-				circle.setFillColor(sf::Color(255, 0, 0));
 				circle.setOrigin(RECEPTOR_RADIUSSIZE, RECEPTOR_RADIUSSIZE);
 
 				// For each emitter in the world
@@ -79,6 +110,7 @@ void GraphicView::Draw()
 				{
 					std::vector<float> pos = (*it)->GetPosition();	// Getting position
 					circle.setPosition(static_cast<float>(pos[0]), static_cast<float>(pos[1]));				// Placing wave accordingly on screen
+					circle.setFillColor(this->getColorCode((*it)->getBodyType()));
 					window->draw(circle);							// Drawing
 				}
 			}
@@ -97,6 +129,7 @@ void GraphicView::Draw()
 				{
 					std::vector<float> pos = (*it)->GetPosition();	// Getting position
 					circle.setPosition(static_cast<float>(pos[0]), static_cast<float>(pos[1]));				// Placing wave accordingly on screen
+					circle.setFillColor(this->getColorCode((*it)->getBodyType()));
 					window->draw(circle);							// Drawing
 				}
 			}
@@ -121,7 +154,7 @@ void GraphicView::Draw()
 						float ampl = (*it)->getAmplitude();
 						if (ampl > (this->problem->getWaveAmplitudeOffset() + this->problem->getWaveAmplitudeRange()))	// Capping to the threshold if amplitude is too high
 							ampl = this->problem->getWaveAmplitudeOffset() + this->problem->getWaveAmplitudeRange();
-						circle.setOutlineColor(sf::Color(255, 255, 255, (ampl * 255) / (this->problem->getWaveAmplitudeOffset() + this->problem->getWaveAmplitudeRange())));
+						circle.setOutlineColor(sf::Color(255, 255, 255, (ampl * 64) / (this->problem->getWaveAmplitudeOffset() + this->problem->getWaveAmplitudeRange())));
 					}
 
 					std::vector<float> pos = (*it)->GetPosition();	// Getting position
@@ -134,6 +167,22 @@ void GraphicView::Draw()
 			// Displaying GUI
 			this->placingAgentText.setPosition(10, window->getSize().y - 30);
 			window->draw(this->placingAgentText);
+
+			// Drawing wave speed
+			this->text.setString("waves x" + to_string(this->world->getWaveSpeed()));
+			this->text.setColor(sf::Color::White);
+			this->text.setPosition(window->getSize().x - 10 - this->text.getLocalBounds().width,
+				10);
+			window->draw(this->text);
+			
+			//Drawing brain active text
+			if (this->brainActive)
+			{
+				this->text.setPosition(10, 10);
+				this->text.setColor(sf::Color::Red);
+				this->text.setString("Brain active");
+				this->window->draw(this->text);
+			}
 
 			// Displaying the whole thing
 			window->display();
@@ -234,9 +283,21 @@ sf::RenderWindow* GraphicView::getWindow()
 	return this->window;
 }
 
-void GraphicView::setCurrentlyPlacingAgent(std::string text)
+void GraphicView::setCurrentlyPlacingAgent(std::string text, int colorCode)
 {
 	this->placingAgentText.setString ("Currently placing : " + text);
+	this->placingAgentText.setColor(this->getColorCode(colorCode));
+}
+
+void GraphicView::resetText()
+{
+	this->placingAgentText.setString("");
+	this->text.setString("");
+}
+
+void GraphicView::setBrainActive(bool active)
+{
+	this->brainActive = active;
 }
 
 GraphicView::~GraphicView(void)

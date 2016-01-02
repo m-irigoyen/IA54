@@ -21,8 +21,11 @@ protected:
 	Body* body;
 	Problem* problem;
 
+private:
+	int type;
+
 public:
-	Agent(Problem* problem = NULL, Body* body = NULL);
+	Agent(Problem* problem = NULL, Body* body = NULL, int type = -1);
 
 	virtual void live() = 0;
 
@@ -35,6 +38,9 @@ public:
 
 	virtual void setProblem(Problem* problem);
 	Problem* getProblem();
+
+	int getType();
+	void setType(int type);
 
 	~Agent(void);
 

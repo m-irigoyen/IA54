@@ -19,11 +19,13 @@
 #include "Problems/Rocket/OneEngine/ProblemRocket_OneEngine.h"
 #include "Problems/Rocket/OneEngine/AgentRocket_OneEngine_Emitter.h"
 #include "Problems/Rocket/OneEngine/AgentRocket_OneEngine_Receptor.h"
+#include "Problems/Rocket/OneEngine/AgentRocket_OneEngine_Brain.h"
 
 // Rocket problem 2
 #include "Problems/Rocket/TwoEngines/ProblemRocket_TwoEngines.h"
 #include "Problems/Rocket/TwoEngines/AgentRocket_TwoEngines_Emitter.h"
 #include "Problems/Rocket/TwoEngines/AgentRocket_TwoEngines_Receptor.h"
+#include "Problems/Rocket/TwoEngines/AgentRocket_TwoEngines_Brain.h"
 
 // Rocket Terrain editor
 #include "Problems/Rocket/ProblemRocket_TerrainEditor.h"
@@ -71,12 +73,24 @@ private:
 	Problem* problem;   // The instance of the drone problem.
 
 	PROBLEM_TYPE problemType;	// The type of the current problem
+	AgentRocket_Brain* rocketBrain;
 
 	// Helper functions
 	void userAddAgent(int x, int y, int agentType);
 	void userEraseAgent(Body* body);
 
 	void updateGUIAgentPlacingText();
+
+		// Helper functions
+	void updateBrain(float elapsedTime);
+	void regulateAgentNumber(int agentType, int desiredNumber);
+	void getRandomPos(int agentType, float& x, float& y);
+
+	// Resets agent positions
+	void resetAgentPositions();
+
+	vector<Agent*>::iterator removeAgent(Agent* agent);
+	vector<Agent*>::iterator removeAgent(vector<Agent*>::iterator agent);
 
 public:
 	Simulator();

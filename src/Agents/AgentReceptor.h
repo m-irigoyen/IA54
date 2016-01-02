@@ -16,7 +16,7 @@ protected:
 	BodyReceptor* castedBody;
 
 public:
-	AgentReceptor(Problem* problem, BodyReceptor* body = NULL);
+	AgentReceptor(Problem* problem, BodyReceptor* body = NULL, int type = -1);
 
 	virtual void live();
 

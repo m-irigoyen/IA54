@@ -1,6 +1,6 @@
 #include "Problems/Rocket/OneEngine/AgentRocket_OneEngine_Emitter.h"
 
-AgentRocket_OneEngine_Emitter::AgentRocket_OneEngine_Emitter(ProblemRocket_OneEngine * problem, BodyEmitter * body, AGENTTYPE_ROCKET_ONE type) : AgentEmitter(problem,body), castedProblem(problem), agentType(type)
+AgentRocket_OneEngine_Emitter::AgentRocket_OneEngine_Emitter(ProblemRocket_OneEngine * problem, BodyEmitter * body, AGENTTYPE_ROCKET_ONE type) : AgentEmitter(problem,body, (int)type), castedProblem(problem)
 {
 }
 
@@ -14,8 +14,9 @@ void AgentRocket_OneEngine_Emitter::live()
 	}
 
 	// Getting problem data
-	float x, y, power, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat, lzSize;
+	float x, y, power, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat, lzSize, worldWidth, worldHeight;
 
+	this->castedProblem->getTerrain()->getTerrainDimensions(worldWidth, worldHeight);
 	this->castedProblem->getRocketPosition(x, y);
 	power = this->castedProblem->getRocketEnginesPower()->at(0);
 	angle = this->castedProblem->getRocketAngle();
@@ -34,14 +35,18 @@ void AgentRocket_OneEngine_Emitter::live()
 	float frequency;
 	bool ceaseTransmission = false;
 	
-	if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DIRECTION)
+	if ((AGENTTYPE_ROCKET_ONE)this->getType() == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DIRECTION)
 	{
-		desiredPower = 50;
+		desiredPower = PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset();
 
 		if (abs(distanceToCenterFlat) > (lzSize / 2))
 		{
 			// Direct the rocket towards the flatzone
-			desiredAngle = PROBLEMROCKET_ONE_PROBLEM_MAXANGLE;
+			desiredAngle = convertToRange(abs(distanceToCenterFlat),
+				lzSize/2,												
+				worldWidth,
+				PROBLEMROCKET_CRUISE_MAXANGLE * PROBLEMROCKET_DIRECTION_LZAPPROACH,
+				PROBLEMROCKET_CRUISE_MAXANGLE);
 
 			if (distanceToCenterFlat > 0)
 				desiredAngle *= -1;
@@ -52,63 +57,122 @@ void AgentRocket_OneEngine_Emitter::live()
 				0.0f,
 				lzSize / 2,
 				0.0f,
-				desiredAngle = PROBLEMROCKET_ONE_PROBLEM_MAXANGLE);
+				PROBLEMROCKET_CRUISE_MAXANGLE * PROBLEMROCKET_DIRECTION_LZAPPROACH);
 				
 				if (distanceToCenterFlat > 0)
 					desiredAngle *= -1;
 		}
 	}
-	else if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_ALTITUDE)
+	else if ((AGENTTYPE_ROCKET_ONE)this->getType() == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_ALTITUDE)
 	{
+		// ALTITUDE STABILIZER
 		if (abs(distanceToCenterFlat) < lzSize /2)
 		{
+			// We're in the landing zone
 			desiredAngle = 0;
 
 			desiredPower = convertToRange(abs(vSpeed),
 				0,
-				PROBLEMROCKET_ONE_PROBLEM_MAXVSPEED,
+				PROBLEMROCKET_LANDING_MAXVSPEED,
 				0,
-				this->castedProblem->getPowerMax()/2);
+				this->castedProblem->getPowerMax()/2 + this->castedProblem->getPowerOffset());
+		}
+		else if (y < this->castedProblem->getDesiredAltitude())
+		{
+			// We're lower than the desired altitude : go up
+			desiredAngle = 0;
+
+			desiredPower = convertToRange(abs(y - this->castedProblem->getDesiredAltitude()),
+				0,
+				100,
+				this->castedProblem->getPowerMax() - PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset(),
+				this->castedProblem->getPowerMax());
+
+			desiredPower += convertToRange(abs(angle),
+				0,
+				PROBLEMROCKET_ROCKET_ANGLE_TILT,
+				0,
+				PROBLEMROCKET_ROCKET_POWER_BASE);
+
+			if (vSpeed > 0.0f)
+				desiredPower -= convertToRange(abs(vSpeed),
+					0,
+					this->castedProblem->getMaxVSpeed(),
+					0,
+					PROBLEMROCKET_ROCKET_POWER_BASE);
 		}
 		else
 		{
-			if (vSpeed > 0.0f)
-				desiredPower = 0.0f;
-			else
-			{
-				desiredPower = convertToRange(abs(vSpeed),
-					0.0f,
-					PROBLEMROCKET_ONE_PROBLEM_MAXVSPEED,
-					this->castedProblem->getPowerMax() / 2,
-					this->castedProblem->getPowerMax());
-			}
+			ceaseTransmission = true;
 		}
 	}
-	else if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_HSPEED)
+	else if ((AGENTTYPE_ROCKET_ONE)this->getType() == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_HSPEED)
 	{
-		desiredAngle = convertToRange(abs(hSpeed),
-			0,
-			PROBLEMROCKET_ONE_PROBLEM_MAXHSPEED,	// That 0.5 factor makes it brake faster
-			0,
-			PROBLEMROCKET_ONE_PROBLEM_MAXANGLE);
+		if (abs(distanceToCenterFlat) < lzSize / 2)
+		{
+			desiredAngle = convertToRange(abs(hSpeed),
+				0,
+				PROBLEMROCKET_LANDING_MAXHSPEED,
+				0,
+				PROBLEMROCKET_CRUISE_MAXANGLE);
+		}
+		else
+		{
+			desiredAngle = convertToRange(abs(hSpeed),
+				0,
+				PROBLEMROCKET_CRUISE_MAXHSPEED,
+				0,
+				PROBLEMROCKET_CRUISE_MAXANGLE);
+		}
+		
 
 		if (hSpeed < 0)
 			desiredAngle *= -1;
 
-		desiredPower = 50.0f;
+		desiredPower = PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset();
 	}
-	else if (this->agentType == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_VSPEED)
+	else if ((AGENTTYPE_ROCKET_ONE)this->getType() == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_VSPEED)
 	{
 		desiredAngle = 0;
+
+		if (abs(distanceToCenterFlat) < lzSize / 2)
+		{
+			desiredPower = convertToRange(abs(vSpeed),
+				0,
+				PROBLEMROCKET_LANDING_MAXVSPEED,
+				PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset(),
+				this->castedProblem->getPowerMax());
+
+			desiredPower += convertToRange(abs(angle),
+				0,
+				PROBLEMROCKET_ROCKET_ANGLE_TILT ,
+				0,
+				this->castedProblem->getPowerMax() / 2);
+		}
+		else
+		{
+			desiredPower = convertToRange(abs(vSpeed),
+				0,
+				PROBLEMROCKET_CRUISE_MAXVSPEED,
+				PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset(),
+				this->castedProblem->getPowerMax());
+
+			desiredPower += convertToRange(abs(angle),
+				0,
+				PROBLEMROCKET_ROCKET_ANGLE_TILT,
+				0,
+				this->castedProblem->getPowerMax() / 2);
+		}
 		
-		desiredPower = convertToRange(abs(vSpeed),
-			0,
-			PROBLEMROCKET_ONE_PROBLEM_MAXVSPEED,
-			this->castedProblem->getPowerMax() / 2,
-			this->castedProblem->getPowerMax());
+		
 
 		if (vSpeed > 0.0f)
-			desiredPower = 0.0f;
+		{
+			if (y < this->castedProblem->getDesiredAltitude())
+				desiredPower = this->castedProblem->getPowerMax() - desiredPower - this->castedProblem->getPowerOffset();
+			else
+				desiredPower = 30.0f;
+		}
 	}
 
 	if (ceaseTransmission)
@@ -129,11 +193,11 @@ void AgentRocket_OneEngine_Emitter::live()
 		}
 		
 		//cout << "DESIRED : " << desiredPower << ", " << desiredAngle << endl;
-		desiredAngle += PROBLEMROCKET_ONE_PROBLEM_MAXANGLE;
+		desiredAngle += PROBLEMROCKET_ROCKET_ANGLE_TILT;
 
-		amplitude = convertToRange(desiredAngle,
-			0,
-			PROBLEMROCKET_ONE_PROBLEM_MAXANGLE * 2,
+		amplitude = convertToRange(desiredAngle,	
+			0,										
+			PROBLEMROCKET_ROCKET_ANGLE_TILT * 2,
 			this->castedProblem->getWaveAmplitudeOffset(),
 			this->castedProblem->getWaveAmplitudeRange());
 
@@ -157,9 +221,4 @@ bool AgentRocket_OneEngine_Emitter::isLinked()
 bool AgentRocket_OneEngine_Emitter::isProblemLinked()
 {
 	return this->castedProblem != NULL;
-}
-
-void AgentRocket_OneEngine_Emitter::setAgentType(AGENTTYPE_ROCKET_ONE type)
-{
-	this->agentType = type;
 }

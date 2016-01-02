@@ -13,7 +13,9 @@
 #include "World/Wave.h"
 
 
-#define DEFAULT_PROPAGATION_SPEED 100.0f;
+#define DEFAULT_PROPAGATION_SPEED 100.0f
+#define WORLD_WIDTH 400.0f
+#define WORLD_HEIGHT 400.0f
 
 /*
 *   The World is the environment. It contains a list of all the PhysicalObjects that exist in it.
@@ -33,6 +35,9 @@ enum BODY_TYPE	// The types of bodies that exist in the world
 class World
 {
 private:
+	// propagation speed
+	int waveSpeed;
+
 	std::vector<Wave*> waves;	// TODO : (optimisation) Change that to a deque 
 	std::vector<BodyReceptor*> receptors;
 	std::vector<BodyEmitter*> emitters;
@@ -81,7 +86,8 @@ public:
 	void forceEndOfTransmission(BodyEmitter* body);
 
 	// Set a receptor's perceptions
-	void setPerception(BodyReceptor* receptor);
+	void setPerceptionBody(Body* body);
+	void setPerceptionWave(BodyReceptor* receptor);
 
 	// Getter functions
 	std::vector<Wave*>* getWaves();
@@ -89,6 +95,11 @@ public:
 	std::vector<BodyReceptor*>* getReceptors();
 
 	void setWaveAmplitude(float amplitudeLoss);
+
+	void clearWaves();
+
+	int getWaveSpeed();
+	void setWaveSpeed(int waveSpeed);
 
 	~World(void);
 };

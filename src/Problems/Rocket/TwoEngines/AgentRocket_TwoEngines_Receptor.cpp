@@ -1,6 +1,6 @@
 #include "Problems/Rocket/TwoEngines/AgentRocket_TwoEngines_Receptor.h"
 
-AgentRocket_TwoEngines_Receptor::AgentRocket_TwoEngines_Receptor(ProblemRocket_TwoEngines * problem, BodyReceptor_Composition * body, AGENTTYPE_ROCKET_TWO type) : AgentReceptor(problem,body), castedProblem(problem), agentType(type)
+AgentRocket_TwoEngines_Receptor::AgentRocket_TwoEngines_Receptor(ProblemRocket_TwoEngines * problem, BodyReceptor_Composition * body, AGENTTYPE_ROCKET_TWO type) : AgentReceptor(problem,body,(int)type), castedProblem(problem)
 {
 }
 
@@ -10,7 +10,7 @@ void AgentRocket_TwoEngines_Receptor::live()
 		return;
 
 	// Getting perception from body
-	WAVE perception = this->castedBody->getPerception();
+	PerceptionWave::WAVE perception = this->castedBody->getPerception();
 
 	// Checking error in parameters
 	if (perception.amplitude < this->castedProblem->getWaveAmplitudeOffset())
@@ -67,9 +67,4 @@ bool AgentRocket_TwoEngines_Receptor::isLinked()
 bool AgentRocket_TwoEngines_Receptor::isProblemLinked()
 {
 	return this->castedProblem != NULL;
-}
-
-void AgentRocket_TwoEngines_Receptor::setAgentType(AGENTTYPE_ROCKET_TWO type)
-{
-	this->agentType = type;
 }

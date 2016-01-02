@@ -28,9 +28,14 @@ bool Problem::handleEvent(sf::RenderWindow* window, sf::Event event)
 			return true;
 		case::sf::Keyboard::P : 
 			this->pause = toggle(this->pause);
-			break;
+			return true;
 		}
+		break;
+	case sf::Event::Resized:
+		window->setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
+		return true;
 	}
+
 	return false;
 }
 
@@ -57,6 +62,18 @@ int Problem::getNumberOfEmitters()
 int Problem::getNumberOfReceptors()
 {
 	return this->numberOfReceptors;
+}
+
+bool Problem::getResetAgent()
+{
+	if (this->resetAgents)
+	{
+		//FIXME : why isn't that working ? u_u
+		resetAgents = false;
+		return true;
+	}
+		
+	return false;
 }
 
 

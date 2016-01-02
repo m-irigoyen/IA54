@@ -5,15 +5,18 @@ Checks if the rocket landed correctly.
 We assume that a correct landing means :
 |hSpeed| < 20
 |vSpeed| < 40
--5 <= rocketAngle <= 5
+-10 <= rocketAngle <= 10
 */
 bool ProblemRocket::correctLanding(float hSpeed, float vSpeed, float angle)
 {
-	if (angle >= PROBLEMROCKET_GUI_ANGLE_OFFSET - 10 && angle <= PROBLEMROCKET_GUI_ANGLE_OFFSET + 10)	// Don't forget to check for the angle offset
+	// Don't forget to check for the angle offset
+	// Checking angle
+	if (angle <= (PROBLEMROCKET_GUI_ANGLE_OFFSET + this->getMaxAngle())
+		&& angle >= (PROBLEMROCKET_GUI_ANGLE_OFFSET - this->getMaxAngle()))
 	{
-		if (hSpeed >= -20.0f && hSpeed <= 20.0f)
+		if (abs(hSpeed) <= this->getMaxHSpeed())
 		{
-			if (vSpeed <= 0.0f && vSpeed >= -40.0f)	// Can't collide going up
+			if (abs(vSpeed) <= this->getMaxVSpeed())
 			{
 				cout << "Rocket landed successfully!" << endl;
 				return true;
@@ -49,17 +52,17 @@ void ProblemRocket::moveRocket(sf::Time elapsedTime, float hEnginesForce, float 
 	if (!this->terrain.isOnMap(this->rocket_x, this->rocket_y))
 	{
 		this->hasGoneMissing = true;
+		this->problemLive = false;
 		cout << "Rocket has gone missing!" << endl;
 	}
 	else
 	{
-		//TODO: replace that 22 by the hitbox size
-		if (this->terrain.collides(this->rocket_x, this->rocket_y, 22))
+		if (this->terrain.collides(this->rocket_x, this->rocket_y, PROBLEMROCKET_ROCKET_HITBOX))
 		{
 			// If is on flat zone
 			float flat1, flat2;
 			this->terrain.getLandingZone(flat1, flat2);
-			if (this->rocket_x >= flat1 && rocket_y <= flat2)
+			if (this->rocket_x >= flat1 && rocket_x <= flat2)
 			{
 				if (this->correctLanding(this->rocket_hSpeed, this->rocket_vSpeed, this->rocket_angle))
 				{
@@ -103,6 +106,7 @@ bool ProblemRocket::handleEvent(sf::RenderWindow * window, sf::Event event)
 	else
 	{
 		string temp;
+		float xWorld, yWorld;
 		switch (event.type)
 		{
 		case sf::Event::KeyPressed:
@@ -117,12 +121,12 @@ bool ProblemRocket::handleEvent(sf::RenderWindow * window, sf::Event event)
 			case sf::Keyboard::A:
 				this->useRelativeChange = toggle(this->useRelativeChange);
 				return true;
-			case sf::Keyboard::O:
+			case sf::Keyboard::Add:
 				++this->problemSpeed;
-				if (this->problemSpeed > 5)
-					this->problemSpeed = 5;
+				if (this->problemSpeed > 20)
+					this->problemSpeed = 20;
 				return true;
-			case sf::Keyboard::I:
+			case sf::Keyboard::Subtract:
 				--this->problemSpeed;
 				if (this->problemSpeed < 1)
 					this->problemSpeed = 1;
@@ -133,10 +137,67 @@ bool ProblemRocket::handleEvent(sf::RenderWindow * window, sf::Event event)
 			case sf::Keyboard::L:
 				cout << "Enter terrain to load : ";
 				cin >> temp;
-				this->terrain.loadTerrain(temp);
-				this->resetRocket();
+				this->loadTerrain(temp);
+				return true;
+			case sf::Keyboard::Tab :
+				toggle(this->drawHUD);
+				return true;
+			case sf::Keyboard::T:
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)
+					|| sf::Keyboard::isKeyPressed(sf::Keyboard::RShift))
+				{
+					this->trajectories.clearLast();
+				}
+				else
+				{
+					this->trajectories.clear();
+				}
+				return true;
+
+				//Rocket one shortcuts
+			case sf::Keyboard::F5:
+				this->loadTerrain("VelocityH");
+				return true;
+			case sf::Keyboard::F6:
+				this->loadTerrain("VelocityV");
+				return true;
+			case sf::Keyboard::F7:
+				this->loadTerrain("Mountain1");
+				return true;
+			case sf::Keyboard::F8:
+				this->loadTerrain("Plateau1");
+				return true;
+			case sf::Keyboard::F9:
+				this->loadTerrain("DoubleBack");
+				return true;
+			case sf::Keyboard::F10:
+				this->loadTerrain("Pit");
+				return true;
+			case sf::Keyboard::F11:
+				this->loadTerrain("DoublePit");
+				return true;
+			case sf::Keyboard::F12:
+				this->loadTerrain("PrecisionLanding");
 				return true;
 			}
+			break;
+			
+		case sf::Event::MouseButtonPressed : 
+			switch (event.mouseButton.button)
+			{
+			case sf::Mouse::Left:
+				// If ctrl is pressed, set start position
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)
+					|| sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))
+				{
+					this->terrain.getWorldCoordinates((float)event.mouseButton.x, (float)event.mouseButton.y, window, xWorld, yWorld);
+					this->rocket_x = xWorld;
+					this->rocket_y = yWorld;
+				}
+				return true;
+			}
+			break;
+		
 		}
 		return false;
 	}
@@ -159,20 +220,20 @@ float ProblemRocket::constrainAngleChange(float currentAngle, float desiredRotat
 	if (!this->useRelativeChange)
 		desiredRotationChange -= currentAngle;
 
-	if (this->rocket_rotationRate < 0)
+	if (this->rocket_rotationRate < 0.0f)
 		currentAngle += desiredRotationChange;
 	else
 	{
 		// Rotate only of the asked amount
-		if (abs(desiredRotationChange) < this->rocket_rotationRate)
+		if (abs(desiredRotationChange) < this->rocket_rotationRate*this->problemSpeed)
 			currentAngle += desiredRotationChange;
 		// Rotate by the change rate
 		else
 		{
 			if (desiredRotationChange < 0)
-				currentAngle -= this->rocket_rotationRate;
+				currentAngle -= this->rocket_rotationRate*this->problemSpeed;
 			else
-				currentAngle += this->rocket_rotationRate;
+				currentAngle += this->rocket_rotationRate*this->problemSpeed;
 		}
 	}
 
@@ -201,15 +262,15 @@ float ProblemRocket::constrainPowerChange(float currentPower, float desiredPower
 	else
 	{
 		// If desiredChange is lower than the change rate, change by the asked amount
-		if (abs(desiredPowerChange) < this->rocket_engineChangeRate)
+		if (abs(desiredPowerChange) < this->rocket_engineChangeRate * this->problemSpeed)
 			currentPower += desiredPowerChange;
 		// Else, change by the change rate
 		else
 		{
 			if (desiredPowerChange < 0.0)
-				currentPower -= this->rocket_engineChangeRate;
+				currentPower -= this->rocket_engineChangeRate * this->problemSpeed;
 			else
-				currentPower += this->rocket_engineChangeRate;
+				currentPower += this->rocket_engineChangeRate * this->problemSpeed;
 		}
 	}
 	currentPower = this->constrainPower(currentPower);
@@ -229,8 +290,50 @@ void ProblemRocket::resetDesiredChanges()
 	this->desiredRotation = 0;
 }
 
-ProblemRocket::ProblemRocket(float waveAmplLossPerSec, bool useAttenuation) : Problem(waveAmplLossPerSec, useAttenuation), userControlled(false), rocket_rotationRate(-1), rocket_engineChangeRate(-1), useRelativeChange(false), problemSpeed(3)
+void ProblemRocket::setHasCrashed(bool crashed)
 {
+	if (crashed)
+	{
+		this->hasCrashed = true;
+		this->problemLive = false;
+	}
+}
+
+void ProblemRocket::setHasLanded(bool landed)
+{
+	if (landed)
+	{
+		this->hasLanded= true;
+		this->problemLive = false;
+	}
+}
+
+void ProblemRocket::setHasGoneMissing(bool goneMissing)
+{
+	if (goneMissing)
+	{
+		this->hasGoneMissing = true;
+		this->problemLive = false;
+	}
+}
+
+void ProblemRocket::resetScale()
+{
+	this->hud_rocketSprite.setScale(PROBLEMROCKET_GUI_SCALE / getScale(PROBLEMROCKET_TERRAIN_DEFAULTSIZE, this->terrain.getWidth()), PROBLEMROCKET_GUI_SCALE / getScale(PROBLEMROCKET_TERRAIN_DEFAULTSIZE, this->terrain.getHeight()));
+	this->hud_explosionSprite.setScale(PROBLEMROCKET_GUI_SCALE / getScale(PROBLEMROCKET_TERRAIN_DEFAULTSIZE, this->terrain.getWidth()), PROBLEMROCKET_GUI_SCALE / getScale(PROBLEMROCKET_TERRAIN_DEFAULTSIZE, this->terrain.getHeight()));
+	this->hud_radarSprite.setScale(0.2f / getScale(PROBLEMROCKET_TERRAIN_DEFAULTSIZE, this->terrain.getWidth()), 0.2f / getScale(PROBLEMROCKET_TERRAIN_DEFAULTSIZE, this->terrain.getHeight()));
+}
+
+ProblemRocket::ProblemRocket(float waveAmplLossPerSec, bool useAttenuation) : Problem(waveAmplLossPerSec, useAttenuation), userControlled(false), rocket_rotationRate(0.1f), rocket_engineChangeRate(0.1f), useRelativeChange(false), problemSpeed(5), problemMaxAngle(0.0f), problemMaxHSpeed(0.0f), problemMaxVSpeed(0.0f), desiredAltitude(0.0f), drawHUD(true)
+{
+	// Initializing agent count
+	this->agentCount.insert(pair<int, int>(0, 0));
+	this->agentCount.insert(pair<int, int>(1, 0));
+	this->agentCount.insert(pair<int, int>(2, 0));
+	this->agentCount.insert(pair<int, int>(3, 0));
+	this->agentCount.insert(pair<int, int>(4, 0));
+	this->agentCount.insert(pair<int, int>(5, 0));
+
 	// Setting base variables
 	this->rocket_x = 0;
 	this->rocket_y = 0;
@@ -295,6 +398,7 @@ void ProblemRocket::resetRocket()
 	this->hasCrashed = false;
 	this->hasGoneMissing = false;
 	this->hasLanded = false;
+	this->resetAgents = true;
 
 	for (vector<float>::iterator it = this->rocket_enginesPower.begin(); it != this->rocket_enginesPower.end(); ++it)
 	{
@@ -325,20 +429,42 @@ void ProblemRocket::initGraphics(std::vector<sf::Font>* fonts)
 		std::cout << "ProblemRocket::init : ERROR : couldn't load rocket image from disk." << std::endl;
 	}
 	this->hud_rocketSprite.setTexture(hud_rocketTexture);
-	this->hud_rocketSprite.setOrigin(hud_rocketTexture.getSize().x / 2, hud_rocketTexture.getSize().y / 2);
+	this->hud_rocketSprite.setOrigin(hud_rocketTexture.getSize().x / 2, hud_rocketTexture.getSize().y *  2/3);
+
+	// Explosion sprite
+	path = PATH_RES;
+	path += "Explosion.png";
+	if (!this->hud_explosionTexture.loadFromFile(path))
+	{
+		std::cout << "ProblemRocket::init : ERROR : couldn't load explosion image from disk." << std::endl;
+	}
+	this->hud_explosionSprite.setTexture(this->hud_explosionTexture);
+	this->hud_explosionSprite.setOrigin(hud_explosionTexture.getSize().x / 2, hud_explosionTexture.getSize().y * 2 / 3);
+
+	// Radar sprite
+	path = PATH_RES;
+	path += "RadarMissing.png";
+	if (!this->hud_radarTexture.loadFromFile(path))
+	{
+		std::cout << "ProblemRocket::init : ERROR : couldn't load explosion image from disk." << std::endl;
+	}
+	this->hud_radarSprite.setTexture(this->hud_radarTexture);
+	this->hud_radarSprite.setOrigin(hud_radarTexture.getSize().x / 2, hud_radarTexture.getSize().y * 2 / 3);
+
+	this->resetScale();
 }
 
 void ProblemRocket::setRocketRotationRate(float rocketRotationRate)
 {
-	if (rocketRotationRate < 0)
-		rocketRotationRate = -1;
+	if (rocketRotationRate < 0.0f)
+		rocketRotationRate = -1.0f;
 	this->rocket_rotationRate = rocketRotationRate;
 }
 
 void ProblemRocket::setRocketengineChangeRate(float engineChangeRate)
 {
-	if (engineChangeRate < 0)
-		engineChangeRate = -1;
+	if (engineChangeRate < 0.0f)
+		engineChangeRate = -1.0f;
 	this->rocket_engineChangeRate = engineChangeRate;
 }
 
@@ -355,87 +481,103 @@ void ProblemRocket::draw(sf::RenderWindow * window)
 	// Drawing rocket
 	float convX, convY;
 	convertCoordinates(this->rocket_x, this->rocket_y, this->terrain.getWidth(), this->terrain.getHeight(), convX, convY, window->getSize().x, window->getSize().y);
-	
-	this->hud_rocketSprite.setPosition(convX, window->getSize().y - convY);
-	/*this->hud_rocketSprite.setPosition(this->rocket_x * window->getSize().x / this->terrain.getWidth(),
-		window->getSize().y - (this->rocket_y * window->getSize().y / this->terrain.getHeight()));*/
-	this->hud_rocketSprite.setRotation(-this->rocket_angle);
-
-	window->draw(this->hud_rocketSprite);
-
-	// Drawing HUD
-	string temp;
-
-	// pause && user control
-	if (this->pause)
+	if (this->problemLive || this->hasLanded)
 	{
-		this->hud_text.setCharacterSize(20);
-		this->hud_text.setString("Pause");
-		this->hud_text.setColor(sf::Color::Red);
-		this->hud_text.setPosition(window->getSize().x / 2 - this->hud_text.getLocalBounds().width / 2 - 10, 35);
-		window->draw(this->hud_text);
+		this->hud_rocketSprite.setPosition(convX, window->getSize().y - convY);
+		this->hud_rocketSprite.setRotation(-this->rocket_angle + 90);
+		window->draw(this->hud_rocketSprite);
 	}
-	if (this->userControlled)
+	else if (this->hasCrashed)
 	{
-		this->hud_text.setCharacterSize(20);
-		this->hud_text.setString("User control : on");
-		this->hud_text.setColor(sf::Color::Red);
-		this->hud_text.setPosition(window->getSize().x / 2 - this->hud_text.getLocalBounds().width / 2 - 10, 50);
-		window->draw(this->hud_text);
+		this->hud_explosionSprite.setPosition(convX, window->getSize().y - convY);
+		this->hud_explosionSprite.setRotation(-this->rocket_angle + 90);
+		window->draw(this->hud_explosionSprite);
+	}
+	else if (this->hasGoneMissing)
+	{
+		this->hud_radarSprite.setPosition(convX, window->getSize().y - convY);
+		window->draw(this->hud_radarSprite);
 	}
 
-	//speed
-	this->hud_text.setColor(sf::Color::White);
-	this->hud_text.setCharacterSize(20);
-	temp = std::to_string(this->problemSpeed);
-	this->hud_text.setString("Speed x" + temp);
-	this->hud_text.setPosition(window->getSize().x - this->hud_text.getLocalBounds().width - 10, 5);
-	window->draw(this->hud_text);
 
-	//Rocket data
-	this->hud_text.setCharacterSize(20);
-	this->hud_text.setPosition(10, 5);
-	if (this->useRelativeChange)
-		this->hud_text.setString("Relative angles");
-	else
-		this->hud_text.setString("Fixed angles");
-	window->draw(this->hud_text);
+	if (this->drawHUD)
+	{
+		// Drawing HUD
+		string temp;
 
-	temp = std::to_string(this->rocket_angle - PROBLEMROCKET_GUI_ANGLE_OFFSET);
-	if (abs(this->rocket_angle - PROBLEMROCKET_GUI_ANGLE_OFFSET) > 10.0f)
-		this->hud_text.setColor(sf::Color::Red);
-	else
-		this->hud_text.setColor(sf::Color::Green);
-	this->hud_text.setPosition(10, 25);
-	this->hud_text.setString("Angle  : " + temp);
-	window->draw(this->hud_text);
+		// pause && user control
+		if (this->pause)
+		{
+			this->hud_text.setCharacterSize(20);
+			this->hud_text.setString("Pause");
+			this->hud_text.setColor(sf::Color::Red);
+			this->hud_text.setPosition(window->getSize().x / 2 - this->hud_text.getLocalBounds().width / 2 - 10, 35);
+			window->draw(this->hud_text);
+		}
+		if (this->userControlled)
+		{
+			this->hud_text.setCharacterSize(20);
+			this->hud_text.setString("User control : on");
+			this->hud_text.setColor(sf::Color::Red);
+			this->hud_text.setPosition(window->getSize().x / 2 - this->hud_text.getLocalBounds().width / 2 - 10, 50);
+			window->draw(this->hud_text);
+		}
 
-	temp = std::to_string(this->rocket_hSpeed);
-	if (abs(this->rocket_hSpeed) > 20.0f)
-		this->hud_text.setColor(sf::Color::Red);
-	else
-		this->hud_text.setColor(sf::Color::Green);
-	this->hud_text.setPosition(10, 45);
-	this->hud_text.setString("hSpeed : " + temp);
-	window->draw(this->hud_text);
+		//speed
+		this->hud_text.setColor(sf::Color::White);
+		this->hud_text.setCharacterSize(20);
+		temp = std::to_string(this->problemSpeed);
+		this->hud_text.setString("Speed x" + temp);
+		this->hud_text.setPosition(window->getSize().x - this->hud_text.getLocalBounds().width - 10, 5);
+		window->draw(this->hud_text);
 
-	temp = std::to_string(this->rocket_vSpeed);
-	if (abs(this->rocket_vSpeed) > 40.0f)
-		this->hud_text.setColor(sf::Color::Red);
-	else
-		this->hud_text.setColor(sf::Color::Green);
-	this->hud_text.setPosition(10, 65);
-	this->hud_text.setString("vSpeed : " + temp);
-	window->draw(this->hud_text);
-	
-	this->hud_text.setColor(sf::Color::White);
-	// Engine values must be drawned in other classes
+		//Rocket data
+		this->hud_text.setCharacterSize(20);
+		this->hud_text.setPosition(10, 5);
+		if (this->useRelativeChange)
+			this->hud_text.setString("Relative angles");
+		else
+			this->hud_text.setString("Fixed angles");
+		window->draw(this->hud_text);
+
+		temp = std::to_string(this->rocket_angle - PROBLEMROCKET_GUI_ANGLE_OFFSET);
+		if (abs(this->rocket_angle - PROBLEMROCKET_GUI_ANGLE_OFFSET) > PROBLEMROCKET_LANDING_MAXANGLE)
+			this->hud_text.setColor(sf::Color::Red);
+		else
+			this->hud_text.setColor(sf::Color::Green);
+		this->hud_text.setPosition(10, 25);
+		this->hud_text.setString("Angle  : " + temp);
+		window->draw(this->hud_text);
+
+		temp = std::to_string(this->rocket_hSpeed);
+		if (abs(this->rocket_hSpeed) > PROBLEMROCKET_LANDING_MAXHSPEED)
+			this->hud_text.setColor(sf::Color::Red);
+		else
+			this->hud_text.setColor(sf::Color::Green);
+		this->hud_text.setPosition(10, 45);
+		this->hud_text.setString("hSpeed : " + temp);
+		window->draw(this->hud_text);
+
+		temp = std::to_string(this->rocket_vSpeed);
+		if (abs(this->rocket_vSpeed) > PROBLEMROCKET_LANDING_MAXVSPEED)
+			this->hud_text.setColor(sf::Color::Red);
+		else
+			this->hud_text.setColor(sf::Color::Green);
+		this->hud_text.setPosition(10, 65);
+		this->hud_text.setString("vSpeed : " + temp);
+		window->draw(this->hud_text);
+
+		this->hud_text.setColor(sf::Color::White);
+		// Engine values must be drawned in other classes
+	}
 }
 
 void ProblemRocket::loadTerrain(string path)
 {
 	this->terrain.loadTerrain(path);
 	this->resetRocket();
+	this->trajectories.clear();
+	this->resetScale();
 }
 
 void ProblemRocket::generateTerrain(int width, int height)
@@ -474,9 +616,24 @@ void ProblemRocket::setUseRelativeChange(bool relativeChange)
 	this->useRelativeChange = relativeChange;
 }
 
+float ProblemRocket::getDesiredAltitude()
+{
+	return this->desiredAltitude;
+}
+
+void ProblemRocket::setDesiredAltitude(float altitude)
+{
+	this->desiredAltitude = altitude;
+}
+
 bool ProblemRocket::getUserControlled()
 {
 	return this->userControlled;
+}
+
+ProblemRocket_Terrain * ProblemRocket::getTerrain()
+{
+	return &this->terrain;
 }
 
 bool ProblemRocket::getHasLanded()
@@ -549,9 +706,40 @@ void ProblemRocket::getHighestPointBeforeLanding(float & pointX, float & pointY)
 
 void ProblemRocket::getSafeLandingSpecs(float & maxHSpeed, float & maxVSpeed, float & maxAngle)
 {
-	maxHSpeed = 20.0f;
-	maxVSpeed = 40.0f;
-	maxAngle = 10.0f;
+	maxHSpeed = this->getMaxHSpeed();
+	maxVSpeed = this->getMaxVSpeed();
+	maxAngle = this->getMaxAngle();
+}
+
+float ProblemRocket::getMaxHSpeed()
+{
+	return this->problemMaxHSpeed;
+}
+
+float ProblemRocket::getMaxVSpeed()
+{
+	return this->problemMaxVSpeed;
+}
+
+float ProblemRocket::getMaxAngle()
+{
+	return this->problemMaxAngle;
+}
+
+void ProblemRocket::setMaxHSpeed(float maxHSpeed)
+{
+
+	this->problemMaxHSpeed = abs(maxHSpeed);
+}
+
+void ProblemRocket::setMaxVSpeed(float maxVSpeed)
+{
+	this->problemMaxVSpeed = abs(maxVSpeed);
+}
+
+void ProblemRocket::setMaxAngle(float maxAngle)
+{
+	this->problemMaxAngle = abs(maxAngle);
 }
 
 // Sets the power influence
@@ -567,4 +755,82 @@ void ProblemRocket::setDesiredPower(int engineNumber, float power)
 void ProblemRocket::setDesiredAngle(float angle)
 {
 	this->desiredRotation = angle;
+}
+
+void ProblemRocket::addedAgent(int agentType)
+{
+	this->agentCount.at(agentType) += 1;
+	switch (agentType)
+	{
+	case 0 :
+		this->numberOfReceptors++;
+		break;
+	case 1:
+	case 2:
+	case 3:
+	case 4:
+	case 5:
+		this->numberOfEmitters++;
+		break;
+	}
+}
+
+void ProblemRocket::removedAgent(int agentType)
+{
+	this->agentCount.at(agentType) -= 1;
+	if (this->agentCount.at(agentType) < 0)
+		this->agentCount.at(agentType) = 0;
+	
+	switch (agentType)
+	{
+	case 0:
+		this->numberOfReceptors--;
+		break;
+	case 1:
+	case 2:
+	case 3:
+	case 4:
+	case 5:
+		this->numberOfEmitters--;
+		break;
+	}
+
+	if (this->numberOfEmitters < 0)
+		this->numberOfEmitters = 0;
+	if (this->numberOfReceptors < 0)
+		this->numberOfReceptors = 0;
+}
+
+map<int, int>& ProblemRocket::getAgentCount()
+{
+	return this->agentCount;
+}
+
+bool ProblemRocket::checkCorrectLanding(float x, float y, float hSpeed, float vSpeed, float angle)
+{
+	// Checking if this is in the landing zone
+	float distanceToCenterFlat = this->getRocketDistanceToLandingZoneCenter();	// Rocket distance to center of the landing zone
+	float lzSize = this->getLandingZoneSize();	// Landing zone size (width)
+	if (abs(distanceToCenterFlat) < lzSize/2)
+	{
+		// Checking if angle is correct
+		if (abs(angle) <= this->getMaxAngle())	// Don't forget to check for the angle offset
+		{
+			// Correct hSpeed
+			if (abs(hSpeed) <= this->getMaxHSpeed())
+			{
+				//Correct vSpeed
+				if (abs(vSpeed) <= this->getMaxVSpeed())
+				{
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+float ProblemRocket::getPowerOffset()
+{
+	return this->problemPowerOffset;
 }

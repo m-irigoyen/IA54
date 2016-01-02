@@ -1,6 +1,6 @@
 #include "Problems/Rocket/OneEngine/AgentRocket_OneEngine_Receptor.h"
 
-AgentRocket_OneEngine_Receptor::AgentRocket_OneEngine_Receptor(ProblemRocket_OneEngine * problem, BodyReceptor_CompositionFull* body, AGENTTYPE_ROCKET_ONE type) : AgentReceptor(problem,body), castedProblem(problem), agentType(type)
+AgentRocket_OneEngine_Receptor::AgentRocket_OneEngine_Receptor(ProblemRocket_OneEngine * problem, BodyReceptor_CompositionFull* body, AGENTTYPE_ROCKET_ONE type) : AgentReceptor(problem,body, (int)type), castedProblem(problem)
 {
 }
 
@@ -10,7 +10,7 @@ void AgentRocket_OneEngine_Receptor::live()
 		return;
 
 	// Getting perception from body
-	WAVE perception = this->castedBody->getPerception();
+	PerceptionWave::WAVE perception = this->castedBody->getPerception();
 
 	// Checking error in parameters
 	if (perception.amplitude < this->castedProblem->getWaveAmplitudeOffset())
@@ -41,8 +41,8 @@ void AgentRocket_OneEngine_Receptor::live()
 		this->castedProblem->getWaveAmplitudeOffset(),
 		this->castedProblem->getWaveAmplitudeRange(),
 		0,
-		PROBLEMROCKET_ONE_PROBLEM_MAXANGLE * 2);
-	angle -= PROBLEMROCKET_ONE_PROBLEM_MAXANGLE;
+		PROBLEMROCKET_ROCKET_ANGLE_TILT * 2);
+	angle -= PROBLEMROCKET_ROCKET_ANGLE_TILT;
 
 	// Getting frequency back
 	//perception.frequency -= this->castedProblem->getWaveFrequencyOffset();
@@ -68,9 +68,3 @@ bool AgentRocket_OneEngine_Receptor::isProblemLinked()
 {
 	return this->castedProblem != NULL;
 }
-
-void AgentRocket_OneEngine_Receptor::setAgentType(AGENTTYPE_ROCKET_ONE type)
-{
-	this->agentType = type;
-}
-

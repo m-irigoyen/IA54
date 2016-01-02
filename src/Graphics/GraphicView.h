@@ -43,6 +43,8 @@ private:
 	bool displayReceptors;
 	bool displayEmitters;
 
+	bool brainActive;
+
 	// Used to compute the alpha component of waves
 	float maxAmplitude;
 
@@ -55,6 +57,9 @@ private:
 	//GUI
 	sf::Text text;
 	sf::Text placingAgentText;	// Data given by the simulator
+
+	//Color code for the emitters
+	sf::Color getColorCode(int emitterType);
 
 public:
 	GraphicView();
@@ -81,7 +86,9 @@ public:
 	void toggleDisplayProblem();
 
 	// GUI
-	void setCurrentlyPlacingAgent(std::string text);
+	void setCurrentlyPlacingAgent(std::string text, int colorCode);
+	void resetText();
+	void setBrainActive(bool active);
 
 	~GraphicView(void);
 };
