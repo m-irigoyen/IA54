@@ -520,6 +520,45 @@ void ProblemRocket_Terrain::getHighestPointBeforeLandingZone(float x, float y, f
 	}
 }
 
+void ProblemRocket_Terrain::getClosestPointFromRocket(float rocketX, float rocketY, float & pointX, float & pointY, float & distance)
+{
+	//TODO if : la fonction. Du coup la fusée est en rocketX/rocketY. Tu me retourne : 
+	/* - pointX : le x du point
+	 * - pointY : le y du point
+	 * - distance : la distance entre les points (rocketX,rocketY) et (pointX, pointY)
+	*/
+	vector <pair<pair<int,int>,pair<int,int>>> segments;
+
+	for (deque <pair<int, int>>::iterator it = this->terrain.begin(); it != terrain.end(); ++it)
+	{
+		if (it + 1 != terrain.end()) {
+			segments.push_back(pair<pair<int, int>, pair<int, int>>(pair<int, int>(it->first, it->second), pair<int, int>((it + 1)->first, (it + 1)->second)));
+		}
+
+	}
+	float d = 100000000;
+	float tempD;
+
+	pair<float, float> Point;
+	pair<float, float> tempP;
+	for (pair<pair<int, int>, pair<int, int>> s : segments) {
+		tempP = this->projection(s.first, s.second, pair<float, float>(rocketX, rocketY));
+		if (tempP.first < s.first.first)
+			tempP = s.first;
+		if (tempP.first > s.second.first)
+			tempP = s.second;
+		tempD = sqrt((tempP.first - rocketX)*(tempP.first - rocketX) + (tempP.second - rocketY)*(tempP.second - rocketY));
+		if (tempD < d) {
+			d = tempD;
+			Point = tempP;
+		}
+
+	}
+	pointX = Point.first;
+	pointY = Point.second;
+	distance = d;
+}
+
 void ProblemRocket_Terrain::setRocketStart(float rocketX, float rocketY)
 {
 	this->rocketStartX = rocketX;
@@ -602,4 +641,21 @@ void ProblemRocket_Terrain::getWind(float & windHorizontal, float & windVertical
 {
 	windHorizontal = this->windHorizontal;
 	windVertical = this->windVertical;
+}
+
+pair<float, float> ProblemRocket_Terrain::projection(pair<int, int> A, pair<int, int> B, pair<float, float> P) {
+
+	float xA = A.first;
+	float yA = A.second;
+	float xB = B.first;
+	float yB = B.second;
+
+	float a = (yB - yA) / (xB - xA);
+	float b = yA - a * xA;
+	pair<float,float> p;
+
+	p.first = (P.first - a*b + a * P.second) / (1.0f + a * a);
+	p.second = b + a * (P.first - a*b + a * P.second) / (1.0f + a * a);
+	
+	return p;
 }

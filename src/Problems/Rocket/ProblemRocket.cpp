@@ -112,11 +112,9 @@ bool ProblemRocket::handleEvent(sf::RenderWindow * window, sf::Event event)
 		case sf::Event::KeyPressed:
 			switch (event.key.code)
 			{
-			case sf::Keyboard::F1:
-				this->initUserControl(true);
-				return true;
-			case sf::Keyboard::F2:
-				this->initUserControl(false);
+			case sf::Keyboard::U:
+				toggle(this->userControlled);
+				this->initUserControl(this->userControlled);
 				return true;
 			case sf::Keyboard::A:
 				this->useRelativeChange = toggle(this->useRelativeChange);
@@ -145,13 +143,9 @@ bool ProblemRocket::handleEvent(sf::RenderWindow * window, sf::Event event)
 			case sf::Keyboard::T:
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)
 					|| sf::Keyboard::isKeyPressed(sf::Keyboard::RShift))
-				{
 					this->trajectories.clearLast();
-				}
 				else
-				{
 					this->trajectories.clear();
-				}
 				return true;
 
 				//Rocket one shortcuts
@@ -197,7 +191,6 @@ bool ProblemRocket::handleEvent(sf::RenderWindow * window, sf::Event event)
 				return true;
 			}
 			break;
-		
 		}
 		return false;
 	}
@@ -333,6 +326,7 @@ ProblemRocket::ProblemRocket(float waveAmplLossPerSec, bool useAttenuation) : Pr
 	this->agentCount.insert(pair<int, int>(3, 0));
 	this->agentCount.insert(pair<int, int>(4, 0));
 	this->agentCount.insert(pair<int, int>(5, 0));
+	this->agentCount.insert(pair<int, int>(6, 0));
 
 	// Setting base variables
 	this->rocket_x = 0;
@@ -770,6 +764,7 @@ void ProblemRocket::addedAgent(int agentType)
 	case 3:
 	case 4:
 	case 5:
+	case 6:
 		this->numberOfEmitters++;
 		break;
 	}

@@ -14,7 +14,7 @@ void AgentRocket_OneEngine_Emitter::live()
 	}
 
 	// Getting problem data
-	float x, y, power, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat, lzSize, worldWidth, worldHeight;
+	float x, y, power, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat, lzSize, worldWidth, worldHeight, closestTerrainX, closestTerrainY, closestTerrainDistance;
 
 	this->castedProblem->getTerrain()->getTerrainDimensions(worldWidth, worldHeight);
 	this->castedProblem->getRocketPosition(x, y);
@@ -25,6 +25,12 @@ void AgentRocket_OneEngine_Emitter::live()
 	distanceToGround = this->castedProblem->getRocketDistanceToGround();
 	distanceToCenterFlat = this->castedProblem->getRocketDistanceToLandingZoneCenter();
 	lzSize = this->castedProblem->getLandingZoneSize();
+
+	closestTerrainX = 0;
+	closestTerrainY = 0;
+	closestTerrainDistance = 10000;
+	this->castedProblem->getTerrain()->getClosestPointFromRocket(x, y, closestTerrainX, closestTerrainY, closestTerrainDistance);
+
 
 	// Variables
 	float desiredAngle = 0;
@@ -63,12 +69,28 @@ void AgentRocket_OneEngine_Emitter::live()
 					desiredAngle *= -1;
 		}
 	}
+	else if ((AGENTTYPE_ROCKET_ONE)this->getType() == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_AVOIDER)
+	{
+		desiredPower = PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset();
+		if (abs(closestTerrainDistance) < 100.0f)
+		{
+			Vector direction = Vector(x - closestTerrainX, y - closestTerrainY);
+ 			desiredAngle = direction.getAngle() - 90;
+			if (desiredAngle < -45)
+				desiredAngle = -45;
+			if (desiredAngle > 45)
+				desiredAngle = 45;
+		}
+		else
+			ceaseTransmission = true;
+	}
 	else if ((AGENTTYPE_ROCKET_ONE)this->getType() == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_ALTITUDE)
 	{
 		// ALTITUDE STABILIZER
 		if (abs(distanceToCenterFlat) < lzSize /2)
 		{
 			// We're in the landing zone
+			
 			desiredAngle = 0;
 
 			desiredPower = convertToRange(abs(vSpeed),
@@ -182,8 +204,6 @@ void AgentRocket_OneEngine_Emitter::live()
 	}
 	else
 	{
-		// 2 cases :
-
 		// Sending
 		// If we're using relative change, convert the desired angle to a relative angle
 		if (this->castedProblem->getUseRelativeChange())

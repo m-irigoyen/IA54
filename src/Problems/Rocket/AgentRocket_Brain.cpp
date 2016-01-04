@@ -8,6 +8,7 @@ AgentRocket_Brain::AgentRocket_Brain(ProblemRocket* problem, bool active) : Agen
 	this->desiredState.insert(pair<int, int>(3, 0));
 	this->desiredState.insert(pair<int, int>(4, 0));
 	this->desiredState.insert(pair<int, int>(5, 0));
+	this->desiredState.insert(pair<int, int>(6, 0));
 }
 
 void AgentRocket_Brain::clearDesiredState()

@@ -23,12 +23,14 @@ sf::Color GraphicView::getColorCode(int emitterType)
 		return sf::Color::Magenta;
 	case 5:
 		return sf::Color::Yellow;
+	case 6:
+		return sf::Color(50, 50, 50);
 	default : 
 		return sf::Color::Red;
 	}
 }
 
-GraphicView::GraphicView() : displayEmitters(true), displayReceptors(true), displayWaves(true), maxAmplitude(100), displaySimulator(true), displayProblem(true), problem(NULL), displayWaveOpacity(true), problemWindow(NULL), window(NULL), brainActive(false)
+GraphicView::GraphicView() : displayEmitters(true), displayReceptors(true), displayWaves(true), maxAmplitude(100), displaySimulator(true), displayProblem(true), problem(NULL), displayWaveOpacity(true), problemWindow(NULL), window(NULL), helpWindow(NULL), brainActive(false)
 {
 }
 
@@ -45,6 +47,18 @@ void GraphicView::Init(int width, int height, int problemWidth, int problemHeigh
 		this->window = new sf::RenderWindow(sf::VideoMode(width, height), "IA54 - WaveAgents simulator");
 		this->window->setVerticalSyncEnabled(false);
 		this->window->setPosition(sf::Vector2i(0, 0));
+	}
+
+	if (this->helpWindow != NULL)
+	{
+		this->helpWindow->setSize(sf::Vector2u(HELPWINDOW_WIDTH, HELPWINDOW_HEIGHT));
+		this->helpWindow->setVerticalSyncEnabled(false);
+	}
+	else
+	{
+		this->helpWindow = new sf::RenderWindow(sf::VideoMode(HELPWINDOW_WIDTH, HELPWINDOW_HEIGHT), "IA54 - helper window");
+		this->helpWindow->setVerticalSyncEnabled(false);
+		this->helpWindow->setPosition(sf::Vector2i(0, 400));
 	}
 
 	if (!this->fonts.empty())
@@ -89,6 +103,10 @@ void GraphicView::Init(int width, int height, int problemWidth, int problemHeigh
 
 void GraphicView::Draw()
 {
+	if (this->helpWindow != NULL) {
+		this->drawHelpWindow();
+	}
+		
 	if (this->window != NULL)
 	{
 		window->clear(sf::Color::Black);
@@ -212,6 +230,111 @@ void GraphicView::clean()
 	delete (this->window);
 	this->problemWindow->clear();
 	delete (this->problemWindow);
+	this->helpWindow->clear();
+	delete (this->helpWindow);
+}
+
+void GraphicView::drawHelpWindow()
+{
+	float marginLeft = 20.0f, marginTop = 20.0f, verticalSpace = this->fonts.at(0).getLineSpacing(this->text.getCharacterSize())/3, letterSize = this->text.getCharacterSize();
+
+	this->helpWindow->clear(sf::Color::Black);
+	this->text.setColor(sf::Color::White);
+
+	if (this->window->hasFocus())
+	{
+		this->text.setPosition(marginLeft,marginTop );
+		this->text.setString("+- : Change wave speed");
+		this->helpWindow->draw(this->text);
+
+
+		this->text.setPosition(marginLeft, marginTop + verticalSpace + letterSize);
+		this->text.setString("F1 : Launch level editor");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 2*verticalSpace + 2*letterSize);
+		this->text.setString("F2 : Launch rocket one engine");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 3 * verticalSpace + 3 * letterSize);
+		this->text.setString("F3 : Launch rocket two engines");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 4 * verticalSpace + 4 * letterSize);
+		this->text.setString("0 -> 5 : place agents");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 5 * verticalSpace + 5 * letterSize);
+		this->text.setString("B : toggle brain active");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 6 * verticalSpace + 6 * letterSize);
+		this->text.setString("L Click : move agents");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 7 * verticalSpace + 7 * letterSize);
+		this->text.setString("R Click : place agent");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 8 * verticalSpace + 8 * letterSize);
+		this->text.setString("Del : delete selected agent");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 9 * verticalSpace + 9 * letterSize);
+		this->text.setString("W : toggle display waves");
+		this->helpWindow->draw(this->text);
+		
+	}
+	else if(this->problemWindow->hasFocus())
+	{
+		this->text.setPosition(marginLeft, marginTop);
+		this->text.setString("F4 -> F11 : load preset level");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + verticalSpace + letterSize);
+		this->text.setString("+- : Change speed");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 2 * verticalSpace + 2 * letterSize);
+		this->text.setString("P : Pause problem");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 3 * verticalSpace + 3 * letterSize);
+		this->text.setString("R : reset rocket position");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 4 * verticalSpace + 4 * letterSize);
+		this->text.setString("Ctrl + LClick : set rocket position");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 5 * verticalSpace + 5 * letterSize);
+		this->text.setString("TAB : toggle show hud");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 6 * verticalSpace + 6 * letterSize);
+		this->text.setString("U : toggle user control (arrows)");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 7 * verticalSpace + 7 * letterSize);
+		this->text.setString("T : clear trajectories");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 8 * verticalSpace + 8 * letterSize);
+		this->text.setString("A : toggle relative/fixed angle");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 9 * verticalSpace + 9 * letterSize);
+		this->text.setString("L : Load specific level (console)");
+		this->helpWindow->draw(this->text);
+	}
+	else
+	{
+		this->text.setPosition(marginLeft, marginTop);
+		this->text.setString("Ceci est la fenêtre d'aide.");
+		this->helpWindow->draw(this->text);
+	}
+
+	this->helpWindow->display();
 }
 
 void GraphicView::setDisplayWaves(bool displayWaves)

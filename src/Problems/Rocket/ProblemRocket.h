@@ -3,7 +3,7 @@
 
 #include <string>
 #include <map>
-
+#include "World/Vector.h"
 #include "Problems/Problem.h"
 #include "Problems/Rocket/ProblemRocket_Terrain.h"
 #include "Problems/Rocket/ProblemRocket_Trajectory.h"

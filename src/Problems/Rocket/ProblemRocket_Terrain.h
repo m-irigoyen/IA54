@@ -52,6 +52,8 @@ protected:
 	// Computes the coordinates of the landing zone. If several are found, only the leftmost one is remembered
 	void computeLandingZone();
 
+	pair<float, float> projection(pair<int, int> A, pair<int, int> B, pair<float, float> P);
+
 public:
 	// Constructors
 	ProblemRocket_Terrain(int width, int height, int maxTerrainHeight, int minTerrainHeight, float rocketStartX, float rocketStartY, float rocketStartHSPeed, float rocketStartVSpeed, float gravity = 4);
@@ -91,6 +93,7 @@ public:
 	void getWind(float& windHorizontal, float& windVertical);
 	float getGravity();
 	void getHighestPointBeforeLandingZone(float x, float y, float& highestPointX, float& highestPointY);
+	void getClosestPointFromRocket(float rocketX, float rocketY, float& pointX, float& pointY, float& distance);
 
 	//setters
 	void setRocketStart(float rocketX, float rocketY);
