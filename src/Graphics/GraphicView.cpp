@@ -233,7 +233,8 @@ void GraphicView::setHelpWindow(HELP_TYPE type)
 
 void GraphicView::drawHelpWindow()
 {
-	if (this->helpWindowIsSimulator == HELP_TYPE::SIMULATOR)
+	this->helpWindow->clear();
+	if (this->window->hasFocus())
 	{
 		//TODO : if : ces 3 lignes là t'affichent sur la bonne fenêtre. tu les copie colles pour chaque affichage en changeant la position et le texte
 		this->text.setPosition(0.0f, 0.0f);
@@ -253,7 +254,7 @@ void GraphicView::drawHelpWindow()
 		W : toggle display waves
 		*/
 	}
-	else if(this->helpWindowIsSimulator == HELP_TYPE::PROBLEM)
+	else if(this->problemWindow->hasFocus())
 	{
 		/* Liste des trucs à afficher :
 		F4 -> F11 : load preset level
@@ -267,6 +268,10 @@ void GraphicView::drawHelpWindow()
 		A : toggle relative/fixed angle
 		L : Load specific level (console)
 		*/
+	}
+	else
+	{
+		//TODO: afficher "Ceci est la fenêtre d'aide."
 	}
 }
 

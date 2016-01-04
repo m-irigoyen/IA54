@@ -7,7 +7,6 @@ void Simulator::userAddAgent(int x, int y, int agentType)
 	switch (this->problemType)
 	{
 	case PROBLEM_TYPE::ROCKET_ONE :
-
 		switch ((AGENTTYPE_ROCKET_ONE)agentType)
 		{
 		case AGENTTYPE_ROCKET_ONE::ROCKET_ONE_RECEPTOR :
