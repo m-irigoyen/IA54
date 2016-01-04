@@ -214,6 +214,50 @@ void GraphicView::clean()
 	delete (this->problemWindow);
 }
 
+void GraphicView::setHelpWindow(bool simulator)
+{
+	this->helpWindowIsSimulator = simulator;
+}
+
+void GraphicView::drawHelpWindow()
+{
+	if (this->helpWindowIsSimulator)
+	{
+		//TODO : if : ces 3 lignes là t'affichent sur la bonne fenêtre. tu les copie colles pour chaque affichage en changeant la position et le texte
+		this->text.setPosition(0.0f, 0.0f);
+		this->text.setString("quelquechose");
+		this->helpWindow->draw(this->text);
+
+		/* Liste des trucs à afficher :
+		+- : Change wave speed
+		F1 : Launch level editor
+		F2 : Launch rocket one engine
+		F3 : Launch rocket two engines
+		0 -> 5 : place agents
+		B : toggle brain active
+		L Click : move agents
+		R Click : place agent
+		Del : delete selected agent
+		W : toggle display waves
+		*/
+	}
+	else
+	{
+		/* Liste des trucs à afficher :
+		F4 -> F11 : load preset level
+		+- : Change speed
+		P : Pause problem
+		R : reset rocket position
+		Ctrl + LClick : set rocket position
+		TAB : toggle show hud
+		U : toggle user control (arrows)
+		T : clear trajectories
+		A : toggle relative/fixed angle
+		L : Load specific level (console)
+		*/
+	}
+}
+
 void GraphicView::setDisplayWaves(bool displayWaves)
 {
 	this->displayWaves = displayWaves;

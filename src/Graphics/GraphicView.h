@@ -29,6 +29,8 @@ class GraphicView
 private:
 	sf::RenderWindow* window;			// The window
 	sf::RenderWindow* problemWindow;	// The problem's window
+	sf::RenderWindow* helpWindow;		// Helper window
+	bool helpWindowIsSimulator;
 	//TODO: intercept close events from the problem window
 
 	World* world;						// Pointer to the world
@@ -64,9 +66,17 @@ private:
 public:
 	GraphicView();
 
+	enum HELP_TYPE
+	{
+
+	};
+
 	void Init(int width, int height, int problemWidth, int problemHeight, Problem* problem);		// Init the window
 	void Draw();							// Draw stuff
 	void clean();	// Cleans the graphics stuff
+
+	void setHelpWindow(bool simulator);
+	void drawHelpWindow();
 
 	// Setters
 	void setDisplayWaves(bool displayWaves);
