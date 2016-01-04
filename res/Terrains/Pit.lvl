@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<terrain width="2050" height="2050" flat1="911" flat2="1099" maxHeight="-842150451" minHeight="-842150451" windH="0" windV="0" rocketX="1711.67" rocketY="1542.84" rocketH="0" rocketV="0" rocketA="90">
+	<point x="0" y="1315" />
+	<point x="46" y="1297" />
+	<point x="230" y="1260" />
+	<point x="292" y="1345" />
+	<point x="320" y="1265" />
+	<point x="470" y="1260" />
+	<point x="557" y="1276" />
+	<point x="651" y="1375" />
+	<point x="810" y="1660" />
+	<point x="831" y="1244" />
+	<point x="837" y="1212" />
+	<point x="871" y="190" />
+	<point x="887" y="163" />
+	<point x="911" y="176" />
+	<point x="1099" y="176" />
+	<point x="1111" y="163" />
+	<point x="1153" y="224" />
+	<point x="1187" y="1369" />
+	<point x="1233" y="1665" />
+	<point x="1235" y="1356" />
+	<point x="1281" y="1241" />
+	<point x="1393" y="1311" />
+	<point x="1568" y="1156" />
+	<point x="1892" y="1140" />
+	<point x="2050" y="1318" />
+</terrain>
