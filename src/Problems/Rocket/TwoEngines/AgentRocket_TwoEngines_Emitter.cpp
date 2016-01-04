@@ -14,7 +14,7 @@ void AgentRocket_TwoEngines_Emitter::live()
 	}
 
 	// Getting problem data
-	float x, y, lPower, rPower, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat, lzSize, worldWidth, worldHeight;
+	float x, y, lPower, rPower, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat, lzSize, worldWidth, worldHeight, closestTerrainX, closestTerrainY, closestTerrainDistance;
 
 	this->castedProblem->getTerrain()->getTerrainDimensions(worldWidth, worldHeight);
 	this->castedProblem->getRocketPosition(x, y);		// Rocket position
@@ -28,6 +28,7 @@ void AgentRocket_TwoEngines_Emitter::live()
 	lzSize = this->castedProblem->getLandingZoneSize();	// Landing zone size (width)
 	float landingMaxHSPeed, landingMaxVSpeed, landingMaxAngle; // Correct landing specs
 	this->castedProblem->getSafeLandingSpecs(landingMaxHSPeed, landingMaxVSpeed, landingMaxAngle);
+	this->castedProblem->getTerrain()->getClosestPointFromRocket(x, y, closestTerrainX, closestTerrainY, closestTerrainDistance);
 
 	// Variables
 	float desiredLPower = 0;
@@ -125,6 +126,33 @@ void AgentRocket_TwoEngines_Emitter::live()
 					PROBLEMROCKET_ROCKET_POWER_BASE);
 
 			desiredRPower = desiredLPower;
+		}
+		else
+			ceaseTransmission = true;
+	}
+	else if ((AGENTTYPE_ROCKET_TWO)this->getType() == AGENTTYPE_ROCKET_TWO::ROCKET_TWO_AVOIDER)
+	{
+		desiredLPower = PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset();
+		desiredRPower = desiredLPower;
+
+		if (abs(closestTerrainDistance) < 100.0f)
+		{
+			float angleVar = convertToRange(100 - abs(x - closestTerrainX),
+				0,
+				100,
+				0,
+				this->castedProblem->getPowerMax()/2);
+
+			if (x - closestTerrainX < 0.0f)
+			{
+				desiredLPower -= angleVar;
+				desiredRPower += angleVar;
+			}
+			else
+			{
+				desiredLPower += angleVar;
+				desiredRPower -= angleVar;
+			}
 		}
 		else
 			ceaseTransmission = true;

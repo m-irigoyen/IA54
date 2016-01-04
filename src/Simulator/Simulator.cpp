@@ -26,6 +26,11 @@ void Simulator::userAddAgent(int x, int y, int agentType)
 			((ProblemRocket*)this->problem)->addedAgent(agentType);
 			//cout << "Placing RocketOne altitude agent" << endl;
 			break;
+		case AGENTTYPE_ROCKET_ONE::ROCKET_ONE_AVOIDER:
+			newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
+			((AgentRocket_OneEngine_Emitter*)newAgent)->setType((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_AVOIDER);
+			((ProblemRocket*)this->problem)->addedAgent(agentType);
+			break;
 		case AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_HSPEED:
 			newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
 			((AgentRocket_OneEngine_Emitter*)newAgent)->setType((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_HSPEED);
@@ -60,6 +65,12 @@ void Simulator::userAddAgent(int x, int y, int agentType)
 		case AGENTTYPE_ROCKET_TWO::ROCKET_TWO_ALTITUDE:
 			newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
 			((AgentRocket_TwoEngines_Emitter*)newAgent)->setType((int)AGENTTYPE_ROCKET_TWO::ROCKET_TWO_ALTITUDE);
+			((ProblemRocket*)this->problem)->addedAgent(agentType);
+			//cout << "Placing altitude agent" << endl;
+			break;
+		case AGENTTYPE_ROCKET_TWO::ROCKET_TWO_AVOIDER:
+			newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
+			((AgentRocket_TwoEngines_Emitter*)newAgent)->setType((int)AGENTTYPE_ROCKET_TWO::ROCKET_TWO_AVOIDER);
 			((ProblemRocket*)this->problem)->addedAgent(agentType);
 			//cout << "Placing altitude agent" << endl;
 			break;
@@ -120,6 +131,9 @@ void Simulator::updateGUIAgentPlacingText()
 		case AGENTTYPE_ROCKET_ONE::ROCKET_ONE_ALTITUDE:
 			this->SFMLView.setCurrentlyPlacingAgent("Emitter altitude", currentAgentType);
 			break;
+		case AGENTTYPE_ROCKET_ONE::ROCKET_ONE_AVOIDER:
+			this->SFMLView.setCurrentlyPlacingAgent("Emitter avoider", currentAgentType);
+			break;
 		case AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_HSPEED:
 			this->SFMLView.setCurrentlyPlacingAgent("Emitter stabilizer_hSpeed", currentAgentType);
 			break;
@@ -142,6 +156,9 @@ void Simulator::updateGUIAgentPlacingText()
 			break;
 		case AGENTTYPE_ROCKET_TWO::ROCKET_TWO_ALTITUDE:
 			this->SFMLView.setCurrentlyPlacingAgent("Emitter descent", currentAgentType);
+			break;
+		case AGENTTYPE_ROCKET_TWO::ROCKET_TWO_AVOIDER:
+			this->SFMLView.setCurrentlyPlacingAgent("Emitter avoider", currentAgentType);
 			break;
 		case AGENTTYPE_ROCKET_TWO::ROCKET_TWO_STABILIZER_ANGLE:
 			this->SFMLView.setCurrentlyPlacingAgent("Emitter stabilizer_angle", currentAgentType);

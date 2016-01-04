@@ -14,7 +14,7 @@ void AgentRocket_OneEngine_Emitter::live()
 	}
 
 	// Getting problem data
-	float x, y, power, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat, lzSize, worldWidth, worldHeight;
+	float x, y, power, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat, lzSize, worldWidth, worldHeight, closestTerrainX, closestTerrainY, closestTerrainDistance;
 
 	this->castedProblem->getTerrain()->getTerrainDimensions(worldWidth, worldHeight);
 	this->castedProblem->getRocketPosition(x, y);
@@ -25,6 +25,7 @@ void AgentRocket_OneEngine_Emitter::live()
 	distanceToGround = this->castedProblem->getRocketDistanceToGround();
 	distanceToCenterFlat = this->castedProblem->getRocketDistanceToLandingZoneCenter();
 	lzSize = this->castedProblem->getLandingZoneSize();
+	this->castedProblem->getTerrain()->getClosestPointFromRocket(x, y, closestTerrainX, closestTerrainY, closestTerrainDistance);
 
 	// Variables
 	float desiredAngle = 0;
@@ -62,6 +63,24 @@ void AgentRocket_OneEngine_Emitter::live()
 				if (distanceToCenterFlat > 0)
 					desiredAngle *= -1;
 		}
+	}
+	else if ((AGENTTYPE_ROCKET_ONE)this->getType() == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_AVOIDER)
+	{
+		desiredPower = PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset();
+
+		if (abs(closestTerrainDistance) < 100.0f)
+		{
+			desiredAngle = convertToRange(100 - abs(x - closestTerrainX),
+				0,
+				100,
+				0,
+				PROBLEMROCKET_CRUISE_MAXANGLE * PROBLEMROCKET_DIRECTION_LZAPPROACH);
+			
+			if (closestTerrainDistance > 0)
+				desiredAngle *= -1;
+		}
+		else
+			ceaseTransmission = true;
 	}
 	else if ((AGENTTYPE_ROCKET_ONE)this->getType() == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_ALTITUDE)
 	{
@@ -182,8 +201,6 @@ void AgentRocket_OneEngine_Emitter::live()
 	}
 	else
 	{
-		// 2 cases :
-
 		// Sending
 		// If we're using relative change, convert the desired angle to a relative angle
 		if (this->castedProblem->getUseRelativeChange())
