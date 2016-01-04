@@ -81,7 +81,7 @@ void AgentRocket_OneEngine_Emitter::live()
 				0,
 				PROBLEMROCKET_CRUISE_MAXANGLE * PROBLEMROCKET_DIRECTION_LZAPPROACH);
 			
-			if (closestTerrainDistance > 0)
+			if (x - closestTerrainX > 0)
 				desiredAngle *= -1;
 		}
 		else
