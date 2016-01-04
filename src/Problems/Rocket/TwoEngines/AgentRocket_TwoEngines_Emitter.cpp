@@ -144,13 +144,13 @@ void AgentRocket_TwoEngines_Emitter::live()
 			if (desiredAngle > 45)
 				desiredAngle = 45;
 
-			float angleVar = convertToRange(abs(angleVar),
+			float angleVar = convertToRange(abs(desiredAngle),
 				0.0f,
 				PROBLEMROCKET_ROCKET_ANGLE_TILT,
 				0.0f,
 				this->castedProblem->getPowerMax() / 2);
 
-			if (angle < 0.0f)
+			if (desiredAngle > 0.0f)
 			{
 				desiredLPower -= angleVar;
 				desiredRPower += angleVar;

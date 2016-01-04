@@ -75,7 +75,7 @@ void AgentRocket_OneEngine_Emitter::live()
 		if (abs(closestTerrainDistance) < 100.0f)
 		{
 			Vector direction = Vector(x - closestTerrainX, y - closestTerrainY);
-			desiredAngle = direction.getAngle() - 90;
+ 			desiredAngle = direction.getAngle() - 90;
 			if (desiredAngle < -45)
 				desiredAngle = -45;
 			if (desiredAngle > 45)
