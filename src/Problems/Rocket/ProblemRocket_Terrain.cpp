@@ -520,6 +520,15 @@ void ProblemRocket_Terrain::getHighestPointBeforeLandingZone(float x, float y, f
 	}
 }
 
+void ProblemRocket_Terrain::getClosestPointFromRocket(float rocketX, float rocketY, float & pointX, float & pointY, float & distance)
+{
+	//TODO if : la fonction. Du coup la fusée est en rocketX/rocketY. Tu me retourne : 
+	/* - pointX : le x du point
+	 * - pointY : le y du point
+	 * - distance : la distance entre les points (rocketX,rocketY) et (pointX, pointY)
+	*/
+}
+
 void ProblemRocket_Terrain::setRocketStart(float rocketX, float rocketY)
 {
 	this->rocketStartX = rocketX;

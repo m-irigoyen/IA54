@@ -326,6 +326,7 @@ ProblemRocket::ProblemRocket(float waveAmplLossPerSec, bool useAttenuation) : Pr
 	this->agentCount.insert(pair<int, int>(3, 0));
 	this->agentCount.insert(pair<int, int>(4, 0));
 	this->agentCount.insert(pair<int, int>(5, 0));
+	this->agentCount.insert(pair<int, int>(6, 0));
 
 	// Setting base variables
 	this->rocket_x = 0;
@@ -763,6 +764,7 @@ void ProblemRocket::addedAgent(int agentType)
 	case 3:
 	case 4:
 	case 5:
+	case 6:
 		this->numberOfEmitters++;
 		break;
 	}

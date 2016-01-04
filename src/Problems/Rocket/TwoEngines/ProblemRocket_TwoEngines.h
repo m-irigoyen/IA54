@@ -31,6 +31,7 @@ enum AGENTTYPE_ROCKET_TWO
 	ROCKET_TWO_RECEPTOR = 0,
 	ROCKET_TWO_DIRECTION,		// Guides the rocket towards destination
 	ROCKET_TWO_ALTITUDE,			// Handles the rocket's altitude
+	ROCKET_TWO_AVOIDER,
 	ROCKET_TWO_STABILIZER_HSPEED,	// Stabilizes the rocket's HSpeed
 	ROCKET_TWO_STABILIZER_VSPEED,	// Stabilizes the rocket's VSPeed
 	ROCKET_TWO_STABILIZER_ANGLE	// Stabilizes the rockt's angle

@@ -17,6 +17,7 @@ enum AGENTTYPE_ROCKET_ONE
 	ROCKET_ONE_RECEPTOR,
 	ROCKET_ONE_DIRECTION,	// Direction agents guide the rocket towards the landing zone
 	ROCKET_ONE_ALTITUDE,	// These agents handle the rocket's altitude
+	ROCKET_ONE_AVOIDER,		// These agents try and avoid collision with the terrain
 	ROCKET_ONE_STABILIZER_HSPEED,	// Regulates the rocket's horizontal speed
 	ROCKET_ONE_STABILIZER_VSPEED,	// Regulates the rocket's vertical speed
 };
