@@ -23,6 +23,8 @@ sf::Color GraphicView::getColorCode(int emitterType)
 		return sf::Color::Magenta;
 	case 5:
 		return sf::Color::Yellow;
+	case 6:
+		return sf::Color(50, 50, 50);
 	default : 
 		return sf::Color::Red;
 	}
@@ -232,21 +234,15 @@ void GraphicView::clean()
 	delete (this->helpWindow);
 }
 
-void GraphicView::setHelpWindow(HELP_TYPE type)
-{
-	this->helpWindowIsSimulator = type;
-}
-
 void GraphicView::drawHelpWindow()
 {
-	float marginLeft = 20.0f, marginTop = 20.0f, verticalSpace = this->fonts.at(0).getLineSpacing(this->text.getCharacterSize()), letterSize = this->text.getCharacterSize();
+	float marginLeft = 20.0f, marginTop = 20.0f, verticalSpace = this->fonts.at(0).getLineSpacing(this->text.getCharacterSize())/3, letterSize = this->text.getCharacterSize();
 
 	this->helpWindow->clear(sf::Color::Black);
+	this->text.setColor(sf::Color::White);
 
 	if (this->window->hasFocus())
 	{
-		//TODO : if : ces 3 lignes là t'affichent sur la bonne fenêtre. tu les copie colles pour chaque affichage en changeant la position et le texte
-		
 		this->text.setPosition(marginLeft,marginTop );
 		this->text.setString("+- : Change wave speed");
 		this->helpWindow->draw(this->text);
@@ -294,7 +290,6 @@ void GraphicView::drawHelpWindow()
 		this->text.setPosition(marginLeft, marginTop);
 		this->text.setString("F4 -> F11 : load preset level");
 		this->helpWindow->draw(this->text);
-
 
 		this->text.setPosition(marginLeft, marginTop + verticalSpace + letterSize);
 		this->text.setString("+- : Change speed");
