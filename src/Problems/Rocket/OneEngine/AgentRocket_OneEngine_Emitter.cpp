@@ -74,8 +74,7 @@ void AgentRocket_OneEngine_Emitter::live()
 		desiredPower = PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset();
 		if (abs(closestTerrainDistance) < 100.0f)
 		{
-
-			Vector direction = Vector(x - closestTerrainDistance, y - closestTerrainY);
+			Vector direction = Vector(x - closestTerrainX, y - closestTerrainY);
 			desiredAngle = direction.getAngle() - 90;
 			if (desiredAngle < -45)
 				desiredAngle = -45;

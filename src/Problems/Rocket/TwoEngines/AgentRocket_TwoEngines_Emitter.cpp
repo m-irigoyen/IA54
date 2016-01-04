@@ -137,13 +137,20 @@ void AgentRocket_TwoEngines_Emitter::live()
 
 		if (abs(closestTerrainDistance) < 100.0f)
 		{
-			float angleVar = convertToRange(100 - abs(x - closestTerrainX),
-				0,
-				100,
-				0,
-				this->castedProblem->getPowerMax()/2);
+			Vector direction = Vector(x - closestTerrainX, y - closestTerrainY);
+			float desiredAngle = direction.getAngle() - 90;
+			if (desiredAngle < -45)
+				desiredAngle = -45;
+			if (desiredAngle > 45)
+				desiredAngle = 45;
 
-			if (x - closestTerrainX < 0.0f)
+			float angleVar = convertToRange(abs(angleVar),
+				0.0f,
+				PROBLEMROCKET_ROCKET_ANGLE_TILT,
+				0.0f,
+				this->castedProblem->getPowerMax() / 2);
+
+			if (angle < 0.0f)
 			{
 				desiredLPower -= angleVar;
 				desiredRPower += angleVar;
