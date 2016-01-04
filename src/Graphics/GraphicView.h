@@ -19,6 +19,9 @@
 
 #define WAVE_AMPLITUDE_MAX 100	// Threshold used for making wave transparent with attenuation
 
+#define HELPWINDOW_WIDTH 600
+#define HELPWINDOW_HEIGHT 600
+
 using namespace std;
 
 /*
@@ -26,56 +29,21 @@ using namespace std;
 */
 class GraphicView
 {
-private:
-	sf::RenderWindow* window;			// The window
-	sf::RenderWindow* problemWindow;	// The problem's window
-	sf::RenderWindow* helpWindow;		// Helper window
-	bool helpWindowIsSimulator;
-	//TODO: intercept close events from the problem window
-
-	World* world;						// Pointer to the world
-	Problem* problem;					// Pointer to the problem
-
-	// display flags : if its off dont display the corresponding objects
-	bool displaySimulator;
-	bool displayProblem;
-
-	bool displayWaves;
-	bool displayWaveOpacity;
-	bool displayReceptors;
-	bool displayEmitters;
-
-	bool brainActive;
-
-	// Used to compute the alpha component of waves
-	float maxAmplitude;
-
-	PROBLEM_TYPE problemType;
-
-	void toggle(bool& toToggle);
-
-	vector<sf::Font> fonts;
-
-	//GUI
-	sf::Text text;
-	sf::Text placingAgentText;	// Data given by the simulator
-
-	//Color code for the emitters
-	sf::Color getColorCode(int emitterType);
 
 public:
 	GraphicView();
 
 	enum HELP_TYPE
 	{
-
+		SIMULATOR,
+		PROBLEM
 	};
 
 	void Init(int width, int height, int problemWidth, int problemHeight, Problem* problem);		// Init the window
 	void Draw();							// Draw stuff
 	void clean();	// Cleans the graphics stuff
 
-	void setHelpWindow(bool simulator);
+	void setHelpWindow(HELP_TYPE type);
 	void drawHelpWindow();
 
 	// Setters
@@ -101,6 +69,44 @@ public:
 	void setBrainActive(bool active);
 
 	~GraphicView(void);
+
+private:
+	sf::RenderWindow* window;			// The window
+	sf::RenderWindow* problemWindow;	// The problem's window
+	sf::RenderWindow* helpWindow;		// Helper window
+	HELP_TYPE helpWindowIsSimulator;
+	//TODO: intercept close events from the problem window
+
+	World* world;						// Pointer to the world
+	Problem* problem;					// Pointer to the problem
+
+										// display flags : if its off dont display the corresponding objects
+	bool displaySimulator;
+	bool displayProblem;
+
+	bool displayWaves;
+	bool displayWaveOpacity;
+	bool displayReceptors;
+	bool displayEmitters;
+
+	bool brainActive;
+
+	// Used to compute the alpha component of waves
+	float maxAmplitude;
+
+	PROBLEM_TYPE problemType;
+
+	void toggle(bool& toToggle);
+
+	vector<sf::Font> fonts;
+
+	//GUI
+	sf::Text text;
+	sf::Text placingAgentText;	// Data given by the simulator
+
+								//Color code for the emitters
+	sf::Color getColorCode(int emitterType);
+
 };
 
 #endif

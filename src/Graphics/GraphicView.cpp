@@ -47,6 +47,18 @@ void GraphicView::Init(int width, int height, int problemWidth, int problemHeigh
 		this->window->setPosition(sf::Vector2i(0, 0));
 	}
 
+	if (this->helpWindow != NULL)
+	{
+		this->window->setSize(sf::Vector2u(HELPWINDOW_WIDTH, HELPWINDOW_HEIGHT));
+		this->window->setVerticalSyncEnabled(false);
+	}
+	else
+	{
+		this->window = new sf::RenderWindow(sf::VideoMode(HELPWINDOW_WIDTH, HELPWINDOW_HEIGHT), "IA54 - helper window");
+		this->window->setVerticalSyncEnabled(false);
+		this->window->setPosition(sf::Vector2i(0, 600));
+	}
+
 	if (!this->fonts.empty())
 		this->fonts.clear();
 
@@ -214,14 +226,14 @@ void GraphicView::clean()
 	delete (this->problemWindow);
 }
 
-void GraphicView::setHelpWindow(bool simulator)
+void GraphicView::setHelpWindow(HELP_TYPE type)
 {
-	this->helpWindowIsSimulator = simulator;
+	this->helpWindowIsSimulator = type;
 }
 
 void GraphicView::drawHelpWindow()
 {
-	if (this->helpWindowIsSimulator)
+	if (this->helpWindowIsSimulator == HELP_TYPE::SIMULATOR)
 	{
 		//TODO : if : ces 3 lignes là t'affichent sur la bonne fenêtre. tu les copie colles pour chaque affichage en changeant la position et le texte
 		this->text.setPosition(0.0f, 0.0f);
@@ -241,7 +253,7 @@ void GraphicView::drawHelpWindow()
 		W : toggle display waves
 		*/
 	}
-	else
+	else if(this->helpWindowIsSimulator == HELP_TYPE::PROBLEM)
 	{
 		/* Liste des trucs à afficher :
 		F4 -> F11 : load preset level
