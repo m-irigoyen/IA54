@@ -28,7 +28,7 @@ sf::Color GraphicView::getColorCode(int emitterType)
 	}
 }
 
-GraphicView::GraphicView() : displayEmitters(true), displayReceptors(true), displayWaves(true), maxAmplitude(100), displaySimulator(true), displayProblem(true), problem(NULL), displayWaveOpacity(true), problemWindow(NULL), window(NULL), brainActive(false)
+GraphicView::GraphicView() : displayEmitters(true), displayReceptors(true), displayWaves(true), maxAmplitude(100), displaySimulator(true), displayProblem(true), problem(NULL), displayWaveOpacity(true), problemWindow(NULL), window(NULL), helpWindow(NULL), brainActive(false)
 {
 }
 
@@ -49,14 +49,14 @@ void GraphicView::Init(int width, int height, int problemWidth, int problemHeigh
 
 	if (this->helpWindow != NULL)
 	{
-		this->window->setSize(sf::Vector2u(HELPWINDOW_WIDTH, HELPWINDOW_HEIGHT));
-		this->window->setVerticalSyncEnabled(false);
+		this->helpWindow->setSize(sf::Vector2u(HELPWINDOW_WIDTH, HELPWINDOW_HEIGHT));
+		this->helpWindow->setVerticalSyncEnabled(false);
 	}
 	else
 	{
-		this->window = new sf::RenderWindow(sf::VideoMode(HELPWINDOW_WIDTH, HELPWINDOW_HEIGHT), "IA54 - helper window");
-		this->window->setVerticalSyncEnabled(false);
-		this->window->setPosition(sf::Vector2i(0, 600));
+		this->helpWindow = new sf::RenderWindow(sf::VideoMode(HELPWINDOW_WIDTH, HELPWINDOW_HEIGHT), "IA54 - helper window");
+		this->helpWindow->setVerticalSyncEnabled(false);
+		this->helpWindow->setPosition(sf::Vector2i(0, 600));
 	}
 
 	if (!this->fonts.empty())
@@ -101,6 +101,10 @@ void GraphicView::Init(int width, int height, int problemWidth, int problemHeigh
 
 void GraphicView::Draw()
 {
+	if (this->helpWindow != NULL) {
+		this->drawHelpWindow();
+	}
+		
 	if (this->window != NULL)
 	{
 		window->clear(sf::Color::Black);
@@ -233,45 +237,105 @@ void GraphicView::setHelpWindow(HELP_TYPE type)
 
 void GraphicView::drawHelpWindow()
 {
-	this->helpWindow->clear();
+	float marginLeft = 20.0f, marginTop = 20.0f, verticalSpace = this->fonts.at(0).getLineSpacing(this->text.getCharacterSize()), letterSize = this->text.getCharacterSize();
+
+	helpWindow->clear(sf::Color::Black);
+	cout << "lololololo" << endl;
 	if (this->window->hasFocus())
 	{
 		//TODO : if : ces 3 lignes là t'affichent sur la bonne fenêtre. tu les copie colles pour chaque affichage en changeant la position et le texte
-		this->text.setPosition(0.0f, 0.0f);
-		this->text.setString("quelquechose");
+
+		
+		this->text.setPosition(marginLeft,marginTop );
+		this->text.setString("+- : Change wave speed");
 		this->helpWindow->draw(this->text);
 
-		/* Liste des trucs à afficher :
-		+- : Change wave speed
-		F1 : Launch level editor
-		F2 : Launch rocket one engine
-		F3 : Launch rocket two engines
-		0 -> 5 : place agents
-		B : toggle brain active
-		L Click : move agents
-		R Click : place agent
-		Del : delete selected agent
-		W : toggle display waves
-		*/
+
+		this->text.setPosition(marginLeft, marginTop + verticalSpace + letterSize);
+		this->text.setString("F1 : Launch level editor");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 2*verticalSpace + 2*letterSize);
+		this->text.setString("F2 : Launch rocket one engine");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 3 * verticalSpace + 3 * letterSize);
+		this->text.setString("F3 : Launch rocket two engines");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 4 * verticalSpace + 4 * letterSize);
+		this->text.setString("0 -> 5 : place agents");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 5 * verticalSpace + 5 * letterSize);
+		this->text.setString("B : toggle brain active");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 6 * verticalSpace + 6 * letterSize);
+		this->text.setString("L Click : move agents");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 7 * verticalSpace + 7 * letterSize);
+		this->text.setString("R Click : place agent");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 8 * verticalSpace + 8 * letterSize);
+		this->text.setString("Del : delete selected agent");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 9 * verticalSpace + 9 * letterSize);
+		this->text.setString("W : toggle display waves");
+		this->helpWindow->draw(this->text);
+		
 	}
 	else if(this->problemWindow->hasFocus())
 	{
-		/* Liste des trucs à afficher :
-		F4 -> F11 : load preset level
-		+- : Change speed
-		P : Pause problem
-		R : reset rocket position
-		Ctrl + LClick : set rocket position
-		TAB : toggle show hud
-		U : toggle user control (arrows)
-		T : clear trajectories
-		A : toggle relative/fixed angle
-		L : Load specific level (console)
-		*/
+		this->text.setPosition(marginLeft, marginTop);
+		this->text.setString("F4 -> F11 : load preset level");
+		this->helpWindow->draw(this->text);
+
+
+		this->text.setPosition(marginLeft, marginTop + verticalSpace + letterSize);
+		this->text.setString("+- : Change speed");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 2 * verticalSpace + 2 * letterSize);
+		this->text.setString("P : Pause problem");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 3 * verticalSpace + 3 * letterSize);
+		this->text.setString("R : reset rocket position");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 4 * verticalSpace + 4 * letterSize);
+		this->text.setString("Ctrl + LClick : set rocket position");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 5 * verticalSpace + 5 * letterSize);
+		this->text.setString("TAB : toggle show hud");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 6 * verticalSpace + 6 * letterSize);
+		this->text.setString("U : toggle user control (arrows)");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 7 * verticalSpace + 7 * letterSize);
+		this->text.setString("T : clear trajectories");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 8 * verticalSpace + 8 * letterSize);
+		this->text.setString("A : toggle relative/fixed angle");
+		this->helpWindow->draw(this->text);
+
+		this->text.setPosition(marginLeft, marginTop + 9 * verticalSpace + 9 * letterSize);
+		this->text.setString("L : Load specific level (console)");
+		this->helpWindow->draw(this->text);
 	}
 	else
 	{
-		//TODO: afficher "Ceci est la fenêtre d'aide."
+		this->text.setPosition(marginLeft, marginTop);
+		this->text.setString("Ceci est la fenêtre d'aide.");
+		this->helpWindow->draw(this->text);
 	}
 }
 
