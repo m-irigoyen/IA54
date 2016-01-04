@@ -25,7 +25,12 @@ void AgentRocket_OneEngine_Emitter::live()
 	distanceToGround = this->castedProblem->getRocketDistanceToGround();
 	distanceToCenterFlat = this->castedProblem->getRocketDistanceToLandingZoneCenter();
 	lzSize = this->castedProblem->getLandingZoneSize();
+
+	closestTerrainX = 0;
+	closestTerrainY = 0;
+	closestTerrainDistance = 10000;
 	this->castedProblem->getTerrain()->getClosestPointFromRocket(x, y, closestTerrainX, closestTerrainY, closestTerrainDistance);
+
 
 	// Variables
 	float desiredAngle = 0;
@@ -67,7 +72,7 @@ void AgentRocket_OneEngine_Emitter::live()
 	else if ((AGENTTYPE_ROCKET_ONE)this->getType() == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_AVOIDER)
 	{
 		desiredPower = PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset();
-
+		cout << "Point " << closestTerrainX << "," << closestTerrainY << endl;
 		if (abs(closestTerrainDistance) < 100.0f)
 		{
 			desiredAngle = convertToRange(100 - abs(x - closestTerrainX),
@@ -88,6 +93,7 @@ void AgentRocket_OneEngine_Emitter::live()
 		if (abs(distanceToCenterFlat) < lzSize /2)
 		{
 			// We're in the landing zone
+			
 			desiredAngle = 0;
 
 			desiredPower = convertToRange(abs(vSpeed),
