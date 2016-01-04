@@ -56,7 +56,7 @@ void GraphicView::Init(int width, int height, int problemWidth, int problemHeigh
 	{
 		this->helpWindow = new sf::RenderWindow(sf::VideoMode(HELPWINDOW_WIDTH, HELPWINDOW_HEIGHT), "IA54 - helper window");
 		this->helpWindow->setVerticalSyncEnabled(false);
-		this->helpWindow->setPosition(sf::Vector2i(0, 600));
+		this->helpWindow->setPosition(sf::Vector2i(0, 400));
 	}
 
 	if (!this->fonts.empty())
@@ -228,6 +228,8 @@ void GraphicView::clean()
 	delete (this->window);
 	this->problemWindow->clear();
 	delete (this->problemWindow);
+	this->helpWindow->clear();
+	delete (this->helpWindow);
 }
 
 void GraphicView::setHelpWindow(HELP_TYPE type)
@@ -239,12 +241,11 @@ void GraphicView::drawHelpWindow()
 {
 	float marginLeft = 20.0f, marginTop = 20.0f, verticalSpace = this->fonts.at(0).getLineSpacing(this->text.getCharacterSize()), letterSize = this->text.getCharacterSize();
 
-	helpWindow->clear(sf::Color::Black);
-	cout << "lololololo" << endl;
+	this->helpWindow->clear(sf::Color::Black);
+
 	if (this->window->hasFocus())
 	{
 		//TODO : if : ces 3 lignes là t'affichent sur la bonne fenêtre. tu les copie colles pour chaque affichage en changeant la position et le texte
-
 		
 		this->text.setPosition(marginLeft,marginTop );
 		this->text.setString("+- : Change wave speed");
@@ -337,6 +338,8 @@ void GraphicView::drawHelpWindow()
 		this->text.setString("Ceci est la fenêtre d'aide.");
 		this->helpWindow->draw(this->text);
 	}
+
+	this->helpWindow->display();
 }
 
 void GraphicView::setDisplayWaves(bool displayWaves)
