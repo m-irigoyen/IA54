@@ -72,17 +72,15 @@ void AgentRocket_OneEngine_Emitter::live()
 	else if ((AGENTTYPE_ROCKET_ONE)this->getType() == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_AVOIDER)
 	{
 		desiredPower = PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset();
-		cout << "Point " << closestTerrainX << "," << closestTerrainY << endl;
 		if (abs(closestTerrainDistance) < 100.0f)
 		{
-			desiredAngle = convertToRange(100 - abs(x - closestTerrainX),
-				0,
-				100,
-				0,
-				PROBLEMROCKET_CRUISE_MAXANGLE * PROBLEMROCKET_DIRECTION_LZAPPROACH);
-			
-			if (x - closestTerrainX > 0)
-				desiredAngle *= -1;
+
+			Vector direction = Vector(x - closestTerrainDistance, y - closestTerrainY);
+			desiredAngle = direction.getAngle() - 90;
+			if (desiredAngle < -45)
+				desiredAngle = -45;
+			if (desiredAngle > 45)
+				desiredAngle = 45;
 		}
 		else
 			ceaseTransmission = true;
