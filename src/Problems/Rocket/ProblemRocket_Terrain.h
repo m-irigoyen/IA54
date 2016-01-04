@@ -41,6 +41,7 @@ protected:
 	float rocketStartHSpeed;
 	float rocketStartVSpeed;
 	float rocketAngle;
+	float rocketStartPower;
 
 	// Terrain points
 	deque<pair<int, int>> terrain;	// The terrain. Just specify points, the collision and drawing is automatic
@@ -89,7 +90,8 @@ public:
 	void getTerrainDimensions(float& terrainWidth, float& terrainHeight);
 	int getWidth();
 	int getHeight();
-	void getRocketStart(float& rocketX, float& rocketY, float& rocketHorizontalSpeed, float& rocketVerticalSpeed, float& rocketAngle);
+	void getRocketStart(float& rocketX, float& rocketY, float& rocketHorizontalSpeed, float& rocketVerticalSpeed, float& rocketAngle, float& rocketStartPower);
+	void getRocketStartCoordinates(float& x, float& y);
 	void getWind(float& windHorizontal, float& windVertical);
 	float getGravity();
 	void getHighestPointBeforeLandingZone(float x, float y, float& highestPointX, float& highestPointY);
@@ -101,6 +103,9 @@ public:
 	void setWind(float hWind, float vWind);
 	void setTerrainWidth(int width);
 	void setTerrainHeigh(int height);
+
+	void setRocketStartPower(float startPower);
+	float getRocketStartPower();
 
 	void checkTerrainBounds();
 

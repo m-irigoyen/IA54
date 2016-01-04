@@ -148,7 +148,7 @@ bool ProblemRocket::handleEvent(sf::RenderWindow * window, sf::Event event)
 					this->trajectories.clear();
 				return true;
 
-				//Rocket one shortcuts
+				//Rocket shortcuts
 			case sf::Keyboard::F5:
 				this->loadTerrain("VelocityH");
 				return true;
@@ -156,10 +156,10 @@ bool ProblemRocket::handleEvent(sf::RenderWindow * window, sf::Event event)
 				this->loadTerrain("VelocityV");
 				return true;
 			case sf::Keyboard::F7:
-				this->loadTerrain("Mountain1");
+				this->loadTerrain("Mountain");
 				return true;
 			case sf::Keyboard::F8:
-				this->loadTerrain("Plateau1");
+				this->loadTerrain("Plateau");
 				return true;
 			case sf::Keyboard::F9:
 				this->loadTerrain("DoubleBack");
@@ -385,7 +385,10 @@ void ProblemRocket::clean()
 // Resets rocket to start position
 void ProblemRocket::resetRocket()
 {
-	this->terrain.getRocketStart(this->rocket_x, this->rocket_y, this->rocket_hSpeed, this->rocket_vSpeed, this->rocket_angle);
+	float rocketStartPower;
+	this->terrain.getRocketStart(this->rocket_x, this->rocket_y, this->rocket_hSpeed, this->rocket_vSpeed, this->rocket_angle, rocketStartPower);
+	this->initRocketStartPower(rocketStartPower);
+	
 
 	this->pause = true;
 	this->problemLive = true;

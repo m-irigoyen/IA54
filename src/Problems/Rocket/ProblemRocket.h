@@ -123,6 +123,8 @@ protected:
 	virtual void setHasLanded(bool landed);
 	virtual void setHasGoneMissing(bool goneMissing);
 
+	virtual void initRocketStartPower(float startPower) = 0;
+
 
 	// Agent influence
 	virtual void resolveInfluences() = 0;
@@ -184,6 +186,8 @@ public:
 	void setAngle(float angle);
 	bool getUseRelativeChange();
 	void setUseRelativeChange(bool relativeChange);
+
+	
 	
 	float getDesiredAltitude();
 	void setDesiredAltitude(float altitude);

@@ -42,6 +42,7 @@ protected:
 
 	virtual void resolveRocketPowerChange();	// Based on the desired power and rotation, resolve what's happening
 	virtual void resolveRocketAngleChange();
+	virtual void initRocketStartPower(float startPower);
 
 	// Agent influence
 	void resolveInfluences();

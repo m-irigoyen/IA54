@@ -157,6 +157,7 @@ void ProblemRocket_Terrain::loadTerrain(std::string name)
 		this->rocketStartHSpeed = 0;
 		this->rocketStartVSpeed = 0;
 		this->rocketAngle = 90;
+		this->rocketStartPower = 0;
 	}
 	else if (name.compare("Base") == 0)
 	{
@@ -180,6 +181,7 @@ void ProblemRocket_Terrain::loadTerrain(std::string name)
 		this->rocketStartHSpeed = 0;
 		this->rocketStartVSpeed = 0;
 		this->rocketAngle = 90;
+		this->rocketStartPower = 50;
 	}
 	else
 	{
@@ -218,6 +220,7 @@ void ProblemRocket_Terrain::loadTerrain(std::string name)
 		this->rocketStartHSpeed = terrainNode.attribute("rocketH").as_float();
 		this->rocketStartVSpeed = terrainNode.attribute("rocketV").as_float();
 		this->rocketAngle = terrainNode.attribute("rocketA").as_float();
+		this->rocketStartPower = terrainNode.attribute("rocketStartP").as_float();
 
 		// Loading terrain points
 		pugi::xml_node point = terrainNode.first_child();
@@ -286,6 +289,7 @@ void ProblemRocket_Terrain::saveTerrain(std::string name)
 		terrainNode.append_attribute("rocketH").set_value(this->rocketStartHSpeed);
 		terrainNode.append_attribute("rocketV").set_value(this->rocketStartVSpeed);
 		terrainNode.append_attribute("rocketA").set_value(this->rocketAngle);
+		terrainNode.append_attribute("rocketStartP").set_value(this->rocketStartPower);
 
 		// terrain points
 		for (deque<pair<int, int>>::iterator it = this->terrain.begin(); it != this->terrain.end(); ++it)
@@ -601,6 +605,21 @@ void ProblemRocket_Terrain::setTerrainHeigh(int height)
 	this->checkTerrainBounds();
 }
 
+void ProblemRocket_Terrain::setRocketStartPower(float startPower)
+{
+	if (startPower > 100)
+		startPower = 100;
+	else if (startPower < 0)
+		startPower = 0;
+
+	this->rocketStartPower = startPower;
+}
+
+float ProblemRocket_Terrain::getRocketStartPower()
+{
+	return this->rocketStartPower;
+}
+
 deque<pair<int, int>>* ProblemRocket_Terrain::getTerrain()
 {
 	return &this->terrain;
@@ -628,13 +647,19 @@ int ProblemRocket_Terrain::getHeight()
 	return this->mapHeight;
 }
 
-void ProblemRocket_Terrain::getRocketStart(float & rocketX, float & rocketY, float & rocketHorizontalSpeed, float & rocketVerticalSpeed, float& rocketAngle)
+void ProblemRocket_Terrain::getRocketStart(float & rocketX, float & rocketY, float & rocketHorizontalSpeed, float & rocketVerticalSpeed, float& rocketAngle, float& rocketStartPower)
 {
-	rocketX = this->rocketStartX;
-	rocketY = this->rocketStartY;
+	this->getRocketStartCoordinates(rocketX, rocketY);
 	rocketHorizontalSpeed = this->rocketStartHSpeed;
 	rocketVerticalSpeed = this->rocketStartVSpeed;
 	rocketAngle = this->rocketAngle;
+	rocketStartPower = this->rocketStartPower;
+}
+
+void ProblemRocket_Terrain::getRocketStartCoordinates(float & x, float & y)
+{
+	x = this->rocketStartX;
+	y = this->rocketStartY;
 }
 
 void ProblemRocket_Terrain::getWind(float & windHorizontal, float & windVertical)

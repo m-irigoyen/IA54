@@ -78,6 +78,14 @@ bool ProblemRocket_TerrainEditor::handleEvent(sf::RenderWindow * window, sf::Eve
 				this->rename();
 				return true;
 
+				// P : Set wind
+			case sf::Keyboard::F:
+				cout << "Enter rocket start power : ";
+				cin >> xWorld;
+				this->terrain.setRocketStartPower(xWorld);
+				this->rename();
+				return true;
+
 				// V : Set velocity
 			case sf::Keyboard::V:
 				cout << "Enter rocket hVelocity : ";
@@ -104,6 +112,32 @@ bool ProblemRocket_TerrainEditor::handleEvent(sf::RenderWindow * window, sf::Eve
 			case sf::Keyboard::Subtract:
 				this->terrain.setTerrainWidth(this->terrain.getWidth() - 10);
 				this->terrain.setTerrainHeigh(this->terrain.getHeight() - 10);
+				return true;
+
+				//Rocket one shortcuts
+			case sf::Keyboard::F5:
+				this->loadTerrain("VelocityH");
+				return true;
+			case sf::Keyboard::F6:
+				this->loadTerrain("VelocityV");
+				return true;
+			case sf::Keyboard::F7:
+				this->loadTerrain("Mountain");
+				return true;
+			case sf::Keyboard::F8:
+				this->loadTerrain("Plateau");
+				return true;
+			case sf::Keyboard::F9:
+				this->loadTerrain("DoubleBack");
+				return true;
+			case sf::Keyboard::F10:
+				this->loadTerrain("Pit");
+				return true;
+			case sf::Keyboard::F11:
+				this->loadTerrain("DoublePit");
+				return true;
+			case sf::Keyboard::F12:
+				this->loadTerrain("PrecisionLanding");
 				return true;
 			}
 			break;
@@ -213,7 +247,7 @@ void ProblemRocket_TerrainEditor::draw(sf::RenderWindow * window)
 	circle.setOrigin(4, 4);
 
 	float x, y, dontCare;
-	this->terrain.getRocketStart(x, y, dontCare, dontCare, dontCare);
+	this->terrain.getRocketStart(x, y, dontCare, dontCare, dontCare, dontCare);
 
 	convertCoordinates(x, y, this->terrain.getWidth(), this->terrain.getHeight(), x, y, window->getSize().x, window->getSize().y);
 	circle.setPosition(x, window->getSize().y - y);
@@ -235,8 +269,8 @@ void ProblemRocket_TerrainEditor::draw(sf::RenderWindow * window)
 	window->draw(this->hud_text);
 
 	// Starting rocket values
-	float startH, startV, startX, startY, windH, windV, rocketAngle;
-	this->terrain.getRocketStart(startX, startY, startH, startV, rocketAngle);
+	float startH, startV, startX, startY, windH, windV, rocketAngle, rocketStartPower;
+	this->terrain.getRocketStart(startX, startY, startH, startV, rocketAngle, rocketStartPower);
 	this->terrain.getWind(windH, windV);
 
 	this->hud_text.setString("Starting x : " + std::to_string(startX));
@@ -265,6 +299,10 @@ void ProblemRocket_TerrainEditor::draw(sf::RenderWindow * window)
 
 	this->hud_text.setString("Starting angle : " + std::to_string(rocketAngle));
 	this->hud_text.setPosition(10, 145);
+	window->draw(this->hud_text);
+
+	this->hud_text.setString("Starting power : " + std::to_string(rocketStartPower));
+	this->hud_text.setPosition(10, 165);
 	window->draw(this->hud_text);
 }
 

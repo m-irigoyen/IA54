@@ -91,6 +91,11 @@ void ProblemRocket_OneEngine::resolveRocketAngleChange()
 	this->rocket_angle = this->constrainAngleChange(this->rocket_angle, this->rotationChange);
 }
 
+void ProblemRocket_OneEngine::initRocketStartPower(float startPower)
+{
+	this->rocket_enginesPower.at(0) = startPower;
+}
+
 void ProblemRocket_OneEngine::resolveInfluences()
 {
 	this->rotationChange = this->desiredRotation;
