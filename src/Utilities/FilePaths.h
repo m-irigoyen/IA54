@@ -3,8 +3,8 @@
 
 #include <string>
 
-#define DEF_DEBUG
-//#define DEF_RELEASE
+//#define DEF_DEBUG
+#define DEF_RELEASE
 
 #ifdef DEF_DEBUG
 	const std::string PATH_RES = "../Project/res/";
@@ -14,7 +14,6 @@
 	const std::string PATH_RES = "res/";
 #endif
 
-	const std::string PATH_RES_FONTS = "Fonts/";
-	const std::string PATH_RES_TERRAINS = "Terrains/";
-
+	const std::string PATH_RES_FONTS = PATH_RES + "Fonts/";
+	const std::string PATH_RES_TERRAINS = PATH_RES + "Terrains/";
 #endif 

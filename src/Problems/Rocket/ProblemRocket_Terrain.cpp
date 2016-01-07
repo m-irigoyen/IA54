@@ -185,8 +185,7 @@ void ProblemRocket_Terrain::loadTerrain(std::string name)
 	}
 	else
 	{
-		string filePath = PATH_RES;
-		filePath += PATH_RES_TERRAINS;
+		string filePath = PATH_RES_TERRAINS;
 		filePath += name;
 		filePath += ".lvl";
 

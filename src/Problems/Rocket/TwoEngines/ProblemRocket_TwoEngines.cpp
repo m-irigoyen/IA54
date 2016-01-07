@@ -48,17 +48,6 @@ void ProblemRocket_TwoEngines::checkEvents(sf::RenderWindow * window)
 	// KeyDown events
 	if (this->userControlled)
 	{
-		// Engine control
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
-			this->setDesiredPower(0, 1);
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-			this->setDesiredPower(0, -1);
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-			this->setDesiredPower(1, 1);
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-			this->setDesiredPower(1, -1);
-		
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 		{
 			this->setDesiredPower(0, -1);
@@ -68,6 +57,16 @@ void ProblemRocket_TwoEngines::checkEvents(sf::RenderWindow * window)
 		{
 			this->setDesiredPower(0, 1);
 			this->setDesiredPower(1, 1);
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+		{
+			this->setDesiredPower(0, -1);
+			this->setDesiredPower(1, 1);
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+		{
+			this->setDesiredPower(0, 1);
+			this->setDesiredPower(1, -1);
 		}
 	}
 	

@@ -66,17 +66,26 @@ void GraphicView::Init(int width, int height, int problemWidth, int problemHeigh
 
 	// Loading fonts
 	sf::Font temp;
-	if (!temp.loadFromFile("../Project/res/Fonts/ForcedSquare.ttf"))
+	if (!temp.loadFromFile(PATH_RES_FONTS + "ForcedSquare.ttf"))
 	{
 		cout << "GraphicView::Init : ERROR : couldn't load ForcedSquare font" << endl;
 	}
+	this->fonts.push_back(temp);
 
+	if (!temp.loadFromFile(PATH_RES_FONTS + "Roboto-Regular.ttf"))
+	{
+		cout << "GraphicView::Init : ERROR : couldn't load ForcedSquare font" << endl;
+	}
 	this->fonts.push_back(temp);
 
 	// Text
 	this->text.setFont(this->fonts.at(0));
 	this->text.setCharacterSize(20);
 	this->text.setColor(sf::Color::White);
+
+	this->textBebasNeue.setFont(this->fonts.at(1));
+	this->textBebasNeue.setCharacterSize(20);
+	this->textBebasNeue.setColor(sf::Color::White);
 	
 	this->placingAgentText.setFont(this->fonts.at(0));
 	this->placingAgentText.setCharacterSize(20);
@@ -236,102 +245,220 @@ void GraphicView::clean()
 
 void GraphicView::drawHelpWindow()
 {
-	float marginLeft = 20.0f, marginTop = 20.0f, verticalSpace = this->fonts.at(0).getLineSpacing(this->text.getCharacterSize())/3, letterSize = this->text.getCharacterSize();
+	float marginLeft = 20.0f, marginTop = 40.0f, verticalSpace = this->fonts.at(1).getLineSpacing(this->text.getCharacterSize())/3, letterSize = this->textBebasNeue.getCharacterSize();
 
 	this->helpWindow->clear(sf::Color::Black);
-	this->text.setColor(sf::Color::White);
+	this->textBebasNeue.setColor(sf::Color::White);
+	int i = 0;
 
 	if (this->window->hasFocus())
 	{
-		this->text.setPosition(marginLeft,marginTop );
-		this->text.setString("+- : Change wave speed");
-		this->helpWindow->draw(this->text);
+		//SIMULATOR
+		this->textBebasNeue.setColor(sf::Color::Green);
+		this->textBebasNeue.setPosition(this->helpWindow->getSize().x / 3, 10.0f);
+		this->textBebasNeue.setString("Simulator window");
+		this->helpWindow->draw(this->textBebasNeue);
+		this->textBebasNeue.setColor(sf::Color::White);
 
+		this->textBebasNeue.setPosition(marginLeft,marginTop + i * verticalSpace + i * letterSize);
+		this->textBebasNeue.setString("F1 : Launch level editor");
+		this->helpWindow->draw(this->textBebasNeue);
+		++i;
 
-		this->text.setPosition(marginLeft, marginTop + verticalSpace + letterSize);
-		this->text.setString("F1 : Launch level editor");
-		this->helpWindow->draw(this->text);
+		this->textBebasNeue.setPosition(marginLeft, marginTop + i*verticalSpace + i*letterSize);
+		this->textBebasNeue.setString("F2 : Launch rocket one engine");
+		this->helpWindow->draw(this->textBebasNeue);
+		++i;
 
-		this->text.setPosition(marginLeft, marginTop + 2*verticalSpace + 2*letterSize);
-		this->text.setString("F2 : Launch rocket one engine");
-		this->helpWindow->draw(this->text);
+		this->textBebasNeue.setPosition(marginLeft, marginTop + i*verticalSpace + i*letterSize);
+		this->textBebasNeue.setString("F3 : Launch rocket two engines");
+		this->helpWindow->draw(this->textBebasNeue);
+		++i;
 
-		this->text.setPosition(marginLeft, marginTop + 3 * verticalSpace + 3 * letterSize);
-		this->text.setString("F3 : Launch rocket two engines");
-		this->helpWindow->draw(this->text);
+		this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+		this->textBebasNeue.setString("+- : Change wave speed");
+		this->helpWindow->draw(this->textBebasNeue);
+		++i;
 
-		this->text.setPosition(marginLeft, marginTop + 4 * verticalSpace + 4 * letterSize);
-		this->text.setString("0 -> 5 : place agents");
-		this->helpWindow->draw(this->text);
+		this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+		this->textBebasNeue.setString("B : toggle brain active");
+		this->helpWindow->draw(this->textBebasNeue);
+		++i;
 
-		this->text.setPosition(marginLeft, marginTop + 5 * verticalSpace + 5 * letterSize);
-		this->text.setString("B : toggle brain active");
-		this->helpWindow->draw(this->text);
+		this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+		this->textBebasNeue.setString("0 -> 6 : place agents");
+		this->helpWindow->draw(this->textBebasNeue);
+		++i;
 
-		this->text.setPosition(marginLeft, marginTop + 6 * verticalSpace + 6 * letterSize);
-		this->text.setString("L Click : move agents");
-		this->helpWindow->draw(this->text);
+		this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+		this->textBebasNeue.setString("L Click : move/select agent");
+		this->helpWindow->draw(this->textBebasNeue);
+		++i;
 
-		this->text.setPosition(marginLeft, marginTop + 7 * verticalSpace + 7 * letterSize);
-		this->text.setString("R Click : place agent");
-		this->helpWindow->draw(this->text);
+		this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+		this->textBebasNeue.setString("Del : delete selected agent");
+		this->helpWindow->draw(this->textBebasNeue);
+		++i;
 
-		this->text.setPosition(marginLeft, marginTop + 8 * verticalSpace + 8 * letterSize);
-		this->text.setString("Del : delete selected agent");
-		this->helpWindow->draw(this->text);
+		this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+		this->textBebasNeue.setString("R Click : place agent");
+		this->helpWindow->draw(this->textBebasNeue);
+		++i;
 
-		this->text.setPosition(marginLeft, marginTop + 9 * verticalSpace + 9 * letterSize);
-		this->text.setString("W : toggle display waves");
-		this->helpWindow->draw(this->text);
+		this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+		this->textBebasNeue.setString("O : toggle wave optimisation");
+		this->helpWindow->draw(this->textBebasNeue);
+
+		this->textBebasNeue.setColor(sf::Color(153,217,234));
+		this->textBebasNeue.setPosition(5.0f, marginTop + 10.2 * verticalSpace + 10.2 * letterSize);
+		this->textBebasNeue.setString("The Brain removes any unwanted agents \nwhile active\nTurn it off before placing/removing agents");
+		this->helpWindow->draw(this->textBebasNeue);
+		this->textBebasNeue.setColor(sf::Color::White);
 		
 	}
 	else if(this->problemWindow->hasFocus())
 	{
-		this->text.setPosition(marginLeft, marginTop);
-		this->text.setString("F4 -> F11 : load preset level");
-		this->helpWindow->draw(this->text);
+		if (this->isTerrainEditor)
+		{
+			// TERRAIN EDITOR
+			this->textBebasNeue.setColor(sf::Color::Green);
+			this->textBebasNeue.setPosition(this->helpWindow->getSize().x / 3, 10.0f);
+			this->textBebasNeue.setString("Terrain Editor");
+			this->helpWindow->draw(this->textBebasNeue);
+			this->textBebasNeue.setColor(sf::Color::White);
 
-		this->text.setPosition(marginLeft, marginTop + verticalSpace + letterSize);
-		this->text.setString("+- : Change speed");
-		this->helpWindow->draw(this->text);
+			
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("LClick : select/move terrain point");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
 
-		this->text.setPosition(marginLeft, marginTop + 2 * verticalSpace + 2 * letterSize);
-		this->text.setString("P : Pause problem");
-		this->helpWindow->draw(this->text);
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("Del : remove terrain point");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
 
-		this->text.setPosition(marginLeft, marginTop + 3 * verticalSpace + 3 * letterSize);
-		this->text.setString("R : reset rocket position");
-		this->helpWindow->draw(this->text);
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("RClick : place terrain point");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
 
-		this->text.setPosition(marginLeft, marginTop + 4 * verticalSpace + 4 * letterSize);
-		this->text.setString("Ctrl + LClick : set rocket position");
-		this->helpWindow->draw(this->text);
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("Shift+RClick : place flat zone");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
 
-		this->text.setPosition(marginLeft, marginTop + 5 * verticalSpace + 5 * letterSize);
-		this->text.setString("TAB : toggle show hud");
-		this->helpWindow->draw(this->text);
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("+- : change terrain size");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
 
-		this->text.setPosition(marginLeft, marginTop + 6 * verticalSpace + 6 * letterSize);
-		this->text.setString("U : toggle user control (arrows)");
-		this->helpWindow->draw(this->text);
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("F : Set rocket start power (console)");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
 
-		this->text.setPosition(marginLeft, marginTop + 7 * verticalSpace + 7 * letterSize);
-		this->text.setString("T : clear trajectories");
-		this->helpWindow->draw(this->text);
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("V : Set rocket start velocity (console)");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
 
-		this->text.setPosition(marginLeft, marginTop + 8 * verticalSpace + 8 * letterSize);
-		this->text.setString("A : toggle relative/fixed angle");
-		this->helpWindow->draw(this->text);
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("W : Set terrain wind (console)");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
 
-		this->text.setPosition(marginLeft, marginTop + 9 * verticalSpace + 9 * letterSize);
-		this->text.setString("L : Load specific level (console)");
-		this->helpWindow->draw(this->text);
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("L/S : load/save level (console)");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
+
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("D : load default terrain");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
+
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("B : load flat terrain");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
+
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("F5->F12 : load preset terrains");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
+		}
+		else
+		{
+			// PROBLEM ROCKET
+			this->textBebasNeue.setColor(sf::Color::Green);
+			this->textBebasNeue.setPosition(this->helpWindow->getSize().x / 3, 10.0f);
+			this->textBebasNeue.setString("Problem window");
+			this->helpWindow->draw(this->textBebasNeue);
+			this->textBebasNeue.setColor(sf::Color::White);
+
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("P : Pause problem");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
+
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("R : reset rocket/problem");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
+
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("Ctrl + LClick : set rocket position");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
+
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i *verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("+- : Change problem speed");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
+
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("TAB : toggle show hud");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
+
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("T : clear trajectories");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
+
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("U : toggle user control (arrow keys)");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
+
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("A : toggle relative/fixed angles");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
+
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i *verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("F4 -> F11 : load preset level");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
+
+			this->textBebasNeue.setPosition(marginLeft, marginTop + i * verticalSpace + i * letterSize);
+			this->textBebasNeue.setString("L : Load specific level (console)");
+			this->helpWindow->draw(this->textBebasNeue);
+			++i;
+		}
 	}
 	else
 	{
-		this->text.setPosition(marginLeft, marginTop);
-		this->text.setString("Ceci est la fenêtre d'aide.");
-		this->helpWindow->draw(this->text);
+		this->textBebasNeue.setColor(sf::Color::Green);
+		this->textBebasNeue.setPosition(this->helpWindow->getSize().x / 3, 10.0f);
+		this->textBebasNeue.setString("Help Window");
+		this->helpWindow->draw(this->textBebasNeue);
+		this->textBebasNeue.setColor(sf::Color::White);
+
+		this->textBebasNeue.setPosition(marginLeft, marginTop);
+		this->textBebasNeue.setString("This is the help window\n\nSelect another window to see available \ncommands and helpful tips");
+		this->helpWindow->draw(this->textBebasNeue);
 	}
 
 	this->helpWindow->display();
@@ -421,6 +548,11 @@ void GraphicView::resetText()
 void GraphicView::setBrainActive(bool active)
 {
 	this->brainActive = active;
+}
+
+void GraphicView::setIsTerrainEditor(bool isTerrainEditor)
+{
+	this->isTerrainEditor = isTerrainEditor;
 }
 
 GraphicView::~GraphicView(void)

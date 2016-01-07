@@ -11,7 +11,7 @@
 // The problems
 #include "Problems/Pointer/ProblemPointer.h"
 #include "Problems/Drones/ProblemDrones.h"
-//#include "Problems/Rocket/OneEngine/ProblemROCKET_ONEEngine.h"
+#include "Utilities/FilePaths.h"
 
 #define RECEPTOR_RADIUSSIZE 6
 #define EMITTER_RADIUSSIZE 6
@@ -61,12 +61,16 @@ public:
 	void resetText();
 	void setBrainActive(bool active);
 
+	void setIsTerrainEditor(bool isTerrainEditor);
+
 	~GraphicView(void);
 
 private:
 	sf::RenderWindow* window;			// The window
 	sf::RenderWindow* problemWindow;	// The problem's window
 	sf::RenderWindow* helpWindow;		// Helper window
+	bool isTerrainEditor;
+
 	//TODO: intercept close events from the problem window
 
 	World* world;						// Pointer to the world
@@ -94,6 +98,7 @@ private:
 
 	//GUI
 	sf::Text text;
+	sf::Text textBebasNeue;
 	sf::Text placingAgentText;	// Data given by the simulator
 
 								//Color code for the emitters

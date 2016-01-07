@@ -43,6 +43,12 @@ void Simulator::userAddAgent(int x, int y, int agentType)
 			((ProblemRocket*)this->problem)->addedAgent(agentType);
 			//cout << "Placing RocketOne stabilizer_vSpeed agent" << endl;
 			break;
+		case AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_ANGLE:
+			newAgent = this->addAgent(static_cast<float>(x), static_cast<float>(y), AGENT_TYPE::AGENT_EMITTER, BODY_TYPE::BODY_EMITTER);
+			((AgentRocket_OneEngine_Emitter*)newAgent)->setType((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_ANGLE);
+			((ProblemRocket*)this->problem)->addedAgent(agentType);
+			//cout << "Placing RocketOne stabilizer_vSpeed agent" << endl;
+			break;
 		default:
 			cout << "ERROR : Simulator::userAddAgent : unexpected agent type" << endl;
 		}
@@ -139,6 +145,9 @@ void Simulator::updateGUIAgentPlacingText()
 			break;
 		case AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_VSPEED:
 			this->SFMLView.setCurrentlyPlacingAgent("Emitter stabilizer_vSpeed", currentAgentType);
+			break;
+		case AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_ANGLE:
+			this->SFMLView.setCurrentlyPlacingAgent("Emitter stabilizer_angle", currentAgentType);
 			break;
 		default :
 			this->SFMLView.setCurrentlyPlacingAgent("", 0);
@@ -442,6 +451,11 @@ void Simulator::initProblem(PROBLEM_TYPE newProblem)
 		this->SFMLView.SetWorld(&this->world);
 		this->world.setWaveAmplitude(this->problem->getAmplitudeLoss());
 		this->window = this->SFMLView.getWindow();
+		
+		if (this->problemType == ROCKET_TERRAINEDITOR)
+			this->SFMLView.setIsTerrainEditor(true);
+		else
+			this->SFMLView.setIsTerrainEditor(false);
 
 		//FIXME : find a more elegant solution to that stupid brain gui
 		if (this->rocketBrain != NULL)
@@ -761,42 +775,52 @@ void Simulator::checkEvents()
 
 					// Agent placement
 					case sf::Keyboard::Num0 :
+					case sf::Keyboard::Numpad0:
 						this->currentAgentType = 0;
 						this->updateGUIAgentPlacingText();
 						break;
 					case sf::Keyboard::Num1:
+					case sf::Keyboard::Numpad1:
 						this->currentAgentType = 1;
 						this->updateGUIAgentPlacingText();
 						break;
 					case sf::Keyboard::Num2:
+					case sf::Keyboard::Numpad2:
 						this->currentAgentType = 2;
 						this->updateGUIAgentPlacingText();
 						break;
-					case sf::Keyboard::Num3 :						
+					case sf::Keyboard::Num3 :	
+					case sf::Keyboard::Numpad3:
 						this->currentAgentType = 3;
 						this->updateGUIAgentPlacingText();
 						break;
 					case sf::Keyboard::Num4:
+					case sf::Keyboard::Numpad4:
 						this->currentAgentType = 4;
 						this->updateGUIAgentPlacingText();
 						break;
 					case sf::Keyboard::Num5:
+					case sf::Keyboard::Numpad5:
 						this->currentAgentType = 5;
 						this->updateGUIAgentPlacingText();
 						break;
 					case sf::Keyboard::Num6:
+					case sf::Keyboard::Numpad6:
 						this->currentAgentType = 6;
 						this->updateGUIAgentPlacingText();
 						break;
 					case sf::Keyboard::Num7:
+					case sf::Keyboard::Numpad7:
 						this->currentAgentType = 7;
 						this->updateGUIAgentPlacingText();
 						break;
 					case sf::Keyboard::Num8:
+					case sf::Keyboard::Numpad8:
 						this->currentAgentType = 8;
 						this->updateGUIAgentPlacingText();
 						break;
-					case sf::Keyboard::Num9:						
+					case sf::Keyboard::Num9:
+					case sf::Keyboard::Numpad9:
 						this->currentAgentType = 9;
 						this->updateGUIAgentPlacingText();
 						break;

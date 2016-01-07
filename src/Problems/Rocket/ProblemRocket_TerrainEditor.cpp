@@ -35,7 +35,6 @@ bool ProblemRocket_TerrainEditor::handleEvent(sf::RenderWindow * window, sf::Eve
 					this->terrain.removePoint(this->selectedPoint);
 					this->isPointSelected = false;
 				}
-					
 				return true;
 
 			// B : Load basic terrain

@@ -84,6 +84,11 @@ void AgentRocket_OneEngine_Emitter::live()
 		else
 			ceaseTransmission = true;
 	}
+	else if ((AGENTTYPE_ROCKET_ONE)this->getType() == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_ANGLE)
+	{
+		desiredPower = PROBLEMROCKET_ROCKET_POWER_BASE + this->castedProblem->getPowerOffset();
+		desiredAngle = 0;
+	}
 	else if ((AGENTTYPE_ROCKET_ONE)this->getType() == AGENTTYPE_ROCKET_ONE::ROCKET_ONE_ALTITUDE)
 	{
 		// ALTITUDE STABILIZER

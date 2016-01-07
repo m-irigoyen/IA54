@@ -14,7 +14,7 @@ AgentRocket_Brain::AgentRocket_Brain(ProblemRocket* problem, bool active) : Agen
 void AgentRocket_Brain::clearDesiredState()
 {
 	this->desiredState.at(0) = 1;
-	for (int i = 1; i <= 5; ++i)
+	for (int i = 1; i < this->desiredState.size(); ++i)
 	{
 		this->desiredState.at(i) = 0;
 	}

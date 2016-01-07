@@ -133,7 +133,7 @@ bool ProblemRocket::handleEvent(sf::RenderWindow * window, sf::Event event)
 				this->resetRocket();
 				return true;
 			case sf::Keyboard::L:
-				cout << "Enter terrain to load : ";
+				cout << "Enter the name of the terrain to load : ";
 				cin >> temp;
 				this->loadTerrain(temp);
 				return true;
@@ -387,8 +387,6 @@ void ProblemRocket::resetRocket()
 {
 	float rocketStartPower;
 	this->terrain.getRocketStart(this->rocket_x, this->rocket_y, this->rocket_hSpeed, this->rocket_vSpeed, this->rocket_angle, rocketStartPower);
-	this->initRocketStartPower(rocketStartPower);
-	
 
 	this->pause = true;
 	this->problemLive = true;
@@ -401,6 +399,7 @@ void ProblemRocket::resetRocket()
 	{
 		*it = 0.0f;
 	}
+	this->initRocketStartPower(rocketStartPower);
 
 	this->trajectories.prepareNewTrajectory();
 }
@@ -418,10 +417,7 @@ void ProblemRocket::initGraphics(std::vector<sf::Font>* fonts)
 	this->hud_text.setColor(sf::Color::White);
 
 	// Rocket sprite
-	string path;
-	path += PATH_RES;
-	path += "Rocket.png";
-	if (!this->hud_rocketTexture.loadFromFile(path))
+	if (!this->hud_rocketTexture.loadFromFile(PATH_RES + "Rocket.png"))
 	{
 		std::cout << "ProblemRocket::init : ERROR : couldn't load rocket image from disk." << std::endl;
 	}
@@ -429,9 +425,7 @@ void ProblemRocket::initGraphics(std::vector<sf::Font>* fonts)
 	this->hud_rocketSprite.setOrigin(hud_rocketTexture.getSize().x / 2, hud_rocketTexture.getSize().y *  2/3);
 
 	// Explosion sprite
-	path = PATH_RES;
-	path += "Explosion.png";
-	if (!this->hud_explosionTexture.loadFromFile(path))
+	if (!this->hud_explosionTexture.loadFromFile(PATH_RES + "Explosion.png"))
 	{
 		std::cout << "ProblemRocket::init : ERROR : couldn't load explosion image from disk." << std::endl;
 	}
@@ -439,9 +433,7 @@ void ProblemRocket::initGraphics(std::vector<sf::Font>* fonts)
 	this->hud_explosionSprite.setOrigin(hud_explosionTexture.getSize().x / 2, hud_explosionTexture.getSize().y * 2 / 3);
 
 	// Radar sprite
-	path = PATH_RES;
-	path += "RadarMissing.png";
-	if (!this->hud_radarTexture.loadFromFile(path))
+	if (!this->hud_radarTexture.loadFromFile(PATH_RES + "RadarMissing.png"))
 	{
 		std::cout << "ProblemRocket::init : ERROR : couldn't load explosion image from disk." << std::endl;
 	}

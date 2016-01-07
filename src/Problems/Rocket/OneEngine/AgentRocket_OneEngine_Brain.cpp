@@ -14,7 +14,7 @@ void AgentRocket_OneEngine_Brain::live()
 	this->clearDesiredState();
 
 	// Getting problem data
-	float x, y, power, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat, lzSize;
+	float x, y, power, angle, hSpeed, vSpeed, distanceToGround, distanceToCenterFlat, lzSize, closestTerrainX, closestTerrainY, closestTerrainDistance;
 
 	this->castedProblem->getRocketPosition(x, y);
 	power = this->castedProblem->getRocketEnginesPower()->at(0);
@@ -30,7 +30,8 @@ void AgentRocket_OneEngine_Brain::live()
 	// Setting desired altitude
 	float highestPointX, highestPointY;
 	this->castedProblem->getTerrain()->getHighestPointBeforeLandingZone(x, y, highestPointX, highestPointY);
-	this->castedProblem->setDesiredAltitude(highestPointY + PROBLEMROCKET_ALTITUDE_OFFSET);
+	this->castedProblem->setDesiredAltitude(highestPointY + PROBLEMROCKET_ALTITUDE_OFFSET + 50.0f); // Forced to add that to avoid certain problems in plateau level
+	this->castedProblem->getTerrain()->getClosestPointFromRocket(x, y, closestTerrainX, closestTerrainY, closestTerrainDistance);
 
 
 		// Decision making
@@ -41,6 +42,7 @@ void AgentRocket_OneEngine_Brain::live()
 		this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DIRECTION) = 1;
 		this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_VSPEED) = 1;
 		this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_HSPEED) = 1;
+		this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_AVOIDER) = 1;
 	}
 	else if (abs(distanceToCenterFlat) < (lzSize / 2))
 	{
@@ -64,7 +66,24 @@ void AgentRocket_OneEngine_Brain::live()
 		else
 			this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_VSPEED) = 1;
 
-		if (this->castedProblem->checkCorrectLanding(x, y, hSpeed * 2, vSpeed * 2, angle * 2))
+		if (abs(closestTerrainDistance) < 25.0f)
+			this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_AVOIDER) = 3;
+		else if (abs(closestTerrainDistance) < 50.0f)
+			this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_AVOIDER) = 2;
+		else
+			this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_AVOIDER) = 1;
+
+		// Emergency landing : landing values are incorrect and we are too close from the ground
+		if (!this->castedProblem->checkCorrectLanding(x, y, hSpeed * 2, vSpeed * 2, angle * 2) && distanceToGround < 100.0f)
+		{
+			this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_ANGLE) = 5;
+			this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_HSPEED) = 1;
+			this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_VSPEED) = 1;
+			this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_ALTITUDE) = 1;
+			this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DIRECTION) = 0;
+			this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_AVOIDER) = 0;
+		}
+		else if (this->castedProblem->checkCorrectLanding(x, y, hSpeed * 2, vSpeed * 2, angle * 2))
 		{
 			// Keeping one direction agent
 			this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DIRECTION) = 1;
@@ -86,7 +105,7 @@ void AgentRocket_OneEngine_Brain::live()
 			0.0f,
 			this->castedProblem->getMaxHSpeed(),
 			1.0f,
-			3.0f));
+			6.0f));
 
 		// Vertical stabilization
 		if (vSpeed < 0.0f)
@@ -98,21 +117,22 @@ void AgentRocket_OneEngine_Brain::live()
 				3.0f));
 		}
 		else
-			this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_VSPEED) = (int)round(convertToRange(abs(vSpeed),
+			this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_VSPEED) = 3; /*(int)round(convertToRange(abs(vSpeed),
 				0.0f,
 				this->castedProblem->getMaxVSpeed(),
 				1.0f,
-				5.0f));
+				5.0f));*/
+
+			this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_AVOIDER) = convertToRange(100 - abs(closestTerrainDistance),
+				0,
+				100,
+				1,
+				3);
 		
 
 		// Check for altitude 
 		if (y > highestPointY + PROBLEMROCKET_ALTITUDE_OFFSET)
 		{
-			// Direction : stabilize before caring about direction
-			if (this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_VSPEED) > 2
-				|| this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_STABILIZER_HSPEED) > 2)
-				this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DIRECTION) = 0;
-			else
 				this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DIRECTION) = 1;
 		}
 		else
@@ -126,7 +146,12 @@ void AgentRocket_OneEngine_Brain::live()
 					4.0f));
 			}
 			else
+			{
 				this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_ALTITUDE) = 1;
+			}
+				
+
+			this->desiredState.at((int)AGENTTYPE_ROCKET_ONE::ROCKET_ONE_DIRECTION) = 1;
 		}
 	}
 }
